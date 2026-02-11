@@ -1,2 +1,4 @@
 
 # Hér kemur greedy algorithmi
+
+
