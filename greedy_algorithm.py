@@ -1,0 +1,2 @@
+
+# Hér kemur greedy algorithmi
