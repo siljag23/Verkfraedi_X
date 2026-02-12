@@ -1,5 +1,4 @@
 
-# Hér kemur greedy algorithmi
 
 from open_excel import open_excel, shift_length
 from pick_employees import pick_employees
