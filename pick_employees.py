@@ -12,7 +12,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, event_id:int
 
     employee_ids = list(dict_employees.keys())
     if n > len(employee_ids):
-        raise ValueError(f"Ekki nóg af starfsmönnum: þarf {n}, en eru {len(employee_ids)}")
+        raise ValueError(f"Ekki nægur fjöldi af starfsmönnum laus: fyrir viðburðinn þarf {n} starfsmenn, en það eru {len(employee_ids)} lausir")
 
     chosen_ids = random.sample(employee_ids, n)
 
@@ -32,6 +32,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, event_id:int
             "EventID": event_id,
             "EmployeeID": emp_id,
             "EmployeeName": dict_employees[emp_id].get("EmployeeName"),
+            "ShiftHours": shift_hours,
             "TotalHours": hours_per_employee[emp_id]
         })
     return out
