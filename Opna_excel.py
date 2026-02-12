@@ -1,11 +1,21 @@
 
-import pandas as pd
+def open_excel(file_name, sheet_1_name, sheet_2_name):
 
-file = pd.read_excel("Input.xlsx")
+    import pandas as pd
 
-file = file.dropna(how="all")
-file = file.loc[:,~file.columns.str.contains("^Unnames")]
+    events = pd.read_excel(file_name, sheet_name=sheet_1_name)
+    employees  = pd.read_excel(file_name, sheet_name=sheet_2_name)
 
-result = file.groupby(file.columns[0])[file.columns[1]].apply(list).to_dict()
 
-print(result)
+    # HHreinsum skjalið
+    events = events.dropna(how="all")
+    employees = employees.dropna(how="all")
+    events = events.loc[:, ~events.columns.str.contains("^Unnamed")]
+    employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
+
+    dict_events = events.set_index("EventID").to_dict(orient="index")
+    dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
+
+    return dict_events, dict_employees
+
+output = open_excel("Input.xlsx","Events", "Employee")
