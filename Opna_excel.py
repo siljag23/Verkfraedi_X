@@ -1,4 +1,3 @@
-
 def open_excel(file_name, sheet_1_name, sheet_2_name):
 
     import pandas as pd
