@@ -31,4 +31,3 @@ for emp_id, total in sorted(hours_per_employee.items(), key=lambda x: x[1]):
     name = employees[emp_id].get("EmployeeName")
     print(f"{emp_id}: {name} -> {total:.2f} klst")
 
-
