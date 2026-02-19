@@ -1,8 +1,6 @@
-
-
 from open_excel import shift_length
 
-#
+# Fall sem velur hvaða starfsmaður fær næstu vakt
 
 def pick_employees(dict_events, dict_employees, hours_per_employee, event_id:int, next_index):
 
@@ -11,7 +9,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, event_id:int
     event = dict_events[event_id]
     n_employees = int(event["Employees"])
 
-    #röðum viðburðum eftir tímasetningu, fyrstu koma fyrst
+    #röðum starfsmönnum eftir stafsrófsröð
 
     sorted_employee_ids = [
         emp_id
@@ -29,7 +27,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, event_id:int
         chosen_ids.append(sorted_employee_ids[next_index % len(sorted_employee_ids)])
         next_index += 1
 
-    shift_hours = shift_length(event["Shift begins"], event["Shifts ends"])
+    shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
     
     # skila lista af pörum: (EventID, EmployeeID, EmployeeName)
     out = []
@@ -42,13 +40,9 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, event_id:int
             "ShiftHours": shift_hours,
             "TotalHours": hours_per_employee[emp_id]
         })
-
+    """
     print(out)
     print("")
     print(next_index)
-    
+    """
     return out, next_index
-
-
-
-
