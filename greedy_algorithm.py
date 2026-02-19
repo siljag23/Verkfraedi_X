@@ -1,16 +1,23 @@
 
-from open_excel import open_excel, shift_length
+from open_excel import open_excel
 from pick_employees import pick_employees
 from collections import defaultdict
 
 hours_per_employee = defaultdict(float)
+next_index = 0
 
 events, employees = open_excel("Input.xlsx", "Events", "Employee")
 
+"""
+sorted_events = sorted(
+    events.items(),
+    key=lambda item: (item[1]["Date"], item[1]["Shift begins"])
+)
+"""
 
 for event_id, event in events.items():
     try:
-        selected_employees = pick_employees(events, employees, hours_per_employee, event_id)
+        selected_employees, next_index = pick_employees(events, employees, hours_per_employee, event_id, next_index)
 
 
         print(f'\nEventID {event_id} | {event["Event"]} | '
@@ -30,5 +37,4 @@ print("\nFjöldi klukkustunda á starfsmann:")
 for emp_id, total in sorted(hours_per_employee.items(), key=lambda x: x[1]):
     name = employees[emp_id].get("EmployeeName")
     print(f"{emp_id}: {name} -> {total:.2f} klst")
-
 
