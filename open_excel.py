@@ -7,12 +7,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name):
 
     events = pd.read_excel(file_name, sheet_name=sheet_1_name)
     employees  = pd.read_excel(file_name, sheet_name=sheet_2_name)
-    """
-    events["Date"] = pd.to_datetime(events["Date"], dayfirst=True, errors="coerce")
-    
-    events["Shift begins"] = pd.to_datetime(events["Shift begins"], errors="coerce").dt.time
-    events["Shifts ends"] = pd.to_datetime(events["Shifts ends"], errors="coerce").dt.time
-    """
+
 
     # Hreinsum skjalið
     events = events.dropna(how="all")
