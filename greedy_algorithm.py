@@ -1,4 +1,3 @@
-
 from open_excel import open_excel
 from pick_employees import pick_employees
 from collections import defaultdict
@@ -37,4 +36,5 @@ print("\nFjöldi klukkustunda á starfsmann:")
 for emp_id, total in sorted(hours_per_employee.items(), key=lambda x: x[1]):
     name = employees[emp_id].get("EmployeeName")
     print(f"{emp_id}: {name} -> {total:.2f} klst")
+
 
