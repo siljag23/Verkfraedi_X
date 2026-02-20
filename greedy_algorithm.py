@@ -26,7 +26,7 @@ for event_id, event in sorted_events.items():
             sorted_events, employees, hours_per_employee, employee_days, event_id, next_index
         )
 
-        print(f'\nEventID {event_id} | {event["Event"]} | '
+        print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} |'
               f'{event["ShiftBegins"]} - {event["ShiftsEnds"]}')
 
         for row in selected_employees:
