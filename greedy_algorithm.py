@@ -4,6 +4,7 @@ from pick_employees import pick_employees
 from collections import defaultdict
 
 hours_per_employee = defaultdict(float)
+employee_days = defaultdict(set)
 next_index = 0
 
 events, employees = open_excel("Input.xlsx", "Events", "Employee")
@@ -13,6 +14,8 @@ sorted_events = dict(
            key=lambda item: float(item[1].get("EventRanking", float("inf"))))
 )
 
+print(sorted_events)
+
 for eid, e in sorted_events.items():
     print(eid, e["EventRanking"])
 
@@ -20,7 +23,7 @@ for eid, e in sorted_events.items():
 for event_id, event in sorted_events.items():
     try:
         selected_employees, next_index = pick_employees(
-            sorted_events, employees, hours_per_employee, event_id, next_index
+            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index
         )
 
         print(f'\nEventID {event_id} | {event["Event"]} | '
