@@ -14,10 +14,12 @@ sorted_events = dict(
            key=lambda item: float(item[1].get("EventRanking", float("inf"))))
 )
 
+"""
 print(sorted_events)
+"""
 
 for eid, e in sorted_events.items():
-    print(eid, e["EventRanking"])
+    eid, e["EventRanking"]
 
 
 for event_id, event in sorted_events.items():
@@ -26,13 +28,12 @@ for event_id, event in sorted_events.items():
             sorted_events, employees, hours_per_employee, employee_days, event_id, next_index
         )
 
-        print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} | '
+        print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} |'
               f'{event["ShiftBegins"]} - {event["ShiftsEnds"]}')
 
         for row in selected_employees:
             print(
-                f'   -> {row["EmployeeID"]}: {row["EmployeeName"]} | '
-                f'+{row["ShiftHours"]:.2f} klst | total {row["TotalHours"]:.2f} klst'
+                f'   -> {row["EmployeeID"]}: {row["EmployeeName"]}'
             )
 
     except Exception as e:

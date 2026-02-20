@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, time
 from open_excel import shift_length
 
 def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days,
@@ -7,16 +7,23 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     event = dict_events[event_id]
     n_employees = int(event["Employees"])
 
+    #Pössum að date sé formattað sem date
     raw_date = event["Date"]
     if isinstance(raw_date, str):
-        try:
-            event_date = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
-        except ValueError as e:
-            raise ValueError(f"Ógild dagsetning í Excel fyrir EventID {event_id}: '{raw_date}'") from e
+        event_date = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
     elif hasattr(raw_date, "date"):
         event_date = raw_date.date()
     else:
-        event_date = raw_date  # ef þetta er þegar date
+        event_date = raw_date
+
+    start_dt = datetime.combine(event_date, event["ShiftBegins"])
+    end_dt = datetime.combine(event_date, event["ShiftsEnds"])
+    if end_dt < start_dt:
+        end_dt += timedelta(days=1)
+
+    blocked_days = {start_dt.date()}
+    if end_dt.date() != start_dt.date() and end_dt.time() != time(0, 0):
+        blocked_days.add(end_dt.date())
 
     #Röðum starfsmönnum í stafrófsröð
     sorted_employee_ids = [
@@ -44,10 +51,12 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
         chosen_ids.append(emp_id)
 
+    #Starfsmenn mega ekki vinna meira en 13 klst. á sólarhring
+
     if len(chosen_ids) < n_employees:
         raise ValueError(
             f"Ekki nægur fjöldi af starfsmönnum laus (án tvöfaldra vakta sama dag): "
-            f"þarf {n_employees}, en aðeins {len(chosen_ids)} eru lausir"
+            f"þarf {n_employees}, en aðeins {len(chosen_ids)} eru lausir sem eru starfsmenn með ID: {chosen_ids}"
         )
 
     # Uppfæra next_index þannig röðin haldi áfram rétt
