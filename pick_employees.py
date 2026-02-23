@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, time
 from shift_length import shift_length
 
-def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int):
+def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours):
 
     # Gera dict um einstaka viðburð úr dict af öllum viðburðum
     event = dict_events[event_id]
@@ -26,6 +26,19 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     # Breyta dagsetningu á shifts_end ef vakt fer yfir miðnætti
     if shift_ends < shift_begins:
         shift_ends += timedelta(days=1)
+
+    total_shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
+
+    # Teljum klst. í hverri vakt og skiptum niður á dag 1 og 2 (ef vaktin skyldi fara yfir miðnætti)
+    day_1 = shift_begins.date()
+    day_2 = shift_ends.date()
+    hours_day_1 = total_shift_hours
+    hours_day_2 = 0
+
+    # Ef vakt fer yfir miðnætti þá fara klst. eftir miðnætti á dag 2
+    if day_1 != day_2 and shift_ends.time() != time(0, 0):
+        hours_day_1 = shift_length(event["ShiftBegins"], time(0, 0))
+        hours_day_2 = shift_length(time(0, 0), event["ShiftsEnds"])
 
     # Ef þú ert með vakt á ákveðnum degi getur þú ekki fengið aðra vakt á þeim degi
     blocked_days = {shift_begins.date()}
@@ -61,9 +74,20 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         if event_date in employee_days[emp_id]:
             continue
 
-        selected_employee_ids.append(emp_id)
+        # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 1
+        # Ef hann fer yfir hámarkið þá hoppum við yfir
+        if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
+            continue
+        
+        # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 2 (á við ef vaktin fer yfir miðnætti)
+        # Ef hann fer yfir hámarkið þá hoppum við yfir
+        if hours_day_2 > 0:
+            if daily_hours_per_employee[(emp_id, day_2)] + hours_day_2 > max_daily_hours:
+                continue
 
-    # Starfsmenn mega ekki vinna meira en 13 klst. á sólarhring
+        selected_employee_ids.append(emp_id)    
+
+    # Athugum hvort það sé nægur fjöldi starfsmanna laus fyrir vakt
     if len(selected_employee_ids) < req_employees:
         raise ValueError(
             f"Ekki nægur fjöldi af starfsmönnum laus þennan dag"
