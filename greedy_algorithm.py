@@ -64,8 +64,19 @@ for emp_id, total in sorted(hours_per_employee.items(), key=lambda x: x[1]):
     print(f"{emp_id}: {name} -> {total:.2f} klst")
 
 # Búum til lista með pörum af EventID og EmployeeED
-pairs = [[row["EventID"], row["EmployeeID"]] for row in rows]
+pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 
-with open("output.json", "w", encoding = "utf-8") as f:
-    json.dump(pairs, f, indent = 4, ensure_ascii = False)
+# Aðlögum events og employees fyrir json skjal
+dicts_for_json = {
+    "events": events,
+    "employees": employees
+}
+
+with open("output_list_mm_yy.json", "w", encoding = "utf-8") as f:
+    json.dump(pairs_for_json, f, indent = 4, ensure_ascii = False)
+
+with open("output_dicts_mm_yy.json", "w", encoding = "utf-8") as f:
+    json.dump(dicts_for_json, f, indent = 4, ensure_ascii = False, default = str)
+
+
 
