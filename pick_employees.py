@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, time
 from shift_length import shift_length
 
-def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours):
+def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours, time_last_shift_ended, min_rest_hours):
 
     # Gera dict um einstaka viðburð úr dict af öllum viðburðum
     event = dict_events[event_id]
@@ -42,11 +42,6 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
     # Ef þú ert með vakt á ákveðnum degi getur þú ekki fengið aðra vakt á þeim degi
     blocked_days = {shift_begins.date()}
-    """
-    # Þurfum ekki... held ég - Kata
-    if shift_ends.date() != shift_begins.date() and shift_ends.time() != time(0, 0):
-        blocked_days.add(shift_ends.date())
-    """
 
     # Raða starfsmönnum í stafrófsröð, ef starfsmenn heita það saman þá raða eftir ID
     sorted_employee_ids = [
@@ -71,18 +66,25 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
         # Skoða hvort dagsetning viburðar sé laus hjá starfsmanni
         # Hoppa yfir starfsmann ef hann er ekki laus (continue)
-        if event_date in employee_days[emp_id]:
+        if employee_days[emp_id] & blocked_days:
             continue
 
         # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 1
-        # Ef hann fer yfir hámarkið þá hoppum við yfir
+        # Ef hann fer yfir hámarkið þá hoppum við yfir starfsmanninn
         if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
             continue
         
         # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 2 (á við ef vaktin fer yfir miðnætti)
-        # Ef hann fer yfir hámarkið þá hoppum við yfir
+        # Ef hann fer yfir hámarkið þá hoppum við yfir starsfmanninn
         if hours_day_2 > 0:
             if daily_hours_per_employee[(emp_id, day_2)] + hours_day_2 > max_daily_hours:
+                continue
+        
+        # Athugum hvort starfsmaður fái a.m.k. lágmarks hvíld
+        # Hoppum yfir starfsmanninn ef hann fengi ekki lágmarks hvíld
+        previous_shift_end = time_last_shift_ended.get(emp_id)
+        if previous_shift_end is not None:
+            if shift_begins - previous_shift_end < timedelta(hours=min_rest_hours):
                 continue
 
         selected_employee_ids.append(emp_id)    
@@ -105,7 +107,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
     for emp_id in selected_employee_ids:
         hours_per_employee[emp_id] += shift_hours
-        employee_days[emp_id].add(event_date)
+        employee_days[emp_id].update(blocked_days)
         total_work_hours.append({
             "EventID": event_id,
             "EmployeeID": emp_id,
