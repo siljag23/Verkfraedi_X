@@ -1,5 +1,5 @@
 
-from open_excel import open_excel
+from open_excel import open_excel, open_previous_scores, merge_scores_into_employees
 from pick_employees import pick_employees
 from collections import defaultdict
 import json
@@ -8,13 +8,23 @@ import json
 hours_per_employee = defaultdict(float)
 employee_days = defaultdict(set)
 daily_hours_per_employee = defaultdict(float)
+score_per_employee = defaultdict(float)
 time_last_shift_ended = {}
 next_index = 0
 max_daily_hours = 11
 min_rest_hours = 13
+# Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
+month = input("Mánuður vaktaplans á format mm_yy: ")
+
 
 # Opna og lesa execl input
 events, employees = open_excel("Input.xlsx", "Events", "Employee")
+
+# Opna og les json dictionaries skjal 
+previous_json = "02_26_output_dicts.json" # Hef þetta svona í bili
+previous_scores = open_previous_scores(previous_json)
+
+employees = merge_scores_into_employees(employees, previous_scores)
 
 # Raða event dict eftir erfiðleika, auðveldasta fyrst
 sorted_events = dict(
@@ -37,8 +47,7 @@ for event_id, event in sorted_events.items():
     try:
         # Raða starfsmönnum á vakt með pick employee
         selected_employees, next_index = pick_employees(
-            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index, daily_hours_per_employee, max_daily_hours, time_last_shift_ended, min_rest_hours
-        )
+            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index, daily_hours_per_employee, max_daily_hours, time_last_shift_ended, min_rest_hours)
 
         rows.extend(selected_employees)
 
@@ -72,11 +81,12 @@ dicts_for_json = {
     "employees": employees
 }
 
-with open("output_list_mm_yy.json", "w", encoding = "utf-8") as f:
+with open(f"{month}_output_list.json", "w", encoding = "utf-8") as f:
     json.dump(pairs_for_json, f, indent = 4, ensure_ascii = False)
 
-with open("output_dicts_mm_yy.json", "w", encoding = "utf-8") as f:
+with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
     json.dump(dicts_for_json, f, indent = 4, ensure_ascii = False, default = str)
 
+print(employees)
 
 

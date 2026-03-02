@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, time
 from shift_length import shift_length
 
+
 def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours, time_last_shift_ended, min_rest_hours):
 
     # Gera dict um einstaka viðburð úr dict af öllum viðburðum
@@ -43,6 +44,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     # Ef þú ert með vakt á ákveðnum degi getur þú ekki fengið aðra vakt á þeim degi
     blocked_days = {shift_begins.date()}
 
+    """
     # Raða starfsmönnum í stafrófsröð, ef starfsmenn heita það saman þá raða eftir ID
     sorted_employee_ids = [
         emp_id
@@ -51,14 +53,106 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             key=lambda item: (item[1].get("EmployeeName", ""), item[0])
         )
     ]
+    """
 
+    # Sæki stig hvers viðburðar
+    event_score = float(event.get("EventRanking", 0))
+
+    # Raða starfsmönnum eftir stigafjölda, starfsmenn með lægstu stigin koma efst
+    sorted_employees = sorted(
+        dict_employees.keys(),
+        key = lambda emp_id: (
+            dict_employees[emp_id].get("Score", 0),
+            dict_employees[emp_id].get("EmployeeName", "")
+        )
+    )
+
+    # Velja starfsmenn með lægstu stig og brjóta engar skorður
+    selected_employee_ids = []
+
+    # Skoðum hvort starfsmaður getur unnið þennan dag
+    for emp_id in sorted_employees:
+        if len(selected_employee_ids) >= req_employees:
+            break
+    
+        # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 1
+        if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
+            continue
+
+        # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 2 (á við ef vaktin fer yfir miðnætti)
+        if hours_day_2 > 0:
+            if daily_hours_per_employee[(emp_id, day_2)] + hours_day_2 > max_daily_hours:
+                continue
+
+
+        # Athugum hvort starfsmaður fái a.m.k. lágmarks hvíld
+        previous_shift_end = time_last_shift_ended.get(emp_id)
+        if previous_shift_end is not None:
+            if shift_begins - previous_shift_end < timedelta(hours=min_rest_hours):
+                continue
+
+        selected_employee_ids.append(emp_id)
+
+    # Athugum hvort það sé nægur fjöldi starfsmanna laus fyrir vakt
+    if len(selected_employee_ids) < req_employees:
+        raise ValueError(
+            f"Ekki nægur fjöldi af starfsmönnum laus þennan dag. "
+            f"Þarf {req_employees} starfsmenn en aðeins {len(selected_employee_ids)} eru lausir. "
+            f"Lausir: {selected_employee_ids}"
+        )
+
+    # next_index er ekki lengur notað (round-robin), en við skilum því samt óbreyttu
+    shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
+
+    # Taka saman hvað hver starfsmaður vinnur mikið
+    total_work_hours = []
+
+    for emp_id in selected_employee_ids:
+        # Uppfæra heildarklst
+        hours_per_employee[emp_id] += shift_hours
+
+        # Banna aðra vakt sama dag (dagur sem vakt byrjar)
+        employee_days[emp_id].update(blocked_days)
+
+        # Uppfæra daglega klst á day_1 og day_2
+        daily_hours_per_employee[(emp_id, day_1)] += hours_day_1
+        if hours_day_2 > 0:
+            daily_hours_per_employee[(emp_id, day_2)] += hours_day_2
+
+        # Uppfæra hvenær síðasta vakt endaði (fyrir min_rest_hours regluna)
+        time_last_shift_ended[emp_id] = shift_ends
+
+        # Uppfæra Score starfsmanns (bætist við stig viðburðarins)
+        dict_employees[emp_id]["Score"] = dict_employees[emp_id].get("Score", 0) + event_score
+
+        total_work_hours.append({
+            "EventID": event_id,
+            "EmployeeID": emp_id,
+            "EmployeeName": dict_employees[emp_id].get("EmployeeName"),
+            "ShiftHours": shift_hours,
+            "TotalHours": hours_per_employee[emp_id],
+            "AddedScore": event_score,
+            "NewScore": dict_employees[emp_id]["Score"],
+        })
+
+    return total_work_hours, next_index
+
+
+
+
+    
+ 
+    """
     # Velja starfsmenn með round-robin eftir starfrófsröð
     # Sleppa þeim sem eru búnir að vinna sama dag
     selected_employee_ids = []
     total_employees = len(sorted_employee_ids)
     i = next_index
     employees_checked = 0
+    """
 
+    """
+    # Hér er valið eftir stafsrófsröð
     while len(selected_employee_ids) < req_employees and employees_checked < total_employees:
         emp_id = sorted_employee_ids[i % total_employees]
         i += 1
@@ -115,5 +209,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "ShiftHours": shift_hours,
             "TotalHours": hours_per_employee[emp_id]
         })
+
+    """
 
     return total_work_hours, next_index
