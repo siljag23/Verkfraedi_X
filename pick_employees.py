@@ -210,6 +210,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "TotalHours": hours_per_employee[emp_id]
         })
 
-    """
+    
 
     return total_work_hours, next_index
+    """
