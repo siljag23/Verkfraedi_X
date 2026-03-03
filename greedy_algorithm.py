@@ -67,10 +67,12 @@ for event_id, event in sorted_events.items():
 
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
-print("\nFjöldi klukkustunda á starfsmann:")
-for emp_id, total in sorted(hours_per_employee.items(), key=lambda x: x[1]):
-    name = employees[emp_id].get("EmployeeName")
-    print(f"{emp_id}: {name} -> {total:.2f} klst")
+print("\nFjöldi klukkustunda á starfsmann og stiga á starfsmann:")
+for emp_id, info in sorted(employees.items(), key=lambda x: x[1].get("Score", 0)):
+    name = info.get("EmployeeName")
+    total = hours_per_employee.get(emp_id, 0)
+    score = info.get("Score", 0)
+    print(f"{emp_id}: {name} -> {total:.2f} klst. -> {score:.2f} stig")
 
 # Búum til lista með pörum af EventID og EmployeeED
 pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
