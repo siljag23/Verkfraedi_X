@@ -51,3 +51,19 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
         info["Score"] = previous_scores.get(emp_id, 0)
 
     return employees
+
+
+def respects_min_rest(emp_id: int) -> bool:
+    """
+    True ef nýja vaktin (shift_begins, shift_ends) er amk min_rest_hours frá ÖLLUM
+    áður úthlutuðum vöktum hjá starfsmanni, í báðar áttir í tíma.
+    """
+    for old_begins, old_ends in assigned_shifts.get(emp_id, []):
+        # Ef annað tímabilið er of nálægt hinu, þá brýtur það hvíld
+        # OK ef:
+        #   new byrjar eftir að old endar + rest  OR
+        #   old byrjar eftir að new endar + rest
+        ok = (shift_begins >= old_ends + rest_delta) or (old_begins >= shift_ends + rest_delta)
+        if not ok:
+            return False
+    return True 

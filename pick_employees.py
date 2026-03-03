@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, time
 from shift_length import shift_length
 
 
-def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours, time_last_shift_ended, min_rest_hours):
+def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours):
 
     # Gera dict um einstaka viðburð úr dict af öllum viðburðum
     event = dict_events[event_id]
@@ -58,6 +58,23 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     # Sæki stig hvers viðburðar
     event_score = float(event.get("EventRanking", 0))
 
+    rest_delta = timedelta(hours = min_rest_hours)
+
+    def respects_min_rest(emp_id: int) -> bool:
+        """
+        True ef nýja vaktin (shift_begins, shift_ends) er amk min_rest_hours frá ÖLLUM
+        áður úthlutuðum vöktum hjá starfsmanni, í báðar áttir í tíma.
+        """
+        for old_begins, old_ends in assigned_shifts.get(emp_id, []):
+            # Ef annað tímabilið er of nálægt hinu, þá brýtur það hvíld
+            # OK ef:
+            #   new byrjar eftir að old endar + rest  OR
+            #   old byrjar eftir að new endar + rest
+            ok = (shift_begins >= old_ends + rest_delta) or (old_begins >= shift_ends + rest_delta)
+            if not ok:
+                return False
+        return True 
+
     # Raða starfsmönnum eftir stigafjölda, starfsmenn með lægstu stigin koma efst
     sorted_employees = sorted(
         dict_employees.keys(),
@@ -68,11 +85,12 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         )
     )
 
-    print("Event", event_id, "event_score", event_score)
-    print("Top 10 (ID,Score):", [(eid, dict_employees[eid].get("Score", 0)) for eid in sorted_employees[:]])
 
     """
     print(sorted_employees)
+    print("Event", event_id, "event_score", event_score)
+    print("Top 10 (ID,Score):", [(eid, dict_employees[eid].get("Score", 0)) for eid in sorted_employees[:]])
+
     """
 
     # Velja starfsmenn með lægstu stig og brjóta engar skorður
@@ -97,10 +115,8 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
 
         # Athugum hvort starfsmaður fái a.m.k. lágmarks hvíld
-        previous_shift_end = time_last_shift_ended.get(emp_id)
-        if previous_shift_end is not None:
-            if shift_begins - previous_shift_end < timedelta(hours=min_rest_hours):
-                continue
+        if not respects_min_rest(emp_id):
+            continue
 
         selected_employee_ids.append(emp_id)
 
@@ -131,7 +147,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             daily_hours_per_employee[(emp_id, day_2)] += hours_day_2
 
         # Uppfæra hvenær síðasta vakt endaði (fyrir min_rest_hours regluna)
-        time_last_shift_ended[emp_id] = shift_ends
+        assigned_shifts[emp_id].append((shift_begins, shift_ends))
 
         # Uppfæra Score starfsmanns (bætist við stig viðburðarins)
         dict_employees[emp_id]["Score"] = dict_employees[emp_id].get("Score", 0) + event_score
