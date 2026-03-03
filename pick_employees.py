@@ -63,9 +63,17 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         dict_employees.keys(),
         key = lambda emp_id: (
             dict_employees[emp_id].get("Score", 0),
-            dict_employees[emp_id].get("EmployeeName", "")
+            dict_employees[emp_id].get("EmployeeName", ""),
+            emp_id
         )
     )
+
+    print("Event", event_id, "event_score", event_score)
+    print("Top 10 (ID,Score):", [(eid, dict_employees[eid].get("Score", 0)) for eid in sorted_employees[:]])
+
+    """
+    print(sorted_employees)
+    """
 
     # Velja starfsmenn með lægstu stig og brjóta engar skorður
     selected_employee_ids = []
@@ -74,6 +82,9 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     for emp_id in sorted_employees:
         if len(selected_employee_ids) >= req_employees:
             break
+
+        if employee_days[emp_id] & blocked_days:
+            continue
     
         # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 1
         if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
@@ -101,7 +112,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             f"Lausir: {selected_employee_ids}"
         )
 
-    # next_index er ekki lengur notað (round-robin), en við skilum því samt óbreyttu
+    # Sækjum lengd hverrar vaktar í klst.
     shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
 
     # Taka saman hvað hver starfsmaður vinnur mikið
@@ -134,6 +145,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "AddedScore": event_score,
             "NewScore": dict_employees[emp_id]["Score"],
         })
+
 
     return total_work_hours, next_index
 

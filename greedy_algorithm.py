@@ -29,12 +29,9 @@ employees = merge_scores_into_employees(employees, previous_scores)
 # Raða event dict eftir erfiðleika, auðveldasta fyrst
 sorted_events = dict(
     sorted(events.items(), 
-           key=lambda item: float(item[1].get("EventRanking", float("inf"))))
+           key=lambda item: float(item[1].get("EventRanking", float("inf"))), reverse = True)
 )
 
-"""
-print(sorted_events)
-"""
 
 # Sæka event ID og event rank úr sorted events dict
 for event_id, event_info in sorted_events.items():
@@ -60,7 +57,9 @@ for event_id, event in sorted_events.items():
             print(
                 f'   -> {row["EmployeeID"]}: {row["EmployeeName"]}'
             )
-    
+        
+
+
     # Villuskilaboð ef eitthvað klikkar
     except Exception as event_info:
         print(f'\nEventID {event_id} ERROR -> {event_info}')
@@ -89,6 +88,6 @@ with open(f"{month}_output_list.json", "w", encoding = "utf-8") as f:
 with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
     json.dump(dicts_for_json, f, indent = 4, ensure_ascii = False, default = str)
 
-print(employees)
+
 
 
