@@ -3,6 +3,7 @@ from open_excel import open_excel, open_previous_scores, merge_scores_into_emplo
 from pick_employees import pick_employees
 from collections import defaultdict
 import json
+import matplotlib.pyplot as plt
 
 # Upphafsstilla breytur
 hours_per_employee = defaultdict(float)
@@ -89,4 +90,18 @@ with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
     json.dump(dicts_for_json, f, indent = 4, ensure_ascii = False, default = str)
 
 
+# Plotta fjölda vinnustunda á hvern starfsmann
+sorted_hours = sorted(hours_per_employee.items(), key = lambda x:x[1], reverse = True)
+
+employee_ids = [emp_id for emp_id, _ in sorted_hours]
+hours = [total for _, total in sorted_hours]
+
+plt.figure()
+plt.bar(employee_ids, hours)
+
+plt.xlabel("EmployeeID")
+plt.ylabel("Heildar klst.")
+plt.title("Fjöldi klukkustunda á starfsmann")
+
+plt.show()
 
