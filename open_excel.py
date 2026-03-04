@@ -1,4 +1,6 @@
 import pandas as pd
+import json 
+import os
 
 def open_excel(file_name, sheet_1_name, sheet_2_name):
 
@@ -16,11 +18,11 @@ def open_excel(file_name, sheet_1_name, sheet_2_name):
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
 
-    # """
+    """
     # Prenta dictionaries
     print(dict_events)
     print("")
     print(dict_employees)
-    # """
+    """
 
     return dict_events, dict_employees
