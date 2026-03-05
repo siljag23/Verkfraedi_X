@@ -11,6 +11,7 @@ employee_days = defaultdict(set)
 daily_hours_per_employee = defaultdict(float)
 score_per_employee = defaultdict(float)
 assigned_shifts = defaultdict(list)
+shifts_per_employee = defaultdict(int)
 next_index = 0
 max_daily_hours = 11
 min_rest_hours = 13
@@ -64,6 +65,10 @@ for event_id, event in sorted_events.items():
     # Villuskilaboð ef eitthvað klikkar
     except Exception as event_info:
         print(f'\nEventID {event_id} ERROR -> {event_info}')
+
+# Reiknum fjölda vakta per starfsmann
+for row in rows: 
+    shifts_per_employee[row["EmployeeID"]] += 1
 
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
