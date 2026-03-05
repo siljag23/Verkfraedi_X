@@ -103,6 +103,8 @@ employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
+"""
+# Plottum fjölda klst./vakta per starfsmann
 plt.figure()
 plt.bar(employee_ids, shifts)
 
@@ -111,4 +113,4 @@ plt.ylabel("Heildar klst.")
 plt.title("Fjöldi klukkustunda á starfsmann")
 
 plt.show()
-
+"""
