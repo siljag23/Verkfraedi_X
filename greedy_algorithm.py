@@ -72,12 +72,13 @@ for row in rows:
 
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
-print("\nFjöldi klukkustunda á starfsmann og stiga á starfsmann:")
+print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
 for emp_id, info in sorted(employees.items(), key=lambda x: x[1].get("Score", 0)):
     name = info.get("EmployeeName")
     total = hours_per_employee.get(emp_id, 0)
     score = info.get("Score", 0)
-    print(f"{emp_id}: {name} -> {total:.2f} klst. -> {score:.2f} stig")
+    shifts = shifts_per_employee.get(emp_id, 0)
+    print(f"{emp_id}: {name} -> {total:.2f} klst. -> {score:.2f} stig -> {shifts} -> vaktir")
 
 # Búum til lista með pörum af EventID og EmployeeED
 pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
@@ -100,9 +101,10 @@ sorted_hours = sorted(hours_per_employee.items(), key = lambda x:x[1], reverse =
 
 employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
+shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
 plt.figure()
-plt.bar(employee_ids, hours)
+plt.bar(employee_ids, shifts)
 
 plt.xlabel("EmployeeID")
 plt.ylabel("Heildar klst.")
