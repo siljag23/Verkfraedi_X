@@ -137,7 +137,7 @@
         "1": {
             "EmployeeName": "Anna",
             "Skillset": 1,
-            "Score": 44.0
+            "Score": 40.0
         },
         "2": {
             "EmployeeName": "Brynja",
@@ -152,42 +152,42 @@
         "4": {
             "EmployeeName": "Emma",
             "Skillset": 2,
-            "Score": 39.0
+            "Score": 42.0
         },
         "5": {
             "EmployeeName": "Freyja",
             "Skillset": 3,
-            "Score": 47.0
+            "Score": 46.0
         },
         "6": {
             "EmployeeName": "Gunna",
             "Skillset": 2,
-            "Score": 46.0
+            "Score": 47.0
         },
         "7": {
             "EmployeeName": "Hildur",
             "Skillset": 3,
-            "Score": 46.0
+            "Score": 45.0
         },
         "8": {
             "EmployeeName": "Inga",
             "Skillset": 3,
-            "Score": 45.0
+            "Score": 41.0
         },
         "9": {
             "EmployeeName": "Jóna",
             "Skillset": 2,
-            "Score": 41.0
+            "Score": 43.0
         },
         "10": {
             "EmployeeName": "Kata",
             "Skillset": 2,
-            "Score": 40.0
+            "Score": 41.0
         },
         "11": {
             "EmployeeName": "Lísa",
             "Skillset": 3,
-            "Score": 39.0
+            "Score": 42.0
         }
     }
 }

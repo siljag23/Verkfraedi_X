@@ -1,18 +1,25 @@
 from datetime import datetime, timedelta, time
 from shift_length import shift_length
+import math
 
 
-def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours):
-
-    # Gera dict um einstaka viðburð úr dict af öllum viðburðum
+def pick_employees(
+    dict_events,
+    dict_employees,
+    hours_per_employee,
+    employee_days,
+    event_id: int,
+    next_index: int,
+    daily_hours_per_employee,
+    max_daily_hours,
+    assigned_shifts,
+    min_rest_hours
+):
     event = dict_events[event_id]
-
-    # Sækja starfsmannaþörf fyrir viðburð
     req_employees = int(event["Employees"])
 
-    # Sækja dagsetningu viðburðar og passa hún sé með rétt date format
+    # --- Date parse ---
     raw_date = event["Date"]
-    
     if isinstance(raw_date, str):
         event_date = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
     elif hasattr(raw_date, "date"):
@@ -20,142 +27,161 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     else:
         event_date = raw_date
 
-    # Upphafsstillum tíma hvenær vakt byrjar og endar, tími er dagur + klukka
     shift_begins = datetime.combine(event_date, event["ShiftBegins"])
     shift_ends = datetime.combine(event_date, event["ShiftsEnds"])
 
-    # Breyta dagsetningu á shifts_end ef vakt fer yfir miðnætti
     if shift_ends < shift_begins:
         shift_ends += timedelta(days=1)
 
     total_shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
 
-    # Teljum klst. í hverri vakt og skiptum niður á dag 1 og 2 (ef vaktin skyldi fara yfir miðnætti)
     day_1 = shift_begins.date()
     day_2 = shift_ends.date()
     hours_day_1 = total_shift_hours
     hours_day_2 = 0
 
-    # Ef vakt fer yfir miðnætti þá fara klst. eftir miðnætti á dag 2
     if day_1 != day_2 and shift_ends.time() != time(0, 0):
         hours_day_1 = shift_length(event["ShiftBegins"], time(0, 0))
         hours_day_2 = shift_length(time(0, 0), event["ShiftsEnds"])
 
-    # Ef þú ert með vakt á ákveðnum degi getur þú ekki fengið aðra vakt á þeim degi
     blocked_days = {shift_begins.date()}
 
-
-    # Sæki stig hvers viðburðar
     event_score = float(event.get("EventRanking", 0))
+    rest_delta = timedelta(hours=min_rest_hours)
 
-    rest_delta = timedelta(hours = min_rest_hours)
+    # --- safe int helper (pandas NaN -> 0) ---
+    def to_int(x, default=0):
+        if x is None:
+            return default
+        try:
+            if isinstance(x, float) and math.isnan(x):
+                return default
+            return int(x)
+        except Exception:
+            return default
 
+    # Fjöldi sem þarf með skillset 1 og 2
+    req_skillset_1 = to_int(event.get("Skillset1", 0), 0)
+    req_skillset_2 = to_int(event.get("Skillset2", 0), 0)
+
+    if req_skillset_1 + req_skillset_2 > req_employees:
+        raise ValueError(
+            f"Skillset1 + Skillset2 ({req_skillset_1 + req_skillset_2}) > Employees ({req_employees}) fyrir Event {event_id}"
+        )
+
+    # --- Rest check (Lausn B) ---
     def respects_min_rest(emp_id: int) -> bool:
-        """
-        True ef nýja vaktin (shift_begins, shift_ends) er amk min_rest_hours frá ÖLLUM
-        áður úthlutuðum vöktum hjá starfsmanni, í báðar áttir í tíma.
-        """
         for old_begins, old_ends in assigned_shifts.get(emp_id, []):
-            # Ef annað tímabilið er of nálægt hinu, þá brýtur það hvíld
-            # OK ef:
-            #   new byrjar eftir að old endar + rest  OR
-            #   old byrjar eftir að new endar + rest
             ok = (shift_begins >= old_ends + rest_delta) or (old_begins >= shift_ends + rest_delta)
             if not ok:
                 return False
-        return True 
+        return True
 
-    # Raða starfsmönnum eftir stigafjölda, starfsmenn með lægstu stigin koma efst
-    sorted_employees = sorted(
-        dict_employees.keys(),
-        key = lambda emp_id: (
-            dict_employees[emp_id].get("Score", 0),
-            dict_employees[emp_id].get("EmployeeName", ""),
-            emp_id
-        )
-    )
-
-
-    """
-    print(sorted_employees)
-    print("Event", event_id, "event_score", event_score)
-    print("Top 10 (ID,Score):", [(eid, dict_employees[eid].get("Score", 0)) for eid in sorted_employees[:]])
-
-    """
-
-    # Velja starfsmenn með lægstu stig og brjóta engar skorður
-    selected_employee_ids = []
-
-    # Skoðum hvort starfsmaður getur unnið þennan dag
-    for emp_id in sorted_employees:
-        if len(selected_employee_ids) >= req_employees:
-            break
-
+    # --- Eligibility ---
+    def is_eligible(emp_id: int) -> bool:
         if employee_days[emp_id] & blocked_days:
-            continue
-    
-        # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 1
-        if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
-            continue
+            return False
 
-        # Athugum hvort starfsmaður færi yfir hámarks klst. á degi 2 (á við ef vaktin fer yfir miðnætti)
+        if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
+            return False
+
         if hours_day_2 > 0:
             if daily_hours_per_employee[(emp_id, day_2)] + hours_day_2 > max_daily_hours:
-                continue
+                return False
 
-
-        # Athugum hvort starfsmaður fái a.m.k. lágmarks hvíld
         if not respects_min_rest(emp_id):
-            continue
+            return False
 
-        selected_employee_ids.append(emp_id)
+        return True
 
-    # Athugum hvort það sé nægur fjöldi starfsmanna laus fyrir vakt
-    if len(selected_employee_ids) < req_employees:
-        raise ValueError(
-            f"Ekki nægur fjöldi af starfsmönnum laus þennan dag. "
-            f"Þarf {req_employees} starfsmenn en aðeins {len(selected_employee_ids)} eru lausir. "
-            f"Lausir: {selected_employee_ids}"
+    # --- Fairness sort: Score -> Hours -> ID ---
+    def sort_key(emp_id: int):
+        return (
+            dict_employees[emp_id].get("Score", 0),
+            hours_per_employee.get(emp_id, 0),
+            emp_id
         )
 
-    # Sækjum lengd hverrar vaktar í klst.
-    shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
+    def emp_skill(emp_id: int) -> int:
+        return to_int(dict_employees[emp_id].get("Skillset", 0), 0)
 
-    # Taka saman hvað hver starfsmaður vinnur mikið
+    def pick_from(candidates: list[int], n: int, selected_set: set[int]) -> list[int]:
+        picked = []
+        for emp_id in sorted(candidates, key=sort_key):
+            if len(picked) >= n:
+                break
+            if emp_id in selected_set:
+                continue
+            if not is_eligible(emp_id):
+                continue
+            picked.append(emp_id)
+        return picked
+
+    # --- Selection: skillset1 -> skillset2 -> rest ---
+    selected_set = set()
+    selected_employee_ids = []
+
+    # 1) Skillset 1
+    skill1_candidates = [eid for eid in dict_employees.keys() if emp_skill(eid) == 1]
+    picked1 = pick_from(skill1_candidates, req_skillset_1, selected_set)
+    selected_set.update(picked1)
+    selected_employee_ids.extend(picked1)
+
+    if len(picked1) < req_skillset_1:
+        raise ValueError(
+            f"Vantar {req_skillset_1 - len(picked1)} starfsmenn með Skillset 1 fyrir Event {event_id}"
+        )
+
+    # 2) Skillset 2
+    skill2_candidates = [eid for eid in dict_employees.keys() if emp_skill(eid) == 2]
+    picked2 = pick_from(skill2_candidates, req_skillset_2, selected_set)
+    selected_set.update(picked2)
+    selected_employee_ids.extend(picked2)
+
+    if len(picked2) < req_skillset_2:
+        raise ValueError(
+            f"Vantar {req_skillset_2 - len(picked2)} starfsmenn með Skillset 2 fyrir Event {event_id}"
+        )
+
+    # 3) Rest
+    remaining = req_employees - len(selected_employee_ids)
+    if remaining > 0:
+        all_candidates = list(dict_employees.keys())
+        picked_rest = pick_from(all_candidates, remaining, selected_set)
+        selected_set.update(picked_rest)
+        selected_employee_ids.extend(picked_rest)
+
+    if len(selected_employee_ids) < req_employees:
+        raise ValueError(
+            f"Ekki nægur fjöldi af starfsmönnum laus. Þarf {req_employees} en fékk {len(selected_employee_ids)}. "
+            f"Valdir: {selected_employee_ids}"
+        )
+
+    # --- Apply updates ---
+    shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
     total_work_hours = []
 
     for emp_id in selected_employee_ids:
-        # Uppfæra heildarklst
         hours_per_employee[emp_id] += shift_hours
-
-        # Banna aðra vakt sama dag (dagur sem vakt byrjar)
         employee_days[emp_id].update(blocked_days)
 
-        # Uppfæra daglega klst á day_1 og day_2
         daily_hours_per_employee[(emp_id, day_1)] += hours_day_1
         if hours_day_2 > 0:
             daily_hours_per_employee[(emp_id, day_2)] += hours_day_2
 
-        # Uppfæra hvenær síðasta vakt endaði (fyrir min_rest_hours regluna)
         assigned_shifts[emp_id].append((shift_begins, shift_ends))
 
-        # Uppfæra Score starfsmanns (bætist við stig viðburðarins)
         dict_employees[emp_id]["Score"] = dict_employees[emp_id].get("Score", 0) + event_score
 
         total_work_hours.append({
             "EventID": event_id,
             "EmployeeID": emp_id,
             "EmployeeName": dict_employees[emp_id].get("EmployeeName"),
+            "EmployeeSkillset": dict_employees[emp_id].get("Skillset"),
             "ShiftHours": shift_hours,
             "TotalHours": hours_per_employee[emp_id],
             "AddedScore": event_score,
             "NewScore": dict_employees[emp_id]["Score"],
         })
 
-
     return total_work_hours, next_index
-
-
-
-
-    
