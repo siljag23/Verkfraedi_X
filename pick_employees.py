@@ -153,8 +153,8 @@ def pick_employees(
 
     if len(selected_employee_ids) < req_employees:
         raise ValueError(
-            f"Ekki nægur fjöldi af starfsmönnum laus. Þarf {req_employees} en fékk {len(selected_employee_ids)}. "
-            f"Valdir: {selected_employee_ids}"
+            f"Ekki nægur fjöldi af starfsmönnum laus. Þarf {req_employees} en það eru {len(selected_employee_ids)}. "
+            f"Þeir sem komast: {selected_employee_ids}"
         )
 
     # --- Apply updates ---
