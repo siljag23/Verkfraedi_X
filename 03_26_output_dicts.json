@@ -4,7 +4,7 @@
             "Event": "Sinfó",
             "EventRanking": 5,
             "Hall": "EB",
-            "Skillset1": 1,
+            "Skillset1": 2,
             "Skillset2": 4,
             "Employees": 11,
             "Date": "1.5.2025",
@@ -72,10 +72,10 @@
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 5,
-            "Employees": 9,
-            "Date": "5.5.2025",
-            "ShiftBegins": "21:00:00",
-            "ShiftsEnds": "01:00:00"
+            "Employees": 11,
+            "Date": "3.5.2025",
+            "ShiftBegins": "19:00:00",
+            "ShiftsEnds": "23:00:00"
         },
         "8": {
             "Event": "Sinfó 2",
@@ -98,96 +98,63 @@
             "Date": "2.5.2025",
             "ShiftBegins": "19:00:00",
             "ShiftsEnds": "23:00:00"
-        },
-        "10": {
-            "Event": "Karíus og Baktus",
-            "EventRanking": 4,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 2,
-            "Date": "3.5.2025",
-            "ShiftBegins": "10:00:00",
-            "ShiftsEnds": "14:00:00"
-        },
-        "11": {
-            "Event": "Einar Áskell",
-            "EventRanking": 4,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 2,
-            "Date": "6.4.2025",
-            "ShiftBegins": "10:00:00",
-            "ShiftsEnds": "14:00:00"
-        },
-        "12": {
-            "Event": "Gömul íslensk",
-            "EventRanking": 7,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 2,
-            "Employees": 9,
-            "Date": "6.4.2025",
-            "ShiftBegins": "19:00:00",
-            "ShiftsEnds": "23:00:00"
         }
     },
     "employees": {
         "1": {
             "EmployeeName": "Anna",
             "Skillset": 1,
-            "Score": 40.0
+            "Score": 39.0
         },
         "2": {
             "EmployeeName": "Brynja",
             "Skillset": 1,
-            "Score": 45.0
+            "Score": 38.0
         },
         "3": {
             "EmployeeName": "Diljá",
             "Skillset": 2,
-            "Score": 42.0
+            "Score": 38.0
         },
         "4": {
             "EmployeeName": "Emma",
             "Skillset": 2,
-            "Score": 42.0
+            "Score": 36.0
         },
         "5": {
             "EmployeeName": "Freyja",
             "Skillset": 3,
-            "Score": 46.0
+            "Score": 40.0
         },
         "6": {
             "EmployeeName": "Gunna",
             "Skillset": 2,
-            "Score": 47.0
+            "Score": 40.0
         },
         "7": {
             "EmployeeName": "Hildur",
-            "Skillset": 3,
-            "Score": 45.0
+            "Skillset": 1,
+            "Score": 37.0
         },
         "8": {
             "EmployeeName": "Inga",
-            "Skillset": 3,
-            "Score": 41.0
+            "Skillset": 2,
+            "Score": 36.0
         },
         "9": {
             "EmployeeName": "Jóna",
-            "Skillset": 2,
-            "Score": 43.0
+            "Skillset": 3,
+            "Score": 36.0
         },
         "10": {
             "EmployeeName": "Kata",
             "Skillset": 2,
-            "Score": 41.0
+            "Score": 36.0
         },
         "11": {
             "EmployeeName": "Lísa",
             "Skillset": 3,
-            "Score": 42.0
+            "Score": 36.0
         }
     }
 }
