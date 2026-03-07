@@ -3,22 +3,13 @@ from shift_length import shift_length
 import math
 
 
-def pick_employees(
-    dict_events,
-    dict_employees,
-    hours_per_employee,
-    employee_days,
-    event_id: int,
-    next_index: int,
-    daily_hours_per_employee,
-    max_daily_hours,
-    assigned_shifts,
-    min_rest_hours
-):
+def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days, event_id: int, next_index: int, 
+                   daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours):
+    
     event = dict_events[event_id]
     req_employees = int(event["Employees"])
 
-    # --- Date parse ---
+    # Athugum hvort date sé formattað sem dagsetning, ef ekki er það lagað
     raw_date = event["Date"]
     if isinstance(raw_date, str):
         event_date = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
@@ -30,6 +21,7 @@ def pick_employees(
     shift_begins = datetime.combine(event_date, event["ShiftBegins"])
     shift_ends = datetime.combine(event_date, event["ShiftsEnds"])
 
+    # Ef vakt nær yfir miðnætti 
     if shift_ends < shift_begins:
         shift_ends += timedelta(days=1)
 
@@ -40,45 +32,53 @@ def pick_employees(
     hours_day_1 = total_shift_hours
     hours_day_2 = 0
 
+    # Ef vakt nær yfir miðnætti telst vaktin sem 2 dagar
     if day_1 != day_2 and shift_ends.time() != time(0, 0):
         hours_day_1 = shift_length(event["ShiftBegins"], time(0, 0))
         hours_day_2 = shift_length(time(0, 0), event["ShiftsEnds"])
 
+    # Starfsmaður má ekki fá tvær vaktir sama dag
     blocked_days = {shift_begins.date()}
 
     event_score = float(event.get("EventRanking", 0))
     rest_delta = timedelta(hours=min_rest_hours)
 
-    # --- safe int helper (pandas NaN -> 0) ---
     def to_int(x, default=0):
+        """Hreinsar gögn úr excel (hugsað fyrir skillset fyrir viðburði)"""
         if x is None:
             return default
+        if isinstance(x, float) and math.isnan(x):
+            return default
         try:
-            if isinstance(x, float) and math.isnan(x):
-                return default
             return int(x)
-        except Exception:
+        except:
             return default
 
     # Fjöldi sem þarf með skillset 1 og 2
-    req_skillset_1 = to_int(event.get("Skillset1", 0), 0)
-    req_skillset_2 = to_int(event.get("Skillset2", 0), 0)
+    req_skillset_1 = to_int(event.get("Skillset1"))
+    req_skillset_2 = to_int(event.get("Skillset2"))
 
+    # Villa ef fjöldi sem þarf með skillset1 + skillset2 er hærri en fjöldi starfsmanna sem þarf á viðburðinn
     if req_skillset_1 + req_skillset_2 > req_employees:
         raise ValueError(
             f"Skillset1 + Skillset2 ({req_skillset_1 + req_skillset_2}) > Employees ({req_employees}) fyrir Event {event_id}"
         )
 
-    # --- Rest check (Lausn B) ---
+
     def respects_min_rest(emp_id: int) -> bool:
+        """Athugum hvort starfsmenn uppfylli hvíldartímann"""
         for old_begins, old_ends in assigned_shifts.get(emp_id, []):
             ok = (shift_begins >= old_ends + rest_delta) or (old_begins >= shift_ends + rest_delta)
             if not ok:
                 return False
         return True
 
-    # --- Eligibility ---
+
     def is_eligible(emp_id: int) -> bool:
+        """Athugum hvort starfsmaður hentar fyrir viðburðinn
+           Tökum tillit til þess hvort starfsmaður sé núþegar að vinna þennan dag,
+           hvort starfsmaðurinn fari yfir leyfilegan vinnutíma þennan dag og
+           hvort starfsmaðurinn uppfylli hvíldartímann"""
         if employee_days[emp_id] & blocked_days:
             return False
 
@@ -94,8 +94,9 @@ def pick_employees(
 
         return True
 
-    # --- Fairness sort: Score -> Hours -> ID ---
+
     def sort_key(emp_id: int):
+        """Sorterum starfsmenn eftir score, hours ef score er jafnt, síðan eftir ID ef hitt er jafnt"""
         return (
             dict_employees[emp_id].get("Score", 0),
             hours_per_employee.get(emp_id, 0),
@@ -103,8 +104,10 @@ def pick_employees(
         )
 
     def emp_skill(emp_id: int) -> int:
+        """Passar að skillset starfsmanna sé int"""
         return to_int(dict_employees[emp_id].get("Skillset", 0), 0)
 
+    
     def pick_from(candidates: list[int], n: int, selected_set: set[int]) -> list[int]:
         picked = []
         for emp_id in sorted(candidates, key=sort_key):

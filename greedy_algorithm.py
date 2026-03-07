@@ -19,29 +19,30 @@ min_rest_hours = 13
 month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
-# Opna og lesa execl input
+# Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
 events, employees = open_excel("Input.xlsx", "Events", "Employee")
 
-# Opna og les json dictionaries skjal 
+# Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json = "02_26_output_dicts.json" # Hef þetta svona í bili
 previous_scores = open_previous_scores(previous_json)
 
+# Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 employees = merge_scores_into_employees(employees, previous_scores)
 
-# Raða event dict eftir erfiðleika, auðveldasta fyrst
+# Raða event dict eftir erfiðleika, viðburðir með hæstu einkunn fyrst
 sorted_events = dict(
     sorted(events.items(), 
            key=lambda item: float(item[1].get("EventRanking", float("inf"))), reverse = True)
 )
 
 
-# Sæka event ID og event rank úr sorted events dict
+# Sækja event ID og event rank úr sorted events dict
 for event_id, event_info in sorted_events.items():
     event_id, event_info["EventRanking"]
 
 rows = []
 
-# Raða starfsmönnum á vakt, byrja á auðveldasta viðburðinum
+# Raða starfsmönnum á vakt, byrja á auðveldasta viðburðinum, starfsmönnum er raðað í forgangsröð í pick_employees fallinu
 for event_id, event in sorted_events.items():
     try:
         # Raða starfsmönnum á vakt með pick employee
@@ -59,12 +60,11 @@ for event_id, event in sorted_events.items():
             print(
                 f'   -> {row["EmployeeID"]}: {row["EmployeeName"]}'
             )
-        
-
 
     # Villuskilaboð ef eitthvað klikkar
     except Exception as event_info:
         print(f'\nEventID {event_id} ERROR -> {event_info}')
+
 
 # Reiknum fjölda vakta per starfsmann
 for row in rows: 
@@ -73,7 +73,8 @@ for row in rows:
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
 print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
-for emp_id, info in sorted(employees.items(), key=lambda x: x[1].get("Score", 0)):
+for emp_id, info in sorted(employees.items(), 
+        key=lambda x: x[1].get("Score", 0)):
     name = info.get("EmployeeName")
     total = hours_per_employee.get(emp_id, 0)
     score = info.get("Score", 0)
@@ -97,7 +98,9 @@ with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
 
 
 # Plotta fjölda vinnustunda á hvern starfsmann
-sorted_hours = sorted(hours_per_employee.items(), key = lambda x:x[1], reverse = True)
+sorted_hours = sorted(hours_per_employee.items(), 
+                      key = lambda x:x[1], 
+                      reverse = True)
 
 employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
