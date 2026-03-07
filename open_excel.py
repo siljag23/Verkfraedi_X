@@ -1,24 +1,51 @@
 import pandas as pd
 import json 
 import os
+from datetime import datetime
+import math
 
-def open_excel(file_name, sheet_1_name, sheet_2_name):
+def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
 
     # Lesa inn sheets í execl skjali
     events = pd.read_excel(file_name, sheet_name = sheet_1_name)
     employees  = pd.read_excel(file_name, sheet_name = sheet_2_name)
+    days_off = pd.read_excel(file_name, sheet_name = sheet_3_name)
     
     # Hreinsa skjölin, eyða tómum og ónenfndum línum/dálkum
     events = events.dropna(how="all")
     employees = employees.dropna(how="all")
+    days_off = days_off.dropna(how="all")
+
     events = events.loc[:, ~events.columns.str.contains("^Unnamed")]
     employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
+    days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
 
     # Búa til dictionary með upplýsingum úr sheetum þar sem ID er lykill
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
+    
+    days_off = days_off.fillna(0)
+    employee_days = {}
 
-    return dict_events, dict_employees
+    for _, row in days_off.iterrows():
+        emp_id = row["EmployeeID"]
+        employee_days[emp_id] = set()
+
+        for col in days_off.columns[1:]:
+
+            if row[col] == 1:
+                
+                # Ef Excel date
+                if hasattr(col, "date"):
+                    date = col.date()
+                
+                # Ef string
+                else: 
+                    date = datetime.strptime(str(col), "%d.%m.%Y").date()
+
+                employee_days[emp_id].add(date)
+
+    return dict_events, dict_employees, employee_days
 
 
 def open_previous_scores(json_path: str) -> dict[int, float]:

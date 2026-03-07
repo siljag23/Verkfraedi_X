@@ -81,6 +81,9 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
            hvort starfsmaðurinn uppfylli hvíldartímann"""
         if employee_days[emp_id] & blocked_days:
             return False
+        
+        if event_date in employee_days[emp_id]:
+            return False
 
         if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
             return False
@@ -164,7 +167,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
     total_work_hours = []
 
-    
+
     for emp_id in selected_employee_ids:
         hours_per_employee[emp_id] += shift_hours
         employee_days[emp_id].update(blocked_days)

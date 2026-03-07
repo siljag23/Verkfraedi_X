@@ -20,7 +20,7 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-events, employees = open_excel("Input.xlsx", "Events", "Employee")
+events, employees, days_off = open_excel("Input.xlsx", "Events", "Employee", "DaysOff")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json = "02_26_output_dicts.json" # Hef þetta svona í bili
