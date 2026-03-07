@@ -109,6 +109,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
     
     def pick_from(candidates: list[int], n: int, selected_set: set[int]) -> list[int]:
+        """Veljum n fjölda starfsmanna sem eru hæfir fyrir vaktina"""
         picked = []
         for emp_id in sorted(candidates, key=sort_key):
             if len(picked) >= n:
@@ -120,11 +121,10 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             picked.append(emp_id)
         return picked
 
-    # --- Selection: skillset1 -> skillset2 -> rest ---
     selected_set = set()
     selected_employee_ids = []
 
-    # 1) Skillset 1
+    # Finnum alla með skillset 1 og keyrum pick_from fallið til að velja starfsmenn með skillset 1 fyrir vaktina
     skill1_candidates = [eid for eid in dict_employees.keys() if emp_skill(eid) == 1]
     picked1 = pick_from(skill1_candidates, req_skillset_1, selected_set)
     selected_set.update(picked1)
@@ -135,7 +135,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             f"Vantar {req_skillset_1 - len(picked1)} starfsmenn með Skillset 1 fyrir Event {event_id}"
         )
 
-    # 2) Skillset 2
+    # Finnum alla með skillset 2 og keyrum pick_from fallið til að velja starfsmenn með skillset 2 fyrir vaktina
     skill2_candidates = [eid for eid in dict_employees.keys() if emp_skill(eid) == 2]
     picked2 = pick_from(skill2_candidates, req_skillset_2, selected_set)
     selected_set.update(picked2)
@@ -146,7 +146,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             f"Vantar {req_skillset_2 - len(picked2)} starfsmenn með Skillset 2 fyrir Event {event_id}"
         )
 
-    # 3) Rest
+    # Fyllum upp í restina af starfsmannaþörf, skiptir ekki máli hvaða skillset þeir eru með
     remaining = req_employees - len(selected_employee_ids)
     if remaining > 0:
         all_candidates = list(dict_employees.keys())
@@ -156,14 +156,15 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
     if len(selected_employee_ids) < req_employees:
         raise ValueError(
-            f"Ekki nægur fjöldi af starfsmönnum laus. Þarf {req_employees} en það eru {len(selected_employee_ids)}. "
-            f"Þeir sem komast: {selected_employee_ids}"
+            f"Ekki nægur fjöldi af starfsmönnum laus. Þarf {req_employees} en það eru {len(selected_employee_ids)} lausir. "
+            f"Þeir sem komast eru með ID {selected_employee_ids}"
         )
 
-    # --- Apply updates ---
+
     shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
     total_work_hours = []
 
+    
     for emp_id in selected_employee_ids:
         hours_per_employee[emp_id] += shift_hours
         employee_days[emp_id].update(blocked_days)
