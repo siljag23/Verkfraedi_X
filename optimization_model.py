@@ -5,7 +5,7 @@ from open_excel import open_excel
 
 
 # Opna excel
-dict_events, dict_employees = open_excel("Input_opti.xlsx", "Events", "Employee")
+dict_events, dict_employees, employee_days = open_excel("Input_opti.xlsx", "Events", "Employee", "DaysOff")
 
 # Model
 model = gp.Model("Event_staffing")
