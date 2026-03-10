@@ -385,7 +385,7 @@
         "5": {
             "EmployeeName": "Pétur",
             "Skillset": 2,
-            "Score": 547.0
+            "Score": 587.0
         },
         "6": {
             "EmployeeName": "Unnur",
@@ -395,7 +395,7 @@
         "7": {
             "EmployeeName": "Harpa",
             "Skillset": 2,
-            "Score": 547.0
+            "Score": 587.0
         },
         "8": {
             "EmployeeName": "Vala",
@@ -405,42 +405,42 @@
         "9": {
             "EmployeeName": "Freyja",
             "Skillset": 2,
-            "Score": 579.0
+            "Score": 549.0
         },
         "10": {
             "EmployeeName": "Björk",
             "Skillset": 2,
-            "Score": 579.0
+            "Score": 549.0
         },
         "11": {
             "EmployeeName": "Oliver",
             "Skillset": 2,
-            "Score": 543.0
+            "Score": 583.0
         },
         "12": {
             "EmployeeName": "Lísa",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 550.0
         },
         "13": {
             "EmployeeName": "Erla",
             "Skillset": 2,
-            "Score": 540.0
+            "Score": 580.0
         },
         "14": {
             "EmployeeName": "Rakel",
             "Skillset": 2,
-            "Score": 550.0
+            "Score": 560.0
         },
         "15": {
             "EmployeeName": "Davíð",
             "Skillset": 2,
-            "Score": 550.0
+            "Score": 560.0
         },
         "16": {
             "EmployeeName": "Laufey",
             "Skillset": 2,
-            "Score": 540.0
+            "Score": 560.0
         },
         "17": {
             "EmployeeName": "Aron",
@@ -450,12 +450,12 @@
         "18": {
             "EmployeeName": "Sara",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 550.0
         },
         "19": {
             "EmployeeName": "Úlfur",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 550.0
         },
         "20": {
             "EmployeeName": "Máni",
@@ -470,57 +470,57 @@
         "22": {
             "EmployeeName": "Helena",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 580.0
         },
         "23": {
             "EmployeeName": "Kata",
             "Skillset": 2,
-            "Score": 550.0
+            "Score": 560.0
         },
         "24": {
             "EmployeeName": "Ylfa",
             "Skillset": 2,
-            "Score": 550.0
+            "Score": 560.0
         },
         "25": {
             "EmployeeName": "Jóna",
             "Skillset": 2,
-            "Score": 550.0
+            "Score": 560.0
         },
         "26": {
             "EmployeeName": "Silja",
             "Skillset": 1,
-            "Score": 550.0
+            "Score": 560.0
         },
         "27": {
             "EmployeeName": "Camilla",
             "Skillset": 1,
-            "Score": 550.0
+            "Score": 560.0
         },
         "28": {
             "EmployeeName": "Nanna",
             "Skillset": 1,
-            "Score": 550.0
+            "Score": 560.0
         },
         "29": {
             "EmployeeName": "Ólafur",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 550.0
         },
         "30": {
             "EmployeeName": "Anna",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 550.0
         },
         "31": {
             "EmployeeName": "Bergur",
             "Skillset": 2,
-            "Score": 580.0
+            "Score": 550.0
         },
         "32": {
             "EmployeeName": "Gunnar",
             "Skillset": 1,
-            "Score": 540.0
+            "Score": 580.0
         }
     }
 }
