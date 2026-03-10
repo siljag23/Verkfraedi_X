@@ -1,0 +1,160 @@
+{
+    "events": {
+        "1": {
+            "Event": "Sinfó",
+            "EventRanking": 5,
+            "Hall": "EB",
+            "Skillset1": 2,
+            "Skillset2": 4,
+            "Employees": 11,
+            "Date": "1.5.2025",
+            "ShiftBegins": "18:30:00",
+            "ShiftsEnds": "22:00:00"
+        },
+        "2": {
+            "Event": "How to ",
+            "EventRanking": 1,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2.5.2025",
+            "ShiftBegins": "18:00:00",
+            "ShiftsEnds": "22:00:00"
+        },
+        "3": {
+            "Event": "Múlinn ",
+            "EventRanking": 2,
+            "Hall": "BL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "30.4.2025",
+            "ShiftBegins": "19:00:00",
+            "ShiftsEnds": "22:00:00"
+        },
+        "4": {
+            "Event": "Vitringar ",
+            "EventRanking": 9,
+            "Hall": "SB",
+            "Skillset1": 1,
+            "Skillset2": 2,
+            "Employees": 5,
+            "Date": "2.5.2025",
+            "ShiftBegins": "20:00:00",
+            "ShiftsEnds": "00:00:00"
+        },
+        "5": {
+            "Event": "Sígildir",
+            "EventRanking": 3,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 2,
+            "Date": "4.5.2025",
+            "ShiftBegins": "14:00:00",
+            "ShiftsEnds": "18:00:00"
+        },
+        "6": {
+            "Event": "Maxi ",
+            "EventRanking": 4,
+            "Hall": "HÖ",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 2,
+            "Date": "2.5.2025",
+            "ShiftBegins": "10:00:00",
+            "ShiftsEnds": "14:00:00"
+        },
+        "7": {
+            "Event": "ABBA",
+            "EventRanking": 8,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 5,
+            "Employees": 11,
+            "Date": "3.5.2025",
+            "ShiftBegins": "19:00:00",
+            "ShiftsEnds": "23:00:00"
+        },
+        "8": {
+            "Event": "Sinfó 2",
+            "EventRanking": 5,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 9,
+            "Date": "4.5.2025",
+            "ShiftBegins": "18:30:00",
+            "ShiftsEnds": "22:00:00"
+        },
+        "9": {
+            "Event": "Stebbi Hilmars",
+            "EventRanking": 5,
+            "Hall": "NL",
+            "Skillset1": 1,
+            "Skillset2": 1,
+            "Employees": 4,
+            "Date": "2.5.2025",
+            "ShiftBegins": "19:00:00",
+            "ShiftsEnds": "23:00:00"
+        }
+    },
+    "employees": {
+        "1": {
+            "EmployeeName": "Anna",
+            "Skillset": 1,
+            "Score": 39.0
+        },
+        "2": {
+            "EmployeeName": "Brynja",
+            "Skillset": 1,
+            "Score": 38.0
+        },
+        "3": {
+            "EmployeeName": "Diljá",
+            "Skillset": 2,
+            "Score": 38.0
+        },
+        "4": {
+            "EmployeeName": "Emma",
+            "Skillset": 2,
+            "Score": 36.0
+        },
+        "5": {
+            "EmployeeName": "Freyja",
+            "Skillset": 3,
+            "Score": 40.0
+        },
+        "6": {
+            "EmployeeName": "Gunna",
+            "Skillset": 2,
+            "Score": 40.0
+        },
+        "7": {
+            "EmployeeName": "Hildur",
+            "Skillset": 1,
+            "Score": 37.0
+        },
+        "8": {
+            "EmployeeName": "Inga",
+            "Skillset": 2,
+            "Score": 36.0
+        },
+        "9": {
+            "EmployeeName": "Jóna",
+            "Skillset": 3,
+            "Score": 36.0
+        },
+        "10": {
+            "EmployeeName": "Kata",
+            "Skillset": 2,
+            "Score": 36.0
+        },
+        "11": {
+            "EmployeeName": "Lísa",
+            "Skillset": 3,
+            "Score": 36.0
+        }
+    }
+}

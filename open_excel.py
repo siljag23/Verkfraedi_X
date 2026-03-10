@@ -1,45 +1,83 @@
-
-#
 import pandas as pd
-from datetime import datetime, timedelta
+import json 
+import os
+from datetime import datetime
+import math
 
-def open_excel(file_name, sheet_1_name, sheet_2_name):
+def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
 
-    events = pd.read_excel(file_name, sheet_name=sheet_1_name)
-    employees  = pd.read_excel(file_name, sheet_name=sheet_2_name)
-    """
-    events["Date"] = pd.to_datetime(events["Date"], dayfirst=True, errors="coerce")
+    # Lesa inn sheets í execl skjali
+    events = pd.read_excel(file_name, sheet_name = sheet_1_name)
+    employees  = pd.read_excel(file_name, sheet_name = sheet_2_name)
+    days_off = pd.read_excel(file_name, sheet_name = sheet_3_name)
     
-    events["Shift begins"] = pd.to_datetime(events["Shift begins"], errors="coerce").dt.time
-    events["Shifts ends"] = pd.to_datetime(events["Shifts ends"], errors="coerce").dt.time
-    """
-
-    # Hreinsum skjalið
+    # Hreinsa skjölin, eyða tómum og ónenfndum línum/dálkum
     events = events.dropna(how="all")
     employees = employees.dropna(how="all")
+    days_off = days_off.dropna(how="all")
+
     events = events.loc[:, ~events.columns.str.contains("^Unnamed")]
     employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
+    days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
 
+    # Búa til dictionary með upplýsingum úr sheetum þar sem ID er lykill
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
-
-    print(dict_events)
-    print("")
-    print(dict_employees)
     
-    return dict_events, dict_employees
+    days_off = days_off.fillna(0)
+    employee_days = {}
+
+    for _, row in days_off.iterrows():
+        emp_id = row["EmployeeID"]
+        employee_days[emp_id] = set()
+
+        for col in days_off.columns[1:]:
+
+            if row[col] == 1:
+                
+                # Ef Excel date
+                if hasattr(col, "date"):
+                    date = col.date()
+                
+                # Ef string
+                else: 
+                    date = datetime.strptime(str(col), "%d.%m.%Y").date()
+
+                employee_days[emp_id].add(date)
+
+    return dict_events, dict_employees, employee_days
 
 
+def open_previous_scores(json_path: str) -> dict[int, float]:
+    """Les json skjal síðasta mánaðar (ef til) og skilar {EmployeeID: Score}"""
+    if not os.path.exists(json_path):
+        return {}
+    
+    with open(json_path, "r", encoding = "utf-8") as f:
+        data = json.load(f)
 
-def  shift_length (start, end):
+    employees_last = data.get("employees", {})
 
-    today = datetime.today().date()
+    scores = {}
+    for k, info in employees_last.items():
+        try:
+            emp_id = int(k)
+        except ValueError:
+            continue
+        scores[emp_id] = info.get("Score", 0)
 
-    start_date = datetime.combine(today, start)
-    end_date = datetime.combine(today, end)
+    return scores  
 
-    if end_date < start_date:
-        end_date += timedelta(days=1)
 
-    return (end_date - start_date).total_seconds()/3600
+def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dict[int,float]) -> dict[int,dict]:
+    """Tekur employees úr Excel og bætir Score við það
+     - Ef starfsmaður var til áður: heldur gamla Score
+     - Annars: Score = 0"""
+    
+    for emp_id, info in employees.items(): 
+        info["Score"] = previous_scores.get(emp_id, 0)
+
+    return employees
+
+
 
