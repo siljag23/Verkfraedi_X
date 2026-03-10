@@ -12,6 +12,7 @@ daily_hours_per_employee = defaultdict(float)
 score_per_employee = defaultdict(float)
 assigned_shifts = defaultdict(list)
 shifts_per_employee = defaultdict(int)
+employee_worked_days = defaultdict(set)
 next_index = 0
 max_daily_hours = 11
 min_rest_hours = 13
@@ -47,7 +48,7 @@ for event_id, event in sorted_events.items():
     try:
         # Raða starfsmönnum á vakt með pick employee
         selected_employees, next_index = pick_employees(
-            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours)
+            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
 
         rows.extend(selected_employees)
 
