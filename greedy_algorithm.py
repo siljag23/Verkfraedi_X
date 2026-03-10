@@ -53,7 +53,7 @@ for event_id, event in sorted_events.items():
 
         # Prenta upplýsingar um viðburð
         print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} |'
-              f'{event["ShiftBegins"]} - {event["ShiftsEnds"]}')
+              f'{event["ShiftBegins"]} - {event["ShiftEnds"]}')
 
         # Prenta lista af starfsmönnum undir vaktinni
         for row in selected_employees:
