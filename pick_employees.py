@@ -19,13 +19,13 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         event_date = raw_date
 
     shift_begins = datetime.combine(event_date, event["ShiftBegins"])
-    shift_ends = datetime.combine(event_date, event["ShiftsEnds"])
+    shift_ends = datetime.combine(event_date, event["ShiftEnds"])
 
     # Ef vakt nær yfir miðnætti 
     if shift_ends < shift_begins:
         shift_ends += timedelta(days=1)
 
-    total_shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
+    total_shift_hours = shift_length(event["ShiftBegins"], event["ShiftEnds"])
 
     day_1 = shift_begins.date()
     day_2 = shift_ends.date()
@@ -35,7 +35,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     # Ef vakt nær yfir miðnætti telst vaktin sem 2 dagar
     if day_1 != day_2 and shift_ends.time() != time(0, 0):
         hours_day_1 = shift_length(event["ShiftBegins"], time(0, 0))
-        hours_day_2 = shift_length(time(0, 0), event["ShiftsEnds"])
+        hours_day_2 = shift_length(time(0, 0), event["ShiftEnds"])
 
     # Starfsmaður má ekki fá tvær vaktir sama dag
     blocked_days = {shift_begins.date()}
@@ -103,7 +103,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return (
             dict_employees[emp_id].get("Score", 0),
             hours_per_employee.get(emp_id, 0),
-            emp_id
+            int(emp_id)
         )
 
     def emp_skill(emp_id: int) -> int:
@@ -164,7 +164,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         )
 
 
-    shift_hours = shift_length(event["ShiftBegins"], event["ShiftsEnds"])
+    shift_hours = shift_length(event["ShiftBegins"], event["ShiftEnds"])
     total_work_hours = []
 
 

@@ -20,6 +20,10 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
     employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
     days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
 
+    events.columns = events.columns.str.strip()
+    employees.columns = employees.columns.str.strip()
+    days_off.columns = [str(col).strip() if not hasattr(col, "date") else col for col in days_off.columns]
+
     # Búa til dictionary með upplýsingum úr sheetum þar sem ID er lykill
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
