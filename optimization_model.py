@@ -13,6 +13,7 @@ employees = list(dict_employees.keys())
 events = list(dict_events.keys())
 
 # Fastar
+# Fastar fyrir reglur í kjarasamningum, 48 klst, 1 frídagur, 11 max vinna
 emp_demand = {j: dict_events[j]["Employees"] for j in events}
 skill1_req = {j: dict_events[j]["Skillset1"] for j in events}
 skill2_req = {j: dict_events[j]["Skillset2"] for j in events}
@@ -46,6 +47,9 @@ for j in events:
 
 
 # overlap listi
+# Koma með öll pör af vöktum sem má ekki vinna báðar
+# Setja frí hér 
+# Óskir 
 overlap_pairs = []
 
 for j1 in events:
@@ -84,7 +88,6 @@ model = gp.Model("Event_staffing")
 # Ákvörðunarbreyta
 works = model.addVars(employees,events,vtype=GRB.BINARY,name="works")
 
-
 # Ekki vinna á frídögum
 for i in employees:
     for j in events:
@@ -94,7 +97,6 @@ for i in employees:
             model.addConstr(
                 works[i,j] == 0
             )
-
 
 # fairness breytur
 min_score = model.addVar()
@@ -111,7 +113,6 @@ max_weekend = model.addVar()
 
 max_halls = model.addVar()
 
-# nýtt: vikudreifing
 min_weekly_shifts = model.addVar()
 max_weekly_shifts = model.addVar()
 
@@ -162,7 +163,7 @@ for i in employees:
         )
 
 
-# max 1 vakt á dag
+# max 1 vakt á dag, overlap á að vera fyrir dag ekki sama tíma
 days = sorted(set(event_date[j].date() for j in events))
 
 for i in employees:
@@ -177,7 +178,7 @@ for i in employees:
         )
 
 
-# max 11 klst á dag
+# max 11 klst á dag, taka út vaktir stjórna 
 for i in employees:
     for d in days:
 
@@ -282,6 +283,7 @@ for w in weeks:
 
 
 # Markfall
+# setja fasta efst
 a = 90
 b = 91
 c = 100
