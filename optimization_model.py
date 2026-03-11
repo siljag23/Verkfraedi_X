@@ -4,6 +4,7 @@ from gurobipy import GRB
 
 from open_excel import open_excel
 from Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
+from export_schedule_to_excel import export_schedule_to_excel
 
 
 # Opna excel
@@ -20,7 +21,7 @@ start = {j: dict_events[j]["ShiftBegins"] for j in events}
 end = {j: dict_events[j]["ShiftEnds"] for j in events}
 shift_score = {j: dict_events[j]["EventRanking"] for j in events}
 
-# Prenta schedule
+# Prenta vaktaplan
 if model.status in [GRB.OPTIMAL, GRB.TIME_LIMIT]:
 
     print("\nSchedule:\n")
@@ -46,8 +47,7 @@ if model.status in [GRB.OPTIMAL, GRB.TIME_LIMIT]:
 
             print()
 
-# EMPLOYEE SUMMARY
-
+# Samantekt um starsmenn
 print("\n--- EMPLOYEE SUMMARY ---\n")
 
 for i in employees:
@@ -63,10 +63,7 @@ for i in employees:
         f"{name:10} | shifts: {shifts:2.0f} | hours: {hours:5.1f} | score: {score:4.0f} | weekend: {weekend_shifts:2.0f}"
     )
 
-# ---------------------------
-# SHIFTS PER WEEK
-# ---------------------------
-
+# Fjöldi vakta á viku fyrir hvern starfsmann
 print("\n--- SHIFTS PER WEEK PER EMPLOYEE ---\n")
 
 for i in employees:
@@ -89,30 +86,9 @@ for i in employees:
     print()
 
 # Excel export
-schedule_rows = []
+export_schedule_to_excel(works, employees, events, event_date, start, end, dict_events, dict_employees)
 
-for j in events:
-    for i in employees:
-        if works[i, j].X > 0.5:
-
-            schedule_rows.append({
-                "Date": event_date[j].date(),
-                "Start": start[j],
-                "End": end[j],
-                "Event": dict_events[j]["Event"],
-                "Employee": dict_employees[i]["EmployeeName"]
-            })
-
-schedule_df = pd.DataFrame(schedule_rows)
-schedule_df = schedule_df.sort_values(["Date", "Start", "Event"])
-
-with pd.ExcelWriter("Schedule_results.xlsx") as writer:
-    schedule_df.to_excel(writer, sheet_name="Schedule", index=False)
-
-print("Excel file created: Schedule_results.xlsx")
-
-# Workhours plot
-
+# Plotta gögn 
 names = []
 hours = []
 
