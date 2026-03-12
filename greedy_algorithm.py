@@ -52,14 +52,14 @@ for event_id, event in sorted_events.items():
         rows.extend(selected_employees)
 
         # Prenta upplýsingar um viðburð
-        """print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} |'
+        print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} |'
               f'{event["ShiftBegins"]} - {event["ShiftEnds"]}')
 
         # Prenta lista af starfsmönnum undir vaktinni
         for row in selected_employees:
             print(
                 f'   -> {row["EmployeeID"]}: {row["EmployeeName"]}'
-            )"""
+            )
 
     # Villuskilaboð ef eitthvað klikkar
     except Exception as event_info:

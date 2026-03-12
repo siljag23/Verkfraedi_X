@@ -122,7 +122,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         # Athugum hvort starsfmaður sé kominn með vakt þennan dag
         if employee_worked_days[emp_id] & blocked_days:
             print(
-                f"EMP {emp_id} HAFNAÐ -> þegar bókaður á degi. "
+                f"EMP {emp_id} HAFNAÐ -> þegar bókaður {event_date}. "
                 f"blocked_days = {blocked_days}, "
                 f"employee_worked_days[{emp_id}] = {sorted(employee_worked_days[emp_id])}"
             )
@@ -150,7 +150,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             return False
 
         # Ef starfsmaður brýtur enga af skorðunum fyrir ofan fær hann vaktina
-        print(f"EMP {emp_id} SAMÞYKKTUR fyrir Event {event_id} á {event_date}")
+        """print(f"EMP {emp_id} SAMÞYKKTUR fyrir Event {event_id} á {event_date}")"""
         return True
 
     def sort_key(emp_id: int):
