@@ -23,16 +23,20 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
     events.columns = events.columns.str.strip()
     employees.columns = employees.columns.str.strip()
     days_off.columns = [str(col).strip() if not hasattr(col, "date") else col for col in days_off.columns]
-
+    
     # Búa til dictionary með upplýsingum úr sheetum þar sem ID er lykill
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
     
     days_off = days_off.fillna(0)
+
+    days_off["EmployeeID"] = days_off["EmployeeID"].astype(int)
+    employees["EmployeeID"] = employees["EmployeeID"].astype(int)
+
     employee_days = {}
 
     for _, row in days_off.iterrows():
-        emp_id = row["EmployeeID"]
+        emp_id = int(row["EmployeeID"])
         employee_days[emp_id] = set()
 
         for col in days_off.columns[1:]:

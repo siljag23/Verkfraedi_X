@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 # Upphafsstilla breytur
 hours_per_employee = defaultdict(float)
-employee_days = defaultdict(set)
 daily_hours_per_employee = defaultdict(float)
 score_per_employee = defaultdict(float)
 assigned_shifts = defaultdict(list)
@@ -21,7 +20,7 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-events, employees, days_off = open_excel("Input.xlsx", "Events", "Employees", "DaysOff")
+events, employees, employees_days_off = open_excel("Input.xlsx", "Events", "Employees", "DaysOff")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json = "02_26_output_dicts.json" # Hef þetta svona í bili
@@ -48,7 +47,7 @@ for event_id, event in sorted_events.items():
     try:
         # Raða starfsmönnum á vakt með pick employee
         selected_employees, next_index = pick_employees(
-            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
+            sorted_events, employees, hours_per_employee, employees_days_off, event_id, next_index, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
 
         rows.extend(selected_employees)
 
@@ -106,6 +105,10 @@ sorted_hours = sorted(hours_per_employee.items(),
 employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
+
+print("")
+print(employees_days_off)
+print("")
 
 """
 # Plottum fjölda klst./vakta per starfsmann
