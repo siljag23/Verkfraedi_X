@@ -111,14 +111,15 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return True
 
     def is_eligible(emp_id: int) -> bool:
-        # DEBUG 1
+        # Athugum hvort starfsmaður sé í fríi þennan dag
         if event_date in employee_days_off[emp_id]:
             print(
                 f"EMP {emp_id} HAFNAÐ -> í fríi á {event_date}. "
                 f"employee_days_off[{emp_id}] = {sorted(employee_days_off[emp_id])}"
             )
             return False
-
+        
+        # Athugum hvort starsfmaður sé kominn með vakt þennan dag
         if employee_worked_days[emp_id] & blocked_days:
             print(
                 f"EMP {emp_id} HAFNAÐ -> þegar bókaður á degi. "
@@ -127,6 +128,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             )
             return False
 
+        # Athugum hvort hvíldartíminn yrði brotinn ef starsfmaður fær vaktina
         if daily_hours_per_employee[(emp_id, day_1)] + hours_day_1 > max_daily_hours:
             print(
                 f"EMP {emp_id} HAFNAÐ -> fer yfir max dagklst á {day_1}. "
@@ -147,6 +149,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         if not respects_min_rest(emp_id):
             return False
 
+        # Ef starfsmaður brýtur enga af skorðunum fyrir ofan fær hann vaktina
         print(f"EMP {emp_id} SAMÞYKKTUR fyrir Event {event_id} á {event_date}")
         return True
 
@@ -265,16 +268,8 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "NewScore": dict_employees[emp_id]["Score"],
         })
 
-    # sýnir stöðuna á forgangslistanum fyrir næsta event
-    sorted_ids = sorted(
-        dict_employees.keys(),
-        key=lambda eid: (
-            dict_employees[eid].get("Score", 0),
-            hours_per_employee.get(eid, 0),
-            eid
-        )
-    )
-
+    # Tékk á forgangsröðun fyrir næsta event
+    """
     print(f"\nStaða eftir Event {event_id}")
 
     print("---- Fyrstu 5 ----")
@@ -292,5 +287,6 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             f"Score={dict_employees[emp_id].get('Score', 0)}, "
             f"Hours={hours_per_employee.get(emp_id, 0)}"
         )
-        
+    """
+
     return total_work_hours, next_index
