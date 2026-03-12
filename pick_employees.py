@@ -265,4 +265,32 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "NewScore": dict_employees[emp_id]["Score"],
         })
 
+    # sýnir stöðuna á forgangslistanum fyrir næsta event
+    sorted_ids = sorted(
+        dict_employees.keys(),
+        key=lambda eid: (
+            dict_employees[eid].get("Score", 0),
+            hours_per_employee.get(eid, 0),
+            eid
+        )
+    )
+
+    print(f"\nStaða eftir Event {event_id}")
+
+    print("---- Fyrstu 5 ----")
+    for emp_id in sorted_ids[:5]:
+        print(
+            f"ID={emp_id}, "
+            f"Score={dict_employees[emp_id].get('Score', 0)}, "
+            f"Hours={hours_per_employee.get(emp_id, 0)}"
+        )
+
+    print("---- Síðustu 5 ----")
+    for emp_id in sorted_ids[-5:]:
+        print(
+            f"ID={emp_id}, "
+            f"Score={dict_employees[emp_id].get('Score', 0)}, "
+            f"Hours={hours_per_employee.get(emp_id, 0)}"
+        )
+        
     return total_work_hours, next_index
