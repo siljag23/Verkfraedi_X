@@ -11,7 +11,8 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
 
     # Fastar kjarasamningar/reglur
     max_workhours_per_day = 11
-    min_shifts_per_period = 3
+    max_workhours_per_week = 48
+    min_shifts_per_period = 1
     max_workdays_per_week = 6
 
     # Fastar, vægisstuðlar
@@ -38,6 +39,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     event_date = {j: pd.to_datetime(dict_events[j]["Date"],dayfirst=True) for j in events}
     skill = {i: dict_employees[i]["Skillset"] for i in employees}
     weekend = {j: 1 if event_date[j].weekday() in [4,5] else 0 for j in events}
+    weeks = sorted(set(event_date[j].isocalendar().week for j in events))
 
     # duration vakta
     shift_dur = {}
@@ -58,7 +60,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
             end_hours += 24
 
         shift_dur[j] = end_hours - start_hours
-
+    
     # Listar
     # Frí
     vacation_events = []
@@ -128,7 +130,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
             gp.quicksum(works[i,j] for i in employees)
             == emp_demand[j]
         )
-
+    
     # Skill skorður
     for j in events:
 
@@ -147,14 +149,14 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                 if skill[i] in [1,2]
             ) >= skill2_req[j]
         )
-
+    
     # Ekki vinna á frídögum
     for (i,j) in vacation_events:
 
         model.addConstr(
             works[i,j] == 0
         )
-
+    
     # Banna event pör
     for i in employees:
         for j1,j2 in blocked_pairs:
@@ -162,7 +164,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
             model.addConstr(
                 works[i,j1] + works[i,j2] <= 1
             )
-
+    """
     # Max 11 klst á dag
     days = sorted(set(event_date[j].date() for j in events))
 
@@ -176,17 +178,16 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                     if event_date[j].date() == day
                 ) <= max_workhours_per_day
             )
-
+    """
     # Min 3 vaktir
     for i in employees:
 
         model.addConstr(
             gp.quicksum(works[i,j] for j in events) >= min_shifts_per_period
         )
-
+    
     # Amk einn frídagur í viku
-    weeks = sorted(set(event_date[j].isocalendar().week for j in events))
-
+    
     for i in employees:
         for week in weeks:
 
@@ -197,6 +198,16 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                     if event_date[j].isocalendar().week == week
                 ) <= max_workdays_per_week
             )
+    
+    
+    num_weeks = len(weeks)
+    for i in employees:
+        model.addConstr(
+            gp.quicksum(
+                works[i,j] * shift_dur[j]
+                for j in events
+            ) <= max_workhours_per_week * num_weeks
+        )
 
     # Fairness skorður
     for i in employees:
@@ -205,7 +216,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
             gp.quicksum(works[i,j]*shift_score[j] for j in events)
             >= min_score
         )
-
+        
         model.addConstr(
             gp.quicksum(works[i,j]*shift_score[j] for j in events)
             <= max_score
@@ -280,5 +291,17 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
 
     # Leysa
     model.optimize()
+
+    if model.status == GRB.INFEASIBLE:
+        print("\nModel is infeasible. Computing IIS...\n")
+        model.computeIIS()
+
+        print("Constraints causing infeasibility:")
+        for c in model.getConstrs():
+            if c.IISConstr:
+                print(" -", c.ConstrName)
+
+        # valfrjálst: skrifa í skrá
+        model.write("infeasible_model.ilp")
 
     return model, works, shift_dur, weekend, weeks, event_date

@@ -6,7 +6,6 @@ from open_excel import open_excel
 from Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
 from export_schedule_to_excel import export_schedule_to_excel
 
-
 # Opna excel
 dict_events, dict_employees, employee_days = open_excel("Input.xlsx", "Events", "Employees", "DaysOff")
 
@@ -20,6 +19,15 @@ events = list(dict_events.keys())
 start = {j: dict_events[j]["ShiftBegins"] for j in events}
 end = {j: dict_events[j]["ShiftEnds"] for j in events}
 shift_score = {j: dict_events[j]["EventRanking"] for j in events}
+
+if model.status == GRB.OPTIMAL or model.status == GRB.SUBOPTIMAL:
+
+    for i in employees:
+        shifts = sum(works[i, j].X for j in events)
+        print(i, shifts)
+
+else:
+    print("Model infeasible or unbounded")
 
 # Prenta vaktaplan
 if model.status in [GRB.OPTIMAL, GRB.TIME_LIMIT]:
@@ -47,10 +55,25 @@ if model.status in [GRB.OPTIMAL, GRB.TIME_LIMIT]:
 
             print()
 
+if model.status not in [GRB.OPTIMAL, GRB.SUBOPTIMAL]:
+    print("Model infeasible or unbounded")
+    quit()   # stoppar kóðann
+
+employees = list(dict_employees.keys())
+events = list(dict_events.keys())
+
+print("\n--- EMPLOYEE SUMMARY ---")
+
+for i in employees:
+    shifts = sum(works[i, j].X for j in events)
+    print(i, shifts)
+    
+"""
 # Samantekt um starsmenn
 print("\n--- EMPLOYEE SUMMARY ---\n")
 
 for i in employees:
+
 
     shifts = sum(works[i, j].X for j in events)
     hours = sum(works[i, j].X * shift_dur[j] for j in events)
@@ -117,3 +140,5 @@ if len(data) > 0:
 
     plt.tight_layout()
     plt.show()
+
+"""
