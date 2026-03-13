@@ -1,1 +1,4 @@
-__pycache__/open_excel.cpython-312.pyc
+
+venv/
+__pycache__/
+*.pyc
