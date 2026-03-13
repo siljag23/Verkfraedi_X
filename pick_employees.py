@@ -240,6 +240,11 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                 f"assigned_shifts[{emp_id}] = {assigned_shifts.get(emp_id, [])}"
             )
 
+    raw_hall = event.get("Hall", "")
+    hall = "" if raw_hall is None else str(raw_hall).strip()
+    if hall.lower() == "nan":
+        hall = ""
+
     shift_hours = shift_length(shift_begins_time, shift_ends_time)
     total_work_hours = []
 
@@ -257,11 +262,23 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             dict_employees[emp_id].get("Score", 0), 0
         ) + event_score
 
-         # Teljum vakt sem helgarvakt ef hún byrjar á föstudegi, laugardegi eða sunnudegi
+        dict_employees[emp_id]["Number_of_shifts"] = (
+            to_int(dict_employees[emp_id].get("Number_of_shifts"), 0) + 1
+        )
+
         if event_date.weekday() in [4, 5, 6]:
             dict_employees[emp_id]["Shifts_on_weekends"] = (
                 to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1
             )
+
+        if hall:
+            if "Shifts_per_hall" not in dict_employees[emp_id] or not isinstance(dict_employees[emp_id]["Shifts_per_hall"], dict):
+                dict_employees[emp_id]["Shifts_per_hall"] = {}
+
+            current_hall_count = to_int(
+                dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0), 0
+            )
+            dict_employees[emp_id]["Shifts_per_hall"][hall] = current_hall_count + 1
 
         total_work_hours.append({
             "EventID": event_id,
@@ -272,8 +289,11 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "TotalHours": hours_per_employee[emp_id],
             "AddedScore": event_score,
             "NewScore": dict_employees[emp_id]["Score"],
+            "NumberOfShifts": dict_employees[emp_id]["Number_of_shifts"],
+            "ShiftsOnWeekends": dict_employees[emp_id]["Shifts_on_weekends"],
+            "Hall": hall,
+            "ShiftsInThisHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0
         })
-
     # Tékk á forgangsröðun fyrir næsta event
     """
     print(f"\nStaða eftir Event {event_id}")
