@@ -257,6 +257,12 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             dict_employees[emp_id].get("Score", 0), 0
         ) + event_score
 
+         # Teljum vakt sem helgarvakt ef hún byrjar á föstudegi, laugardegi eða sunnudegi
+        if event_date.weekday() in [4, 5, 6]:
+            dict_employees[emp_id]["Shifts_on_weekends"] = (
+                to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1
+            )
+
         total_work_hours.append({
             "EventID": event_id,
             "EmployeeID": emp_id,

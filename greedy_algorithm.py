@@ -77,23 +77,26 @@ print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
 for emp_id, info in sorted(
     employees.items(),
     key=lambda x: (
-        x[1].get("Score", 0),                 # 1. score
-        shifts_per_employee.get(x[0], 0),     # 2. vaktir
-        hours_per_employee.get(x[0], 0),      # 3. klst
-        x[0]                                  # 4. id
+        x[1].get("Score", 0),
+        shifts_per_employee.get(x[0], 0),
+        hours_per_employee.get(x[0], 0),
+        x[0]
     )
 ):
     name = info.get("EmployeeName")
     total = hours_per_employee.get(emp_id, 0)
     score = info.get("Score", 0)
     shifts = shifts_per_employee.get(emp_id, 0)
+    weekend_shifts = info.get("Shifts_on_weekends", 0)
 
     print(
         f"{emp_id}: {name} -> "
         f"{total:.2f} klst. -> "
         f"{score:.2f} stig -> "
-        f"{shifts} -> vaktir"
+        f"{shifts} vaktir -> "
+        f"{weekend_shifts} helgarvaktir"
     )
+
 # Búum til lista með pörum af EventID og EmployeeED
 pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 

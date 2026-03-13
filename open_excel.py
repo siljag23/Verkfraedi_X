@@ -28,6 +28,9 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
     
+    for emp_id in dict_employees:
+        dict_employees[emp_id]["Shifts_on_weekends"] = 0
+    
     days_off = days_off.fillna(0)
 
     days_off["EmployeeID"] = days_off["EmployeeID"].astype(int)
@@ -84,7 +87,8 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
     
     for emp_id, info in employees.items(): 
         info["Score"] = previous_scores.get(emp_id, 0)
-
+        info["Shifts_on_weekends"] = info.get("Shifts_on_weekends", 0)
+    
     return employees
 
 
