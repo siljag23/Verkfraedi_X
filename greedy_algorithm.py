@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 
 # Upphafsstilla breytur
 hours_per_employee = defaultdict(float)
-employee_days = defaultdict(set)
 daily_hours_per_employee = defaultdict(float)
 score_per_employee = defaultdict(float)
 assigned_shifts = defaultdict(list)
 shifts_per_employee = defaultdict(int)
+employee_worked_days = defaultdict(set)
 next_index = 0
 max_daily_hours = 11
 min_rest_hours = 13
@@ -20,7 +20,7 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-events, employees, days_off = open_excel("Input.xlsx", "Events", "Employee", "DaysOff")
+events, employees, employees_days_off = open_excel("Input.xlsx", "Events", "Employees", "DaysOff")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json = "02_26_output_dicts.json" # Hef þetta svona í bili
@@ -47,13 +47,13 @@ for event_id, event in sorted_events.items():
     try:
         # Raða starfsmönnum á vakt með pick employee
         selected_employees, next_index = pick_employees(
-            sorted_events, employees, hours_per_employee, employee_days, event_id, next_index, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours)
+            sorted_events, employees, hours_per_employee, employees_days_off, event_id, next_index, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
 
         rows.extend(selected_employees)
 
         # Prenta upplýsingar um viðburð
         print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} |'
-              f'{event["ShiftBegins"]} - {event["ShiftsEnds"]}')
+              f'{event["ShiftBegins"]} - {event["ShiftEnds"]}')
 
         # Prenta lista af starfsmönnum undir vaktinni
         for row in selected_employees:
@@ -73,13 +73,29 @@ for row in rows:
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
 print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
-for emp_id, info in sorted(employees.items(), 
-        key=lambda x: x[1].get("Score", 0)):
+
+for emp_id, info in sorted(
+    employees.items(),
+    key=lambda x: (
+        x[1].get("Score", 0),
+        shifts_per_employee.get(x[0], 0),
+        hours_per_employee.get(x[0], 0),
+        x[0]
+    )
+):
     name = info.get("EmployeeName")
     total = hours_per_employee.get(emp_id, 0)
     score = info.get("Score", 0)
     shifts = shifts_per_employee.get(emp_id, 0)
-    print(f"{emp_id}: {name} -> {total:.2f} klst. -> {score:.2f} stig -> {shifts} -> vaktir")
+    weekend_shifts = info.get("Shifts_on_weekends", 0)
+
+    print(
+        f"{emp_id}: {name} -> "
+        f"{total:.2f} klst. -> "
+        f"{score:.2f} stig -> "
+        f"{shifts} vaktir -> "
+        f"{weekend_shifts} helgarvaktir"
+    )
 
 # Búum til lista með pörum af EventID og EmployeeED
 pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
@@ -105,6 +121,7 @@ sorted_hours = sorted(hours_per_employee.items(),
 employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
+
 
 """
 # Plottum fjölda klst./vakta per starfsmann

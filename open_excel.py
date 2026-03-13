@@ -20,15 +20,28 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
     employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
     days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
 
+    events.columns = events.columns.str.strip()
+    employees.columns = employees.columns.str.strip()
+    days_off.columns = [str(col).strip() if not hasattr(col, "date") else col for col in days_off.columns]
+    
     # Búa til dictionary með upplýsingum úr sheetum þar sem ID er lykill
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
     
+    for emp_id in dict_employees:
+        dict_employees[emp_id]["Shifts_on_weekends"] = 0
+        dict_employees[emp_id]["Number_of_shifts"] = 0
+        dict_employees[emp_id]["Shifts_per_hall"] = {}
+    
     days_off = days_off.fillna(0)
+
+    days_off["EmployeeID"] = days_off["EmployeeID"].astype(int)
+    employees["EmployeeID"] = employees["EmployeeID"].astype(int)
+
     employee_days = {}
 
     for _, row in days_off.iterrows():
-        emp_id = row["EmployeeID"]
+        emp_id = int(row["EmployeeID"])
         employee_days[emp_id] = set()
 
         for col in days_off.columns[1:]:
@@ -76,6 +89,9 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
     
     for emp_id, info in employees.items(): 
         info["Score"] = previous_scores.get(emp_id, 0)
+        info["Shifts_on_weekends"] = info.get("Shifts_on_weekends", 0)
+        info["Number_of_shifts"] = info.get("Number_of_shifts", 0)
+        info["Shifts_per_hall"] = info.get("Shifts_per_hall", {})
 
     return employees
 
