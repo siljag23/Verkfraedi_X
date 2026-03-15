@@ -2,7 +2,7 @@ import pandas as pd
 import json 
 import os
 from datetime import datetime
-import math
+from collections import defaultdict
 
 def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
 
@@ -82,6 +82,73 @@ def open_previous_scores(json_path: str) -> dict[int, float]:
     return scores  
 
 
+
+def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
+    """Les output_dicts og output_list og reiknar stats fyrir hvern starfsmann."""
+
+    if not os.path.exists(dict_path) or not os.path.exists(list_path):
+        return {}
+
+    with open(dict_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    with open(list_path, "r", encoding="utf-8") as f:
+        pairs = json.load(f)
+
+    events = data.get("events", {})
+    employees = data.get("employees", {})
+
+    number_of_shifts = defaultdict(int)
+    shifts_on_weekends = defaultdict(int)
+    shifts_per_hall = defaultdict(lambda: defaultdict(int))
+    worked_days = defaultdict(set)
+
+    def parse_date(x):
+        if isinstance(x, str):
+            x = x.strip()
+            for fmt in ("%Y-%m-%d", "%d.%m.%Y"):
+                try:
+                    return datetime.strptime(x, fmt).date()
+                except ValueError:
+                    pass
+        raise ValueError(f"Óþekkt dagsetning: {x}")
+
+    for event_id, emp_id in pairs:
+        event = events[str(event_id)]
+
+        raw_date = event.get("Date")
+        event_date = parse_date(raw_date)
+
+        raw_hall = event.get("Hall", "")
+        hall = "" if raw_hall is None else str(raw_hall).strip()
+        if hall.lower() == "nan":
+            hall = ""
+
+        number_of_shifts[emp_id] += 1
+        worked_days[emp_id].add(event_date)
+
+        if event_date.weekday() in [4, 5, 6]:
+            shifts_on_weekends[emp_id] += 1
+
+        if hall:
+            shifts_per_hall[emp_id][hall] += 1
+
+    stats = {}
+
+    for emp_id_str in employees:
+        emp_id = int(emp_id_str)
+
+        stats[emp_id] = {
+            "number_of_shifts": number_of_shifts[emp_id],
+            "shifts_on_weekends": shifts_on_weekends[emp_id],
+            "shifts_per_hall": dict(shifts_per_hall[emp_id]),
+            "worked_days_count": len(worked_days[emp_id]),
+            "worked_days": sorted(str(d) for d in worked_days[emp_id])
+        }
+
+    return stats
+
+
 def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dict[int,float]) -> dict[int,dict]:
     """Tekur employees úr Excel og bætir Score við það
      - Ef starfsmaður var til áður: heldur gamla Score
@@ -96,4 +163,16 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
     return employees
 
 
+def merge_previous_stats_into_employees(employees, previous_stats):
 
+    for emp_id, info in employees.items():
+
+        stats = previous_stats.get(emp_id, {})
+
+        info["prev_number_of_shifts"] = stats.get("number_of_shifts", 0)
+        info["prev_weekend_shifts"] = stats.get("weekend_shifts", 0)
+        info["prev_worked_days"] = stats.get("worked_days", 0)
+        info["prev_shifts_per_hall"] = stats.get("shifts_per_hall", {})
+
+    return employees
+    
