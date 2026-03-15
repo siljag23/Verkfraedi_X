@@ -266,11 +266,13 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             to_int(dict_employees[emp_id].get("Number_of_shifts"), 0) + 1
         )
 
+        # Teljum hversu margar vaktir starfsmaður fær um helgi
         if event_date.weekday() in [4, 5, 6]:
             dict_employees[emp_id]["Shifts_on_weekends"] = (
                 to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1
             )
 
+        # Teljum hversu margar vaktir hver starfsmaður fær í hverjum sal
         if hall:
             if "Shifts_per_hall" not in dict_employees[emp_id] or not isinstance(dict_employees[emp_id]["Shifts_per_hall"], dict):
                 dict_employees[emp_id]["Shifts_per_hall"] = {}

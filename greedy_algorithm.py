@@ -1,5 +1,5 @@
 
-from open_excel import open_excel, open_previous_scores, merge_scores_into_employees
+from open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
 from pick_employees import pick_employees
 from collections import defaultdict
 import json
@@ -23,11 +23,14 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 events, employees, employees_days_off = open_excel("Input.xlsx", "Events", "Employees", "DaysOff")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
-previous_json = "02_26_output_dicts.json" # Hef þetta svona í bili
-previous_scores = open_previous_scores(previous_json)
+previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
+previous_json_list = "02_26_output_list.json" # Hef þetta svona í bili
+previous_scores = open_previous_scores(previous_json_dict)
+previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 employees = merge_scores_into_employees(employees, previous_scores)
+employees = merge_previous_stats_into_employees(employees, previous_stats)
 
 # Raða event dict eftir erfiðleika, viðburðir með hæstu einkunn fyrst
 sorted_events = dict(
@@ -100,17 +103,28 @@ for emp_id, info in sorted(
 # Búum til lista með pörum af EventID og EmployeeED
 pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 
+# Aðlaga employee dicts fyrir json skjal
+keys_to_keep = ["EmployeeID", "EmployeeName", "Score", "Skillset"]
+filtered_employees = {}
+
+for emp_id, info in employees.items():
+    filtered_employees[emp_id] = {
+        k: info[k]
+        for k in keys_to_keep
+        if k in info
+    }
+
 # Aðlögum events og employees fyrir json skjal
-dicts_for_json = {
+info_for_json = {
     "events": events,
-    "employees": employees
+    "employees": filtered_employees
 }
 
 with open(f"{month}_output_list.json", "w", encoding = "utf-8") as f:
     json.dump(pairs_for_json, f, indent = 4, ensure_ascii = False)
 
 with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
-    json.dump(dicts_for_json, f, indent = 4, ensure_ascii = False, default = str)
+    json.dump(info_for_json, f, indent = 4, ensure_ascii = False, default = str)
 
 
 # Plotta fjölda vinnustunda á hvern starfsmann
