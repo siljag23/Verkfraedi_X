@@ -38,7 +38,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     end = {j: dict_events[j]["ShiftEnds"] for j in events}
     event_date = {j: pd.to_datetime(dict_events[j]["Date"],dayfirst=True) for j in events}
     skill = {i: dict_employees[i]["Skillset"] for i in employees}
-    weekend = {j: 1 if event_date[j].weekday() in [4,5] else 0 for j in events}
+    weekend = {j: 1 if event_date[j].weekday() in [4,5,6] else 0 for j in events}
     weeks = sorted(set(event_date[j].isocalendar().week for j in events))
 
     # duration vakta
