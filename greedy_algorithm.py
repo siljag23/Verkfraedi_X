@@ -72,6 +72,7 @@ for event_id, event in sorted_events.items():
 # Reiknum fjölda vakta per starfsmann
 for row in rows: 
     shifts_per_employee[row["EmployeeID"]] += 1
+    event = events[row["EventID"]]
 
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
@@ -137,6 +138,9 @@ hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
 
+print("")
+print(employees)
+print("")
 """
 # Plottum fjölda klst./vakta per starfsmann
 plt.figure()

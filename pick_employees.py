@@ -154,8 +154,20 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return True
 
     def sort_key(emp_id: int):
+        raw_category = event.get("Category", "")
+        category = "" if raw_category is None else str(raw_category).strip()
+
+        if category.lower() == "nan":
+            category = ""
+
+        prev_category_count = 0
+        if category:
+            prev_category_count = dict_employees[emp_id].get(
+                "prev_shifts_per_category", {}
+            ).get(category, 0)
         return (
-            to_number(dict_employees[emp_id].get("Score", 0), 0),
+            to_number(dict_employees[emp_id].get("Score", 0), 0), 
+            prev_category_count,
             to_number(hours_per_employee.get(emp_id, 0), 0),
             emp_id
         )
@@ -272,6 +284,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                 to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1
             )
 
+            
         # Teljum hversu margar vaktir hver starfsmaður fær í hverjum sal
         if hall:
             if "Shifts_per_hall" not in dict_employees[emp_id] or not isinstance(dict_employees[emp_id]["Shifts_per_hall"], dict):
@@ -281,6 +294,24 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                 dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0), 0
             )
             dict_employees[emp_id]["Shifts_per_hall"][hall] = current_hall_count + 1
+
+            raw_category = event.get("EventCategory", "")
+        category = "" if raw_category is None else str(raw_category).strip()
+        
+        if category.lower() == "nan":
+            category = ""
+        
+        if category:
+            if (
+                "current_shifts_per_category" not in dict_employees[emp_id]
+                or not isinstance(dict_employees[emp_id]["current_shifts_per_category"], dict)
+            ):
+                dict_employees[emp_id]["current_shifts_per_category"] = {}
+
+            current_cat_count = to_int(
+                dict_employees[emp_id]["current_shifts_per_category"].get(category, 0), 0
+            )
+            dict_employees[emp_id]["current_shifts_per_category"][category] = current_cat_count + 1
 
         total_work_hours.append({
             "EventID": event_id,
@@ -293,8 +324,8 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             "NewScore": dict_employees[emp_id]["Score"],
             "NumberOfShifts": dict_employees[emp_id]["Number_of_shifts"],
             "ShiftsOnWeekends": dict_employees[emp_id]["Shifts_on_weekends"],
-            "Hall": hall,
-            "ShiftsInThisHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0
+            "ShiftsPerHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0,
+            "CurrentShiftsPerCategory": dict_employees[emp_id]["current_shifts_per_category"]. get(category, 0) if category else 0
         })
     # Tékk á forgangsröðun fyrir næsta event
     """

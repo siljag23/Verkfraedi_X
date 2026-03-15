@@ -170,8 +170,8 @@ def merge_previous_stats_into_employees(employees, previous_stats):
         stats = previous_stats.get(emp_id, {})
 
         info["prev_number_of_shifts"] = stats.get("number_of_shifts", 0)
-        info["prev_weekend_shifts"] = stats.get("weekend_shifts", 0)
-        info["prev_worked_days"] = stats.get("worked_days", 0)
+        info["prev_weekend_shifts"] = stats.get("shifts_on_weekends", 0)
+        info["prev_worked_days"] = stats.get("worked_days", [])
         info["prev_shifts_per_hall"] = stats.get("shifts_per_hall", {})
 
     return employees
