@@ -2,7 +2,7 @@ import pandas as pd
 import json 
 import os
 from datetime import datetime
-import math
+from collections import defaultdict
 
 def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name):
 
@@ -81,11 +81,6 @@ def open_previous_scores(json_path: str) -> dict[int, float]:
 
     return scores  
 
-
-import json
-import os
-from collections import defaultdict
-from datetime import datetime
 
 
 def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
