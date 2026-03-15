@@ -55,20 +55,9 @@ if model.status in [GRB.OPTIMAL, GRB.TIME_LIMIT]:
 
             print()
 
-if model.status not in [GRB.OPTIMAL, GRB.SUBOPTIMAL]:
-    print("Model infeasible or unbounded")
-    quit()   # stoppar kóðann
-
 employees = list(dict_employees.keys())
 events = list(dict_events.keys())
 
-print("\n--- EMPLOYEE SUMMARY ---")
-
-for i in employees:
-    shifts = sum(works[i, j].X for j in events)
-    print(i, shifts)
-    
-"""
 # Samantekt um starsmenn
 print("\n--- EMPLOYEE SUMMARY ---\n")
 
@@ -108,6 +97,7 @@ for i in employees:
 
     print()
 
+"""
 # Excel export
 export_schedule_to_excel(works, employees, events, event_date, start, end, dict_events, dict_employees)
 

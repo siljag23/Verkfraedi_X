@@ -2,6 +2,7 @@ import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
 from datetime import timedelta
+from itertools import combinations
 
 def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
 
@@ -10,7 +11,6 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     events = list(dict_events.keys())
 
     # Fastar kjarasamningar/reglur
-    max_workhours_per_day = 11
     max_workhours_per_week = 48
     min_shifts_per_period = 1
     max_workdays_per_week = 6
@@ -72,32 +72,38 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                 vacation_events.append((i,j))
 
     # Banna 2 vaktir á dag og þarf að vera amk 13 klst á milli
+
     blocked_pairs = set()
 
-    for j1 in events:
-        for j2 in events:
+    # precompute start/end time
+    shift_start = {}
+    shift_end = {}
 
-            if j1 < j2:
+    for j in events:
 
-                if event_date[j1].date() == event_date[j2].date():
+        shift_start[j] = event_date[j] + pd.to_timedelta(start[j].hour, unit="h") \
+                        + pd.to_timedelta(start[j].minute, unit="m")
 
-                    blocked_pairs.add((j1,j2))
+        shift_end[j] = shift_start[j] + pd.to_timedelta(shift_dur[j], unit="h")
 
-    for j1 in events:
-        for j2 in events:
+    # sort events by start time
+    sorted_events = sorted(events, key=lambda j: shift_start[j])
 
-            if j1 != j2:
+    for idx, j1 in enumerate(sorted_events):
 
-                end1 = event_date[j1] + pd.to_timedelta(start[j1].hour,unit="h")
-                end1 += pd.to_timedelta(start[j1].minute,unit="m")
-                end1 += pd.to_timedelta(shift_dur[j1],unit="h")
+        for j2 in sorted_events[idx+1:]:
 
-                start2 = event_date[j2] + pd.to_timedelta(start[j2].hour,unit="h")
-                start2 += pd.to_timedelta(start[j2].minute,unit="m")
+            # ef meira en 13h á milli -> engin þörf að skoða fleiri
+            if shift_start[j2] - shift_end[j1] >= timedelta(hours=13):
+                break
 
-                if start2 > end1 and (start2 - end1) < timedelta(hours=13):
+            # sama dag
+            if event_date[j1].date() == event_date[j2].date():
+                blocked_pairs.add((j1, j2))
 
-                    blocked_pairs.add((j1,j2))
+            # minna en 13h á milli
+            if shift_start[j2] > shift_end[j1] and (shift_start[j2] - shift_end[j1]) < timedelta(hours=13):
+                blocked_pairs.add((j1, j2))
 
     # Model
     model = gp.Model("Event_staffing")
@@ -158,27 +164,13 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
         )
     
     # Banna event pör
-    for i in employees:
-        for j1,j2 in blocked_pairs:
-
-            model.addConstr(
-                works[i,j1] + works[i,j2] <= 1
-            )
-    """
-    # Max 11 klst á dag
-    days = sorted(set(event_date[j].date() for j in events))
-
-    for i in employees:
-        for day in days:
-
-            model.addConstr(
-                gp.quicksum(
-                    works[i,j]*shift_dur[j]
-                    for j in events
-                    if event_date[j].date() == day
-                ) <= max_workhours_per_day
-            )
-    """
+    model.addConstrs(
+        (works[i,j1] + works[i,j2] <= 1
+        for i in employees
+        for j1,j2 in blocked_pairs),
+        name="blocked_pairs"
+    )
+    
     # Min 3 vaktir
     for i in employees:
 
@@ -287,21 +279,11 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     )
 
     # Solver stillingar
-    model.setParam("MIPGap",0.05)
+    model.setParam("MIPGap", 0.05)
+    model.setParam("TimeLimit", 60)
+    model.setParam("MIPFocus", 1)
 
     # Leysa
     model.optimize()
-
-    if model.status == GRB.INFEASIBLE:
-        print("\nModel is infeasible. Computing IIS...\n")
-        model.computeIIS()
-
-        print("Constraints causing infeasibility:")
-        for c in model.getConstrs():
-            if c.IISConstr:
-                print(" -", c.ConstrName)
-
-        # valfrjálst: skrifa í skrá
-        model.write("infeasible_model.ilp")
 
     return model, works, shift_dur, weekend, weeks, event_date
