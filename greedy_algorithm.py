@@ -72,6 +72,7 @@ for event_id, event in sorted_events.items():
 # Reiknum fjölda vakta per starfsmann
 for row in rows: 
     shifts_per_employee[row["EmployeeID"]] += 1
+    event = events[row["EventID"]]
 
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
@@ -127,7 +128,7 @@ with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
     json.dump(info_for_json, f, indent = 4, ensure_ascii = False, default = str)
 
 
-# Plotta fjölda vinnustunda á hvern starfsmann
+# Tökum saman gildi sem er hægt að nota í plot
 sorted_hours = sorted(hours_per_employee.items(), 
                       key = lambda x:x[1], 
                       reverse = True)
@@ -138,9 +139,13 @@ shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
 
 """
+print("")
+print(employees)
+print("")
+
 # Plottum fjölda klst./vakta per starfsmann
 plt.figure()
-plt.bar(employee_ids, shifts)
+plt.bar(employee_ids, hours)
 
 plt.xlabel("EmployeeID")
 plt.ylabel("Heildar klst.")
