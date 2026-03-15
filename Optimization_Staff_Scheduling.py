@@ -12,7 +12,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
 
     # Fastar kjarasamningar/reglur
     max_workhours_per_week = 48
-    min_shifts_per_period = 1
+    min_shifts_per_period = 3
     max_workdays_per_week = 6
 
     # Fastar, vægisstuðlar
@@ -23,10 +23,11 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     e = 90
     f = 91
     g = 30
-    h = 50
-    i = 51
-    j = 70
-    k = 71
+    h = 31
+    i = 50
+    j = 51
+    k = 70
+    l = 71
 
     # Fastar gögn
     emp_demand = {j: dict_events[j]["Employees"] for j in events}
@@ -34,6 +35,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     skill2_req = {j: dict_events[j]["Skillset2"] for j in events}
     shift_score = {j: dict_events[j]["EventRanking"] for j in events}
     hall = {j: dict_events[j]["Hall"] for j in events}
+    halls = list(set(hall.values()))
     start = {j: dict_events[j]["ShiftBegins"] for j in events}
     end = {j: dict_events[j]["ShiftEnds"] for j in events}
     event_date = {j: pd.to_datetime(dict_events[j]["Date"],dayfirst=True) for j in events}
@@ -72,10 +74,8 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                 vacation_events.append((i,j))
 
     # Banna 2 vaktir á dag og þarf að vera amk 13 klst á milli
-
     blocked_pairs = set()
 
-    # precompute start/end time
     shift_start = {}
     shift_end = {}
 
@@ -86,7 +86,6 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
 
         shift_end[j] = shift_start[j] + pd.to_timedelta(shift_dur[j], unit="h")
 
-    # sort events by start time
     sorted_events = sorted(events, key=lambda j: shift_start[j])
 
     for idx, j1 in enumerate(sorted_events):
@@ -110,6 +109,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
 
     # Ákvörðunarbreyta
     works = model.addVars(employees,events,vtype=GRB.BINARY,name="works")
+    works_hall = model.addVars(employees, halls, vtype=GRB.BINARY, name="works_hall")
 
     # Sanngirnisbreytur
     min_score = model.addVar()
@@ -124,6 +124,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
     min_weekend = model.addVar()
     max_weekend = model.addVar()
 
+    min_halls = model.addVar()
     max_halls = model.addVar()
 
     min_weekly_shifts = model.addVar()
@@ -179,7 +180,6 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
         )
     
     # Amk einn frídagur í viku
-    
     for i in employees:
         for week in weeks:
 
@@ -190,8 +190,7 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                     if event_date[j].isocalendar().week == week
                 ) <= max_workdays_per_week
             )
-    
-    
+    # Max 48 klst á viku 
     num_weeks = len(weeks)
     for i in employees:
         model.addConstr(
@@ -200,6 +199,13 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                 for j in events
             ) <= max_workhours_per_week * num_weeks
         )
+
+    # Halls 
+    for i in employees:
+        for j in events:
+            model.addConstr(
+                works[i,j] <= works_hall[i, hall[j]]
+            )
 
     # Fairness skorður
     for i in employees:
@@ -244,6 +250,16 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
             <= max_weekend
         )
 
+        model.addConstr(
+            gp.quicksum(works_hall[i,h] for h in halls)
+            >= min_halls
+)
+
+        model.addConstr(
+            gp.quicksum(works_hall[i,h] for h in halls)
+            <= max_halls
+        )
+
     # Jafna vaktir milli vikna
     for week in weeks:
 
@@ -272,9 +288,9 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
         a*min_score - b*max_score
         + c*min_shifts - d*max_shifts
         + e*min_workhours - f*max_workhours
-        - g*max_halls
-        + h*min_weekend - i*max_weekend
-        + j*min_weekly_shifts - k*max_weekly_shifts,
+        + g*min_halls - h*max_halls
+        + i*min_weekend - j*max_weekend
+        + k*min_weekly_shifts - l*max_weekly_shifts,
         GRB.MAXIMIZE
     )
 
