@@ -18,6 +18,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return raw
 
     all_event_dates = [parse_event_date(ev) for ev in dict_events.values()]
+    period_start = min(all_event_dates)
     period_end = max(all_event_dates)
 
     period_days = (period_end - period_start).days + 1
