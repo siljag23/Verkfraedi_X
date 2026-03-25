@@ -3,13 +3,16 @@ from shift_length import shift_length
 import math
 
 
-def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days_off, event_id: int, next_index: int, 
+def pick_employees(dict_events, dict_employees, hours_per_employee, employee_days_off, event_id: int, 
                    daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days):
+    """Velur starfsmenn á viðburði m.t.t. skorða
+    Skilar lista með upplýsingum um valda starfsmenn fyrir hvern viðburð"""
     
     event = dict_events[event_id]
     req_employees = int(event["Employees"])
 
     def parse_event_date(ev):
+        """Les dagsetningu úr event dict og skilar henni sem date object"""
         raw = ev["Date"]
         if isinstance(raw, str):
             return datetime.strptime(raw.strip(), "%d.%m.%Y").date()
@@ -17,6 +20,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             return raw.date()
         return raw
 
+    # Finnum tímabilið sem viðburðirnir spanna svo hægt sé að reikna meðaltal vinnustunda á viku
     all_event_dates = [parse_event_date(ev) for ev in dict_events.values()]
     period_start = min(all_event_dates)
     period_end = max(all_event_dates)
@@ -26,7 +30,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     if period_weeks <= 0:
         period_weeks = 1
         
-    # Athugum hvort date sé formattað sem dagsetning, ef ekki er það lagað
+    # Athugum hvort dagsetning viðburðar sé á réttu formi, ef ekki er það lagað
     raw_date = event["Date"]
     if isinstance(raw_date, str):
         event_date = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
@@ -37,6 +41,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
     # Breytum tíma úr Excel/pandas í datetime.time ef hann kemur sem timedelta
     def ensure_time(x):
+        """Breytum dagsetningum á röngu formi í datetime.time"""
         if isinstance(x, time):
             return x
         if isinstance(x, timedelta):
@@ -56,24 +61,28 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                     pass
         raise ValueError(f"Óþekkt tímaformat: {x} ({type(x)})")
 
+    # Sækjum upphafs- og lokatíma vaktar
     shift_begins_time = ensure_time(event["ShiftBegins"])
     shift_ends_time = ensure_time(event["ShiftEnds"])
 
+    # Sameinum dagsetningu og tíma í datetime
     shift_begins = datetime.combine(event_date, shift_begins_time)
     shift_ends = datetime.combine(event_date, shift_ends_time)
 
-    # Ef vakt nær yfir miðnætti
+    # Ef vakt nær yfir miðnætti 
     if shift_ends < shift_begins:
         shift_ends += timedelta(days=1)
 
+    # Heildarlengd vaktar
     total_shift_hours = shift_length(shift_begins_time, shift_ends_time)
 
+    # Skiptum vaktinni niður á daga ef hún fer yfir miðnætti
     day_1 = shift_begins.date()
     day_2 = shift_ends.date()
     hours_day_1 = total_shift_hours
     hours_day_2 = 0
 
-    # Ef vakt nær yfir miðnætti telst vaktin sem 2 dagar
+    # Ef vakt nær yfir miðnætti, teljum klukkustundir á hvorn dag fyrir sig 
     if day_1 != day_2 and shift_ends.time() != time(0, 0):
         hours_day_1 = shift_length(shift_begins_time, time(0, 0))
         hours_day_2 = shift_length(time(0, 0), shift_ends_time)
@@ -83,10 +92,14 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     if hours_day_2 > 0:
         blocked_days.add(day_2)
 
+    # Stig sem starfsmaður fær ef hann fær þennan viðburð
     event_score = float(event.get("EventRanking", 0))
+
+    # Breytum lágmarkshvíldartíma í timedelta til að geta borið saman við vinnustundir
     rest_delta = timedelta(hours=min_rest_hours)
 
     def to_int(x, default=0):
+        """Breytir gildum í heiltölu"""
         if x is None:
             return default
         if isinstance(x, float) and math.isnan(x):
@@ -97,6 +110,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             return default
 
     def to_number(x, default=0):
+        """Breytir gildum í brotatölu"""
         if x is None:
             return default
         if isinstance(x, float) and math.isnan(x):
@@ -106,15 +120,18 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         except:
             return default
 
+    # Sækjum nauðsynlegan fjölda starfsmanna með skillset 1 og 2 fyrir hvern viðburð
     req_skillset_1 = to_int(event.get("Skillset1"))
     req_skillset_2 = to_int(event.get("Skillset2"))
 
+    # Athugum hvort krafa um skillset starfsmanna sé meiri en karfa um heildarfjölda starfsmanna 
     if req_skillset_1 + req_skillset_2 > req_employees:
         raise ValueError(
             f"Skillset1 + Skillset2 ({req_skillset_1 + req_skillset_2}) > Employees ({req_employees}) fyrir Event {event_id}"
         )
 
     def respects_min_rest(emp_id: int) -> bool:
+        """Athugar hvort starsfmaður uppfylli lágmarkshvíld m.v. eldri vaktir"""
         for old_begins, old_ends in assigned_shifts.get(emp_id, []):
             ok = (shift_begins >= old_ends + rest_delta) or (old_begins >= shift_ends + rest_delta)
             if not ok:
@@ -128,6 +145,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return True
     
     def respects_max_6_days_in_7(emp_id: int) -> bool:
+        """Athugar hvort starfsmaður brjóti hámarkið um 6 vinnudaga á hverju 7 daga tímabili"""
         proposed_days = set(employee_worked_days[emp_id]) | blocked_days
 
         if not proposed_days:
@@ -150,7 +168,8 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return True
 
     def is_eligible(emp_id: int) -> bool:
-        # Athugum hvort starfsmaður sé í fríi þennan dag
+        """Athugar hvort starfsmaður megi vinna tiltekna vakt"""
+        # Athugum hvort starfsmaður sé í fríi daginn sem vaktin er
         if event_date in employee_days_off[emp_id]:
             print(
                 f"EMP {emp_id} HAFNAÐ -> í fríi á {event_date}. "
@@ -179,6 +198,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             )
             return False
 
+        # Ef vaktin fer yfir miðvætti athugum við líka seinni daginn
         if hours_day_2 > 0:
             if daily_hours_per_employee[(emp_id, day_2)] + hours_day_2 > max_daily_hours:
                 print(
@@ -188,6 +208,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                 )
                 return False
         
+        # Reiknum meðaltal vinnustunda á viku ef starfsmaður fær þessa vakt
         projected_total_hours = hours_per_employee.get(emp_id, 0) + total_shift_hours
         avg_weekly_hours = projected_total_hours / period_weeks
 
@@ -200,6 +221,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             )
             return False
 
+        # Athugum hvort starfmaður fái næga hvíld á milli vakta
         if not respects_min_rest(emp_id):
             return False
 
@@ -208,6 +230,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         return True
 
     def sort_key(emp_id: int):
+        """Skilgreinir röðun starfsmanna við val á vaktir"""
         raw_category = event.get("Category", "")
         category = "" if raw_category is None else str(raw_category).strip()
 
@@ -228,9 +251,12 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         )
 
     def emp_skill(emp_id: int) -> int:
+        """Sækir skillset starfsmanns sem heiltölu"""
         return to_int(dict_employees[emp_id].get("Skillset", 0), 0)
 
     def is_valid_team(team_ids: list[int]) -> bool:
+        """Athugum hvort lokahópurinn megi vinna saman m.t.t. skillset 
+        (starfsmenn með skillset 3 mega ekki vera einir á vakt)"""
         if not team_ids:
             return True
 
@@ -243,13 +269,17 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
         return True
 
+    # Tryggjum að score sé tölugildi áður en við röðum á vaktir
     for emp_id in dict_employees:
         dict_employees[emp_id]["Score"] = to_number(
             dict_employees[emp_id].get("Score", 0), 0
         )
 
     def pick_from(candidates: list[int], n: int, selected_set: set[int]) -> list[int]:
+        """Velur allt að n starfsmenn af þeim sem mega fá vaktina"""
         picked = []
+
+        # Förum í gegnum alla kandítata í réttri forgangsröð
         for emp_id in sorted(candidates, key=sort_key):
             if len(picked) >= n:
                 break
@@ -260,9 +290,8 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             picked.append(emp_id)
         return picked
 
-    def pick_remaining_candidates(
-        candidates: list[int], n: int, selected_set: set[int]
-    ) -> list[int]:
+    def pick_remaining_candidates(candidates: list[int], n: int, selected_set: set[int]) -> list[int]:
+        """Velur starfsmenn til að fylla upp í starfsmannaþörf eftir að skillset hafa verið uppfyllt"""
         picked = []
 
         def remaining_sort_key(emp_id: int):
@@ -282,6 +311,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                 *sort_key(emp_id)
             )
 
+        # Röðum á vakt þarf til nógu margir eru komnir
         for emp_id in sorted(candidates, key=remaining_sort_key):
             if len(picked) >= n:
                 break
@@ -301,9 +331,11 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
 
         return picked
     
+    # Geymum valda starfsmenn
     selected_set = set()
     selected_employee_ids = []
 
+    # Veljum fyrst starfsmenn sem uppfylla skillset 1 kröfu
     skill1_candidates = [eid for eid in dict_employees.keys() if emp_skill(eid) == 1]
     picked1 = pick_from(skill1_candidates, req_skillset_1, selected_set)
     selected_set.update(picked1)
@@ -314,6 +346,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             f"Vantar {req_skillset_1 - len(picked1)} starfsmenn með Skillset 1 fyrir Event {event_id}"
         )
 
+    # Veljum næst starfsmenn sem uppfylla skillset 2 kröfu
     skill2_candidates = [eid for eid in dict_employees.keys() if emp_skill(eid) == 2]
     picked2 = pick_from(skill2_candidates, req_skillset_2, selected_set)
     selected_set.update(picked2)
@@ -324,6 +357,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             f"Vantar {req_skillset_2 - len(picked2)} starfsmenn með Skillset 2 fyrir Event {event_id}"
         )
 
+    # Fyllum restina af starsmannaþörf með gjaldgengum kandídötum
     remaining = req_employees - len(selected_employee_ids)
     if remaining > 0:
         all_candidates = list(dict_employees.keys())
@@ -331,15 +365,18 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         selected_set.update(picked_rest)
         selected_employee_ids.extend(picked_rest)
 
+    # Ef það vantar enn starfsmenn þá er ekki hægt að manna viðburðinn
     if len(selected_employee_ids) < req_employees:
         raise ValueError(
             f"Ekki nægur fjöldi af starfsmönnum laus. Þarf {req_employees} en það eru {len(selected_employee_ids)} lausir. "
             f"Þeir sem komast eru með ID {selected_employee_ids}"
         )
     
+    # Lokatékk á reglu fyrir skillset 3
     if not is_valid_team(selected_employee_ids):
         replacement_found = False
 
+        # Leitum að starfsmanni utan hóps sem gæti leyst skillset 3 starfsmann af
         for emp_id in sorted(dict_employees.keys(), key=sort_key):
             if emp_id in selected_set:
                 continue
@@ -371,7 +408,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
             )
         
 
-    # DEBUG 2 # öryggistékk: enginn valinn starfsmaður má vera í fríi eða brjóta hvíldartíma
+    # Öryggistékk: enginn valinn starfsmaður má vera í fríi eða brjóta hvíldartíma
     for emp_id in selected_employee_ids:
         if event_date in employee_days_off[emp_id]:
             raise ValueError(
@@ -395,6 +432,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
                 f"assigned_shifts[{emp_id}] = {assigned_shifts.get(emp_id, [])}"
             )
 
+    # Hreinsum hall og category svo það séu alltaf strengir 
     raw_hall = event.get("Hall", "")
     hall = "" if raw_hall is None else str(raw_hall).strip()
     if hall.lower() == "nan":
@@ -408,6 +446,7 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
     shift_hours = shift_length(shift_begins_time, shift_ends_time)
     total_work_hours = []
 
+    # Uppfærum allar upplýsingar fyrir hvern valinn starfsmann
     for emp_id in selected_employee_ids:
         hours_per_employee[emp_id] += shift_hours
         employee_worked_days[emp_id].update(blocked_days)
@@ -490,4 +529,4 @@ def pick_employees(dict_events, dict_employees, hours_per_employee, employee_day
         )
     """
 
-    return total_work_hours, next_index
+    return total_work_hours
