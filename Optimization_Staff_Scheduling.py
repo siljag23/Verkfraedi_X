@@ -156,6 +156,13 @@ def Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days):
                 if skill[i] in [1,2]
             ) >= skill2_req[j]
         )
+
+    # Starfsmaður með skill 3 má ekki vinna einn á vakt
+    for j in events:
+        if emp_demand[j] == 1:
+            model.addConstr(
+                gp.quicksum(works[i,j] for i in employees if skill[i] == 3) == 0
+            )
     
     # Ekki vinna á frídögum
     for (i,j) in vacation_events:

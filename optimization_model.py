@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from gurobipy import GRB
 
 from open_excel import open_excel
-from Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
+from Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
 from export_schedule_to_excel import export_schedule_to_excel
 from Plot_Results import Plot_Results
 from Export_Json import Export_Json
@@ -13,7 +13,7 @@ from Print_Results import Print_Results
 dict_events, dict_employees, employee_days = open_excel("Input.xlsx", "Events", "Employees", "DaysOff")
 
 # Keyra optimization
-model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Scheduling(dict_events, dict_employees, employee_days)
+model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Scheduling2(dict_events, dict_employees, employee_days)
 
 # Indexar
 employees = list(dict_employees.keys())
