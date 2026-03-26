@@ -3,17 +3,8 @@ from shift_length import shift_length
 import math
 
 
-def assign_all_events(
-    dict_events,
-    dict_employees,
-    hours_per_employee,
-    employee_days_off,
-    daily_hours_per_employee,
-    max_daily_hours,
-    assigned_shifts,
-    min_rest_hours,
-    employee_worked_days
-):
+def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee,
+                      max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days):
     """
     Aðalfall:
     - velur starfsmann fyrst út frá forgangi
@@ -23,10 +14,11 @@ def assign_all_events(
 
     Skilar:
     - all_work_results: listi með öllum úthlutunum
-    - event_state: staða allra eventa eftir úthlutun
+    - event_state: staða allra viðburða eftir úthlutun
     """
 
     def parse_event_date(ev):
+        """Les dagsetningu úr event dict og skilar henni sem date object"""
         raw = ev["Date"]
         if isinstance(raw, str):
             return datetime.strptime(raw.strip(), "%d.%m.%Y").date()
@@ -35,6 +27,7 @@ def assign_all_events(
         return raw
 
     def ensure_time(x):
+        """Breytum dagsetningum á röngu formi í datetime.time"""
         if isinstance(x, time):
             return x
         if isinstance(x, timedelta):
@@ -55,6 +48,7 @@ def assign_all_events(
         raise ValueError(f"Óþekkt tímaformat: {x} ({type(x)})")
 
     def to_int(x, default=0):
+        """Breytum gildum í heiltölu"""
         if x is None:
             return default
         if isinstance(x, float) and math.isnan(x):
@@ -65,6 +59,7 @@ def assign_all_events(
             return default
 
     def to_number(x, default=0):
+        """Breytum gildum í brotatölu"""
         if x is None:
             return default
         if isinstance(x, float) and math.isnan(x):
@@ -75,6 +70,7 @@ def assign_all_events(
             return default
 
     def emp_skill(emp_id: int) -> int:
+        """Breytum skillset starsfmanna í heiltölu"""
         return to_int(dict_employees[emp_id].get("Skillset", 0), 0)
 
     # Reiknum tímabil fyrir 48 klst/viku meðaltalsreglu
@@ -88,9 +84,7 @@ def assign_all_events(
         period_weeks = 1
 
     def get_event_datetime_info(event_id: int):
-        """
-        Sækir allar grunnupplýsingar um dagsetningu, tíma og skiptingu vaktar á daga.
-        """
+        """Sækir allar grunnupplýsingar um dagsetningu, tíma og skiptingu vaktar á daga"""
         event = dict_events[event_id]
 
         raw_date = event["Date"]
@@ -104,20 +98,20 @@ def assign_all_events(
         shift_begins_time = ensure_time(event["ShiftBegins"])
         shift_ends_time = ensure_time(event["ShiftEnds"])
 
-        shift_begins = datetime.combine(event_date, shift_begins_time)
-        shift_ends = datetime.combine(event_date, shift_ends_time)
+        shift_begins_date = datetime.combine(event_date, shift_begins_time)
+        shift_ends_date = datetime.combine(event_date, shift_ends_time)
 
-        if shift_ends < shift_begins:
-            shift_ends += timedelta(days=1)
+        if shift_ends_date < shift_begins_date:
+            shift_ends_date += timedelta(days=1)
 
         total_shift_hours = shift_length(shift_begins_time, shift_ends_time)
 
-        day_1 = shift_begins.date()
-        day_2 = shift_ends.date()
+        day_1 = shift_begins_date.date()
+        day_2 = shift_ends_date.date()
         hours_day_1 = total_shift_hours
         hours_day_2 = 0
 
-        if day_1 != day_2 and shift_ends.time() != time(0, 0):
+        if day_1 != day_2 and shift_ends_date.time() != time(0, 0):
             hours_day_1 = shift_length(shift_begins_time, time(0, 0))
             hours_day_2 = shift_length(time(0, 0), shift_ends_time)
 
@@ -129,8 +123,8 @@ def assign_all_events(
             "event_date": event_date,
             "shift_begins_time": shift_begins_time,
             "shift_ends_time": shift_ends_time,
-            "shift_begins": shift_begins,
-            "shift_ends": shift_ends,
+            "shift_begins": shift_begins_date,
+            "shift_ends": shift_ends_date,
             "total_shift_hours": total_shift_hours,
             "day_1": day_1,
             "day_2": day_2,
@@ -195,6 +189,7 @@ def assign_all_events(
         return roles
 
     def respects_min_rest(emp_id: int, shift_begins: datetime, shift_ends: datetime) -> bool:
+        """Athugar hvort starfsmenn uppfylli lágmarks hvíldartíma"""
         rest_delta = timedelta(hours=min_rest_hours)
 
         for old_begins, old_ends in assigned_shifts.get(emp_id, []):
@@ -204,6 +199,7 @@ def assign_all_events(
         return True
 
     def respects_max_6_days_in_7(emp_id: int, blocked_days: set) -> bool:
+        """Athugar hvort starfsmenn vinni nokkuð meira en 6 daga á 7 daga tímabili"""
         proposed_days = set(employee_worked_days[emp_id]) | blocked_days
 
         if not proposed_days:
@@ -221,10 +217,7 @@ def assign_all_events(
         return True
 
     def is_eligible_for_event(emp_id: int, event_id: int) -> bool:
-        """
-        Almenn gjaldgengni starfsmanns fyrir event,
-        óháð því hvaða hlutverk innan vaktar er valið.
-        """
+        """Almenn gjaldgengni starfsmanns fyrir event, óháð því hvaða hlutverk innan vaktar er valið"""
         info = get_event_datetime_info(event_id)
 
         event_date = info["event_date"]
@@ -299,11 +292,7 @@ def assign_all_events(
         return True
 
     def employee_priority(emp_id: int):
-        """
-        Röðun starfsmanna fyrir nýja aðferð.
-
-        Sá með fæst núverandi stig er efstur.
-        """
+        """Raðar starfsmönnum í forgangsröð, lægstu stig efst"""
         return (
             to_number(dict_employees[emp_id].get("Score", 0), 0),
             to_number(hours_per_employee.get(emp_id, 0), 0),
@@ -341,13 +330,13 @@ def assign_all_events(
         current_shifts = to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0)
         weekend_count = to_int(dict_employees[emp_id].get("Shifts_on_weekends", 0), 0)
 
-        prev_cat = to_int(
+        prev_category = to_int(
             dict_employees[emp_id].get("prev_shifts_per_category", {}).get(category, 0), 0
         )
-        curr_cat = to_int(
+        curr_category = to_int(
             dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0), 0
         )
-        total_cat_count = prev_cat + curr_cat
+        total_category_count = prev_category + curr_category
 
         hall_count = to_int(
             dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0), 0
@@ -358,7 +347,7 @@ def assign_all_events(
         if event_date.weekday() in [4, 5, 6]:
             weekend_penalty = weekend_count * 8
 
-        category_penalty = total_cat_count * 5
+        category_penalty = total_category_count * 5
         hall_penalty = hall_count * 3
         score_penalty = current_score * 1.0
         hours_penalty = current_hours * 0.25
@@ -368,7 +357,7 @@ def assign_all_events(
         required_skill = role.get("required_skill")
         skill_penalty = 0
         if required_skill is not None and emp_skill(emp_id) != required_skill:
-            skill_penalty = 1000
+            skill_penalty = -1000
 
         return (
             event_score
@@ -382,9 +371,7 @@ def assign_all_events(
         )
 
     def can_take_role(emp_id: int, event_id: int, role: dict, event_state: dict) -> bool:
-        """
-        Athugar hvort starfsmaður megi taka ákveðið hlutverk á ákveðnum event.
-        """
+        """Athugar hvort starfsmaður megi taka ákveðið hlutverk á ákveðnum event"""
         if role["filled_by"] is not None:
             return False
 
@@ -437,9 +424,7 @@ def assign_all_events(
         return best_option
 
     def assign_employee_to_role(emp_id: int, event_id: int, role_id: int, event_state: dict):
-        """
-        Úthlutar starfsmanni á tiltekið hlutverk og uppfærir allar stöðubreytur.
-        """
+        """Úthlutar starfsmanni á tiltekið hlutverk og uppfærir allar stöðubreytur"""
         event = dict_events[event_id]
         info = get_event_datetime_info(event_id)
 

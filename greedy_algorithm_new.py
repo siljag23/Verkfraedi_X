@@ -44,27 +44,12 @@ for event_id, event_info in sorted_events.items():
 
 rows = []
 
-# Raða starfsmönnum á vakt, byrja á auðveldasta viðburðinum, starfsmönnum er raðað í forgangsröð í pick_employees fallinu
-for event_id, event in sorted_events.items():
-    try:
-        # Raða starfsmönnum á vakt með pick employee
-        selected_employees = assign_all_events(events, employees, hours_per_employee, employees_days_off, daily_hours_per_employee, max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
+try:
+    rows, event_state = assign_all_events(events, employees, hours_per_employee, employees_days_off, daily_hours_per_employee, 
+                                          max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
 
-        rows.extend(selected_employees)
-
-        # Prenta upplýsingar um viðburð
-        print(f'\nEventID {event_id} | {event["Event"]} | {event["Date"]} | {event["EventRanking"]} |'
-              f'{event["ShiftBegins"]} - {event["ShiftEnds"]}')
-
-        # Prenta lista af starfsmönnum undir vaktinni
-        for row in selected_employees:
-            print(
-                f'   -> {row["EmployeeID"]}: {row["EmployeeName"]}'
-            )
-
-    # Villuskilaboð ef eitthvað klikkar
-    except Exception as event_info:
-        print(f'\nEventID {event_id} ERROR -> {event_info}')
+except Exception as e:
+    print("ERROR ->", e)
 
 
 # Reiknum fjölda vakta per starfsmann
