@@ -1,14 +1,16 @@
 import json
 
-def Export_Json(dict_events, dict_employees, works, employees, events):
+def Export_Json(dict_events, dict_employees, works, employees, events, base_filename):
 
-    output_dicts = {
+    dict_output = {
         "events": dict_events,
         "employees": dict_employees
     }
 
-    with open("05_24_optioutput_dicts.json", "w", encoding="utf-8") as f:
-        json.dump(output_dicts, f, indent=4, ensure_ascii=False, default=str)
+    dict_filename = f"{base_filename}_dicts.json"
+
+    with open(dict_filename, "w", encoding="utf-8") as f:
+        json.dump(dict_output, f, indent=4, ensure_ascii=False, default=str)
 
     assignment_list = []
 
@@ -17,5 +19,10 @@ def Export_Json(dict_events, dict_employees, works, employees, events):
             if works[i, j].X > 0.5:
                 assignment_list.append([j, i])
 
-    with open("05_24_optioutput_list.json", "w", encoding="utf-8") as f:
+    list_filename = f"{base_filename}_list.json"
+
+    with open(list_filename, "w", encoding="utf-8") as f:
         json.dump(assignment_list, f, indent=4)
+
+    print(f"Saved: {dict_filename}")
+    print(f"Saved: {list_filename}")
