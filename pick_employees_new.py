@@ -272,21 +272,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         return True
 
-    def role_matches_employee(emp_id: int, role: dict) -> bool:
-        """
-        Skillset er hér metið með score en ekki sem hörð útilokun.
-        Þess vegna er role alltaf leyfilegt hér.
-        """
-        return True
-
-    def is_valid_partial_team(event_id: int, trial_employee_ids: list[int]) -> bool:
-        """
-        Hér má setja reglur sem mega ekki brotna jafnvel áður en vakt fyllist alveg.
-
-        Í byrjun má hafa þetta einfalt og alltaf True.
-        """
-        return True
-
     def is_valid_final_team(event_id: int, employee_ids: list[int]) -> bool:
         """
         Lokatékk á hópnum þegar event er fullmannað.
@@ -338,16 +323,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             hall = ""
 
         event_score = to_number(event.get("EventRanking", 0), 0)
-        current_score = to_number(dict_employees[emp_id].get("Score", 0), 0)
-        current_hours = to_number(hours_per_employee.get(emp_id, 0), 0)
         current_shifts = to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0)
         weekend_count = to_int(dict_employees[emp_id].get("Shifts_on_weekends", 0), 0)
-
-        prev_cat = to_int(
-            dict_employees[emp_id].get("prev_shifts_per_category", {}).get(category, 0), 0)
-        curr_cat = to_int(
-            dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0), 0)
-        total_cat_count = prev_cat + curr_cat
 
         hall_count = to_int(
             dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0), 0)
@@ -421,20 +398,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         if not is_eligible_for_event(emp_id, event_id):
             return False
 
-        if not role_matches_employee(emp_id, role):
-            return False
-
-        current_team = [
-            role_info["filled_by"]
-            for role_info in event_state[event_id]["roles"]
-            if role_info["filled_by"] is not None
-        ]
-
-        trial_team = current_team + [emp_id]
-
-        if not is_valid_partial_team(event_id, trial_team):
-            return False
-
         return True
 
     def choose_best_role_for_employee(emp_id: int, event_state: dict):
@@ -473,8 +436,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         event_date = info["event_date"]
         shift_begins = info["shift_begins"]
         shift_ends = info["shift_ends"]
-        shift_begins_time = info["shift_begins_time"]
-        shift_ends_time = info["shift_ends_time"]
         total_shift_hours = info["total_shift_hours"]
         day_1 = info["day_1"]
         day_2 = info["day_2"]
