@@ -394,622 +394,131 @@
     "employees": {
         "1": {
             "EmployeeName": "Ásdís",
-            "Skillset": 3,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-10",
-                "2024-05-16",
-                "2024-05-26",
-                "2024-05-31"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 3
         },
         "2": {
             "EmployeeName": "Helgi",
-            "Skillset": 3,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-18",
-                "2024-05-25",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "NL": 1,
-                "EB": 3
-            }
+            "Skillset": 3
         },
         "3": {
             "EmployeeName": "Össur",
-            "Skillset": 3,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-04",
-                "2024-05-09",
-                "2024-05-18",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "KL": 1,
-                "EB": 4
-            }
+            "Skillset": 3
         },
         "4": {
             "EmployeeName": "Thelma",
-            "Skillset": 3,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-12",
-                "2024-05-20",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "SB": 1
-            }
+            "Skillset": 3
         },
         "5": {
             "EmployeeName": "Pétur",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-12",
-                "2024-05-18",
-                "2024-05-19",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "SB": 1,
-                "EB": 2,
-                "NL": 1
-            }
+            "Skillset": 2
         },
         "6": {
             "EmployeeName": "Unnur",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-02",
-                "2024-05-04",
-                "2024-05-18",
-                "2024-05-25"
-            ],
-            "prev_shifts_per_hall": {
-                "NL": 1,
-                "EB": 3
-            }
+            "Skillset": 2
         },
         "7": {
             "EmployeeName": "Harpa",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-10",
-                "2024-05-11",
-                "2024-05-13",
-                "2024-05-25"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 2
         },
         "8": {
             "EmployeeName": "Vala",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-08",
-                "2024-05-11",
-                "2024-05-25"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "BL": 1
-            }
+            "Skillset": 2
         },
         "9": {
             "EmployeeName": "Freyja",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-10",
-                "2024-05-16",
-                "2024-05-26",
-                "2024-05-31"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 2
         },
         "10": {
             "EmployeeName": "Björk",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-09",
-                "2024-05-11",
-                "2024-05-16",
-                "2024-05-19"
-            ],
-            "prev_shifts_per_hall": {
-                "KL": 3,
-                "EB": 2
-            }
+            "Skillset": 2
         },
         "11": {
             "EmployeeName": "Oliver",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-03",
-                "2024-05-10",
-                "2024-05-16",
-                "2024-05-17"
-            ],
-            "prev_shifts_per_hall": {
-                "KL": 3,
-                "EB": 2
-            }
+            "Skillset": 2
         },
         "12": {
             "EmployeeName": "Lísa",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-09",
-                "2024-05-10",
-                "2024-05-24",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 1
         },
         "13": {
             "EmployeeName": "Erla",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-20",
-                "2024-05-25",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 4
-            }
+            "Skillset": 2
         },
         "14": {
             "EmployeeName": "Rakel",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-02",
-                "2024-05-03",
-                "2024-05-09",
-                "2024-05-16",
-                "2024-05-18"
-            ],
-            "prev_shifts_per_hall": {
-                "NL": 1,
-                "KL": 1,
-                "EB": 3
-            }
+            "Skillset": 2
         },
         "15": {
             "EmployeeName": "Davíð",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-09",
-                "2024-05-10",
-                "2024-05-11",
-                "2024-05-12"
-            ],
-            "prev_shifts_per_hall": {
-                "KL": 1,
-                "EB": 3,
-                "NL": 1
-            }
+            "Skillset": 2
         },
         "16": {
             "EmployeeName": "Laufey",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-05",
-                "2024-05-12",
-                "2024-05-16"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 2,
-                "KL": 1,
-                "SB": 1
-            }
+            "Skillset": 2
         },
         "17": {
             "EmployeeName": "Aron",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-18",
-                "2024-05-25",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "NL": 1,
-                "EB": 3
-            }
+            "Skillset": 2
         },
         "18": {
             "EmployeeName": "Sara",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-09",
-                "2024-05-16",
-                "2024-05-24",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 1
         },
         "19": {
             "EmployeeName": "Úlfur",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-11",
-                "2024-05-25",
-                "2024-05-26",
-                "2024-05-30"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "BL": 1
-            }
+            "Skillset": 1
         },
         "20": {
             "EmployeeName": "Máni",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-09",
-                "2024-05-11",
-                "2024-05-16",
-                "2024-05-18",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 5
-            }
+            "Skillset": 2
         },
         "21": {
             "EmployeeName": "Inga",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-09",
-                "2024-05-18",
-                "2024-05-19",
-                "2024-05-20",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 4,
-                "KL": 1
-            }
+            "Skillset": 2
         },
         "22": {
             "EmployeeName": "Helena",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-09",
-                "2024-05-10",
-                "2024-05-11",
-                "2024-05-16",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 5
-            }
+            "Skillset": 1
         },
         "23": {
             "EmployeeName": "Kata",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-05",
-                "2024-05-11",
-                "2024-05-12",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "KL": 1,
-                "EB": 2,
-                "SB": 1
-            }
+            "Skillset": 2
         },
         "24": {
             "EmployeeName": "Ylfa",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-05",
-                "2024-05-11",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "NL": 1
-            }
+            "Skillset": 2
         },
         "25": {
             "EmployeeName": "Jóna",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-09",
-                "2024-05-10",
-                "2024-05-25"
-            ],
-            "prev_shifts_per_hall": {
-                "KL": 1,
-                "EB": 3
-            }
+            "Skillset": 2
         },
         "26": {
             "EmployeeName": "Silja",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-12",
-                "2024-05-20",
-                "2024-05-25"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "SB": 1
-            }
+            "Skillset": 1
         },
         "27": {
             "EmployeeName": "Camilla",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-10",
-                "2024-05-11",
-                "2024-05-14"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 1
         },
         "28": {
             "EmployeeName": "Nanna",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 5,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-02",
-                "2024-05-09",
-                "2024-05-10",
-                "2024-05-11",
-                "2024-05-16"
-            ],
-            "prev_shifts_per_hall": {
-                "NL": 1,
-                "EB": 4
-            }
+            "Skillset": 1
         },
         "29": {
             "EmployeeName": "Ólafur",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-01",
-                "2024-05-04",
-                "2024-05-18",
-                "2024-05-25"
-            ],
-            "prev_shifts_per_hall": {
-                "NL": 1,
-                "EB": 3
-            }
+            "Skillset": 1
         },
         "30": {
             "EmployeeName": "Anna",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 2,
-            "prev_worked_days": [
-                "2024-05-11",
-                "2024-05-13",
-                "2024-05-18",
-                "2024-05-20"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 1
         },
         "31": {
             "EmployeeName": "Bergur",
-            "Skillset": 2,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-04",
-                "2024-05-16",
-                "2024-05-18",
-                "2024-05-24"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
-            }
+            "Skillset": 2
         },
         "32": {
             "EmployeeName": "Gunnar",
-            "Skillset": 1,
-            "Shifts_on_weekends": 0,
-            "Number_of_shifts": 0,
-            "Shifts_per_hall": {},
-            "prev_number_of_shifts": 4,
-            "prev_weekend_shifts": 3,
-            "prev_worked_days": [
-                "2024-05-10",
-                "2024-05-23",
-                "2024-05-25",
-                "2024-05-26"
-            ],
-            "prev_shifts_per_hall": {
-                "EB": 3,
-                "BL": 1
-            }
+            "Skillset": 1
         }
     }
 }
