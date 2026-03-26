@@ -4,7 +4,7 @@ import math
 
 
 def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee,
-                      max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days):
+                      max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores):
     """
     Aðalfall:
     - velur starfsmann fyrst út frá forgangi
@@ -68,6 +68,26 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             return float(x)
         except:
             return default
+
+    def lookup_score(rule_dict: dict, key: int, default=0):
+        """
+        Sækir score fyrir tiltekinn lykil úr reglutöflu.
+
+        Ef lykillinn finnst ekki:
+        - og er stærri en hæsti skilgreindi lykillinn, þá er notað score fyrir hæsta lykil
+        - annars default
+        """
+        if not rule_dict:
+            return default
+
+        if key in rule_dict:
+            return rule_dict[key]
+
+        max_key = max(rule_dict.keys())
+        if key > max_key:
+            return rule_dict[max_key]
+
+        return default
 
     def emp_skill(emp_id: int) -> int:
         """Breytum skillset starsfmanna í heiltölu"""
@@ -258,13 +278,10 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
     def role_matches_employee(emp_id: int, role: dict) -> bool:
         """
-        Hard constraint útgáfa:
-        Ef role krefst skillset 1 eða 2 þarf starfsmaður að hafa það skillset.
+        Skillset er hér metið með score en ekki sem hörð útilokun.
+        Þess vegna er role alltaf leyfilegt hér.
         """
-        required_skill = role.get("required_skill")
-        if required_skill is None:
-            return True
-        return emp_skill(emp_id) == required_skill
+        return True
 
     def is_valid_partial_team(event_id: int, trial_employee_ids: list[int]) -> bool:
         """
@@ -306,13 +323,13 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         HÆRRA score = betra val fyrir þennan starfsmann.
 
-        Ath:
-        - þetta score er bara notað til að VELJA vakt
-        - starfsmaður fær samt upprunaleg event-stig þegar hann er úthlutaður
+        Þetta score er aðeins notað við valið.
+        Þegar starfsmaður er úthlutaður fær hann samt upprunaleg EventRanking stig.
         """
         event = dict_events[event_id]
         info = get_event_datetime_info(event_id)
         event_date = info["event_date"]
+        total_shift_hours = info["total_shift_hours"]
 
         raw_category = event.get("Category", "")
         category = "" if raw_category is None else str(raw_category).strip()
@@ -330,44 +347,103 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         current_shifts = to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0)
         weekend_count = to_int(dict_employees[emp_id].get("Shifts_on_weekends", 0), 0)
 
-        prev_category = to_int(
+        prev_cat = to_int(
             dict_employees[emp_id].get("prev_shifts_per_category", {}).get(category, 0), 0
         )
-        curr_category = to_int(
+        curr_cat = to_int(
             dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0), 0
         )
-        total_category_count = prev_category + curr_category
+        total_cat_count = prev_cat + curr_cat
 
         hall_count = to_int(
             dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0), 0
         )
 
-        # Dæmi um leiðréttingar
-        weekend_penalty = 0
-        if event_date.weekday() in [4, 5, 6]:
-            weekend_penalty = weekend_count * 8
+        emp_current_skill = emp_skill(emp_id)
+        required_skill = role.get("required_skill")
 
-        category_penalty = total_category_count * 5
-        hall_penalty = hall_count * 3
+        # =========================
+        # Score úr ScoreKeys
+        # =========================
+
+        # Helgarvakt í núverandi tímabili
+        weekend_adjustment = 0
+        if event_date.weekday() in [4, 5, 6]:
+            weekend_adjustment = lookup_score(
+                score_rules.get("Weekend", {}),
+                weekend_count,
+                0
+            )
+
+        # Helgarvaktir frá síðasta tímabili
+        prev_weekend_count = to_int(
+            dict_employees[emp_id].get("prev_Shifts_on_weekends", 0), 0
+        )
+        weekend_last_period_adjustment = 0
+        if event_date.weekday() in [4, 5, 6]:
+            weekend_last_period_adjustment = lookup_score(
+                score_rules.get("Weekend_last_period", {}),
+                prev_weekend_count,
+                0
+            )
+
+        # Fjöldi vakta í sama sal
+        hall_adjustment = 0
+        if hall:
+            hall_adjustment = lookup_score(
+                score_rules.get("Hall", {}),
+                hall_count,
+                0
+            )
+
+        # Fjöldi vakta í þessari viku
+        shifts_this_week = current_shifts
+        shifts_this_week_adjustment = lookup_score(
+            score_rules.get("Shifts_this_week", {}),
+            shifts_this_week,
+            0
+        )
+
+        # Lengd vaktar
+        shift_length_adjustment = lookup_score(
+            score_rules.get("Shifts_this_length", {}),
+            int(round(total_shift_hours)),
+            0
+        )
+
+        # Extra refsing ef vakt er yfir 6 klst
+        shift_over_six_hours_adjustment = 0
+        if total_shift_hours > 6:
+            shift_over_six_hours_adjustment = lookup_score(
+                score_rules.get("Shift_over_six_hours", {}),
+                1,
+                0
+            )
+
+        # =========================
+        # Skillset score úr SkillsetScores
+        # =========================
+        skill_adjustment = 0
+        if required_skill is not None:
+            skill_adjustment = skillset_scores.get(required_skill, {}).get(emp_current_skill, 0)
+
+        # =========================
+        # Aðrir liðir sem þú ert enn með beint í kóðanum
+        # =========================
         score_penalty = current_score * 1.0
         hours_penalty = current_hours * 0.25
-        shifts_penalty = current_shifts * 2
-
-        # Ef þú vilt seinna leyfa mismunandi skill penalty í stað hard constraint
-        required_skill = role.get("required_skill")
-        skill_penalty = 0
-        if required_skill is not None and emp_skill(emp_id) != required_skill:
-            skill_penalty = -1000
 
         return (
             event_score
-            - weekend_penalty
-            - category_penalty
-            - hall_penalty
+            + weekend_adjustment
+            + weekend_last_period_adjustment
+            + hall_adjustment
+            + shifts_this_week_adjustment
+            + shift_length_adjustment
+            + shift_over_six_hours_adjustment
+            + skill_adjustment
             - score_penalty
             - hours_penalty
-            - shifts_penalty
-            - skill_penalty
         )
 
     def can_take_role(emp_id: int, event_id: int, role: dict, event_state: dict) -> bool:
