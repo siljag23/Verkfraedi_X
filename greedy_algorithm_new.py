@@ -1,5 +1,5 @@
 
-from open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
+from open_excel_new import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
 from pick_employees_new import assign_all_events
 from collections import defaultdict
 import json
@@ -19,7 +19,7 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-events, employees, employees_days_off = open_excel("Input_minna_gagnasett.xlsx", "Events", "Employees", "DaysOff")
+events, employees, employees_days_off, score_rules, skillset_scores = open_excel("Input_minna_gagnasett.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
@@ -46,7 +46,7 @@ rows = []
 
 try:
     rows, event_state = assign_all_events(events, employees, hours_per_employee, employees_days_off, daily_hours_per_employee, 
-                                          max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days)
+                                          max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores)
 
 except Exception as e:
     print("ERROR ->", e)

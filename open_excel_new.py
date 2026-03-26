@@ -49,6 +49,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         dict_employees[emp_id]["Shifts_on_weekends"] = 0
         dict_employees[emp_id]["Number_of_shifts"] = 0
         dict_employees[emp_id]["Shifts_per_hall"] = {}
+        dict_employees[emp_id]["current_shifts_per_category"] = {}
     
     days_off = days_off.fillna(0)
 
@@ -78,7 +79,54 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
 
                 employee_days[emp_id].add(date)
 
-    return dict_events, dict_employees, employee_days
+    # Tryggjum að allir starfsmenn séu í employee_days þó þeir eigi enga frídaga
+    for emp_id in dict_employees:
+        if emp_id not in employee_days:
+            employee_days[emp_id] = set()
+
+     # =========================
+    # Lesa inn almenn stig úr ScoreKeys
+    # score_rules verður á forminu:
+    # {
+    #   "Weekend": {0: 50, 1: 30, 2: 15, ...},
+    #   "Hall": {1: 20, 2: 10, ...},
+    #   ...
+    # }
+    # =========================
+    score_rules = {}
+
+    for _, row in score_keys.iterrows():
+        rule_type = str(row["RuleType"]).strip()
+        key = int(row["Key"])
+        score = float(row["Score"])
+
+        if rule_type not in score_rules:
+            score_rules[rule_type] = {}
+
+        score_rules[rule_type][key] = score
+
+    # =========================
+    # Lesa inn skillset stig úr SkillsetScores
+    # skillset_scores verður á forminu:
+    # {
+    #   1: {1: 100, 2: -200, 3: -200},
+    #   2: {1: -200, 2: 100, 3: -50},
+    #   3: {1: -1000, 2: -1000, 3: 100}
+    # }
+    # =========================
+    skillset_scores = {}
+
+    for _, row in skillset_scores_df.iterrows():
+        req_skill = int(row["ReqSkillset"])
+        emp_skill = int(row["EmpSkillset"])
+        score = float(row["Score"])
+
+        if req_skill not in skillset_scores:
+            skillset_scores[req_skill] = {}
+
+        skillset_scores[req_skill][emp_skill] = score
+
+    return dict_events, dict_employees, employee_days, score_rules, skillset_scores
 
 
 def open_previous_scores(json_path: str) -> dict[int, float]:
