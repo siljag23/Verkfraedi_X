@@ -348,16 +348,13 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         weekend_count = to_int(dict_employees[emp_id].get("Shifts_on_weekends", 0), 0)
 
         prev_cat = to_int(
-            dict_employees[emp_id].get("prev_shifts_per_category", {}).get(category, 0), 0
-        )
+            dict_employees[emp_id].get("prev_shifts_per_category", {}).get(category, 0), 0)
         curr_cat = to_int(
-            dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0), 0
-        )
+            dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0), 0)
         total_cat_count = prev_cat + curr_cat
 
         hall_count = to_int(
-            dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0), 0
-        )
+            dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0), 0)
 
         emp_current_skill = emp_skill(emp_id)
         required_skill = role.get("required_skill")
@@ -370,55 +367,37 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         weekend_adjustment = 0
         if event_date.weekday() in [4, 5, 6]:
             weekend_adjustment = lookup_score(
-                score_rules.get("Weekend", {}),
-                weekend_count,
-                0
-            )
+                score_rules.get("Weekend", {}), weekend_count, 0)
 
         # Helgarvaktir frá síðasta tímabili
         prev_weekend_count = to_int(
-            dict_employees[emp_id].get("prev_Shifts_on_weekends", 0), 0
-        )
+            dict_employees[emp_id].get("prev_Shifts_on_weekends", 0), 0)
         weekend_last_period_adjustment = 0
         if event_date.weekday() in [4, 5, 6]:
             weekend_last_period_adjustment = lookup_score(
-                score_rules.get("Weekend_last_period", {}),
-                prev_weekend_count,
-                0
-            )
+                score_rules.get("Weekend_last_period", {}), prev_weekend_count, 0)
 
         # Fjöldi vakta í sama sal
         hall_adjustment = 0
         if hall:
             hall_adjustment = lookup_score(
-                score_rules.get("Hall", {}),
-                hall_count,
-                0
-            )
+                score_rules.get("Hall", {}), hall_count, 0)
 
         # Fjöldi vakta í þessari viku
         shifts_this_week = current_shifts
         shifts_this_week_adjustment = lookup_score(
-            score_rules.get("Shifts_this_week", {}),
-            shifts_this_week,
-            0
-        )
+            score_rules.get("Shifts_this_week", {}), shifts_this_week, 0)
 
         # Lengd vaktar
         shift_length_adjustment = lookup_score(
             score_rules.get("Shifts_this_length", {}),
-            int(round(total_shift_hours)),
-            0
-        )
+            int(round(total_shift_hours)), 0)
 
         # Extra refsing ef vakt er yfir 6 klst
         shift_over_six_hours_adjustment = 0
         if total_shift_hours > 6:
             shift_over_six_hours_adjustment = lookup_score(
-                score_rules.get("Shift_over_six_hours", {}),
-                1,
-                0
-            )
+                score_rules.get("Shift_over_six_hours", {}), 1, 0)
 
         # =========================
         # Skillset score úr SkillsetScores
@@ -426,12 +405,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         skill_adjustment = 0
         if required_skill is not None:
             skill_adjustment = skillset_scores.get(required_skill, {}).get(emp_current_skill, 0)
-
-        # =========================
-        # Aðrir liðir sem þú ert enn með beint í kóðanum
-        # =========================
-        score_penalty = current_score * 1.0
-        hours_penalty = current_hours * 0.25
 
         return (
             event_score
@@ -442,8 +415,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             + shift_length_adjustment
             + shift_over_six_hours_adjustment
             + skill_adjustment
-            - score_penalty
-            - hours_penalty
         )
 
     def can_take_role(emp_id: int, event_id: int, role: dict, event_state: dict) -> bool:
