@@ -42,13 +42,13 @@ def Plot_Results_Over_Time(
 
         # TOTAL = CURRENT + HISTORY
         total_shifts = shift_count + hist_shifts.get(i, 0)
-        total_hours = work_hours + hist_hours.get(i, 0)
+        #total_hours = work_hours + hist_hours.get(i, 0)
         total_score = score + hist_scores.get(i, 0)
         total_weekend = weekend_count + hist_weekend.get(i, 0)
 
         names.append(name)
         shifts.append(total_shifts)
-        hours.append(total_hours)
+        hours.append(work_hours)
         scores.append(total_score)
         weekend_shifts.append(total_weekend)
 

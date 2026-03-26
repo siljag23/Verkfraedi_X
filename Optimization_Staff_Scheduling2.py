@@ -36,9 +36,9 @@ def Optimization_Staff_Scheduling2(
     min_shifts_per_period = 3
     max_workdays_per_week = 6
 
-    a,b,c,d,e,f,g,h,i,j,k,l = 90,91,100,101,90,91,30,31,50,51,70,71
+    a,b,c,d,e,f,g,h,i,j,k,l = 90,91,100,101,200,201,30,31,50,51,70,71
     penalty_change = 200
-    penalty_history = 20  # 🔥 nýtt
+    penalty_history = 20  
 
     # Data
     emp_demand = {j: dict_events[j]["Employees"] for j in events}
@@ -57,6 +57,24 @@ def Optimization_Staff_Scheduling2(
 
     weekend = {j: 1 if event_date[j].weekday() in [4,5,6] else 0 for j in events}
     weeks = sorted(set(event_date[j].isocalendar().week for j in events))
+
+    # ---------------------------
+    # Employment ratio (NEW)
+    # ---------------------------
+    all_days = sorted(set(event_date[j].date() for j in events))
+    total_days = len(all_days)
+
+    employment_ratio = {}
+
+    for i in employees:
+
+        days_off = employee_days.get(i, set())
+        available_days = [d for d in all_days if d not in days_off]
+
+        if total_days > 0:
+            employment_ratio[i] = len(available_days) / total_days
+        else:
+            employment_ratio[i] = 1
 
     # ---------------------------
     # Shift duration
@@ -167,11 +185,25 @@ def Optimization_Staff_Scheduling2(
          for j1,j2 in blocked_pairs)
     )
 
-    # Min shifts
+    # ---------------------------
+    # Min shifts 
+    # ---------------------------
     for i in employees:
-        model.addConstr(gp.quicksum(works[i,j] for j in events) >= min_shifts_per_period)
 
+        ratio = employment_ratio[i]
+
+        min_shifts_i = int(round(ratio * min_shifts_per_period))
+        min_shifts_i = max(1, min_shifts_i)
+
+        model.addConstr(
+            gp.quicksum(works[i,j] for j in events) >= min_shifts_i
+        )
+        
+
+
+    # ---------------------------
     # Weekly rest
+    # ---------------------------
     for i in employees:
         for week in weeks:
             model.addConstr(
@@ -182,7 +214,9 @@ def Optimization_Staff_Scheduling2(
                 ) <= max_workdays_per_week
             )
 
+    # ---------------------------
     # Max hours per week
+    # ---------------------------
     for i in employees:
         for week in weeks:
             model.addConstr(
@@ -193,7 +227,9 @@ def Optimization_Staff_Scheduling2(
                 ) <= max_workhours_per_week
             )
 
+    # ---------------------------
     # Change constraints
+    # ---------------------------
     if current_schedule is not None:
         for i in employees:
             for j in events:
@@ -212,7 +248,7 @@ def Optimization_Staff_Scheduling2(
 
         total_shifts = hist_shifts.get(i,0) + current_shifts
         total_hours = hist_hours.get(i,0) + current_hours
-        total_weekend = dict_employees[i].get("prev_weekend_shifts", 0) + current_weekend  # 🔥 fix
+        total_weekend = dict_employees[i].get("prev_weekend_shifts", 0) + current_weekend
 
         score_expr = gp.quicksum(works[i,j]*shift_score[j] for j in events)
 
@@ -225,17 +261,19 @@ def Optimization_Staff_Scheduling2(
         model.addConstr(total_hours >= min_workhours)
         model.addConstr(total_hours <= max_workhours)
 
-        model.addConstr(total_weekend >= min_weekend)  # 🔥 fix
+        model.addConstr(total_weekend >= min_weekend)
         model.addConstr(total_weekend <= max_weekend)
 
         for hall_h in halls:
             current_h = gp.quicksum(works[i,j] for j in events if hall[j] == hall_h)
-            total_h = hist_halls.get(i, {}).get(hall_h, 0) + current_h  # 🔥 fix
+            total_h = hist_halls.get(i, {}).get(hall_h, 0) + current_h
 
             model.addConstr(total_h >= min_halls)
             model.addConstr(total_h <= max_halls)
 
+    # ---------------------------
     # Weekly balance
+    # ---------------------------
     for week in weeks:
         total_week = gp.quicksum(
             works[i,j]
@@ -246,7 +284,9 @@ def Optimization_Staff_Scheduling2(
         model.addConstr(total_week >= min_weekly_shifts)
         model.addConstr(total_week <= max_weekly_shifts)
 
+    # ---------------------------
     # Objective
+    # ---------------------------
     model.setObjective(
         a*min_score - b*max_score
         + c*min_shifts - d*max_shifts
@@ -262,7 +302,9 @@ def Optimization_Staff_Scheduling2(
         GRB.MAXIMIZE
     )
 
+    # ---------------------------
     # Solver settings
+    # ---------------------------
     model.setParam("MIPGap", 0.05)
     model.setParam("TimeLimit", 60)
     model.setParam("MIPFocus", 1)
