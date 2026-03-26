@@ -312,7 +312,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         event_date = datetime_info["event_date"]
         total_shift_hours = datetime_info["total_shift_hours"]
 
-        raw_category = event.get("Category", "")
+        raw_category = event.get("EventCategory", "")
         category = "" if raw_category is None else str(raw_category).strip()
         if category.lower() == "nan":
             category = ""
@@ -344,7 +344,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         # Helgarvaktir frá síðasta tímabili
         prev_weekend_count = to_int(
-            dict_employees[emp_id].get("prev_Shifts_on_weekends", 0), 0)
+            dict_employees[emp_id].get("prev_shifts_on_weekends", 0), 0)
         weekend_last_period_adjustment = 0
         if event_date.weekday() in [4, 5, 6]:
             weekend_last_period_adjustment = lookup_score(
@@ -396,6 +396,15 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             return False
 
         if not is_eligible_for_event(emp_id, event_id):
+            return False
+
+        current_team = [
+            r["filled_by"]
+            for r in event_state[event_id]["roles"]
+            if r["filled_by"] is not None
+        ]
+        projected_team = current_team + [emp_id]
+        if not is_valid_final_team(event_id, projected_team):
             return False
 
         return True
@@ -450,7 +459,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         if hall.lower() == "nan":
             hall = ""
 
-        raw_category = event.get("Category", "")
+        raw_category = event.get("EventCategory", "")
         category = "" if raw_category is None else str(raw_category).strip()
         if category.lower() == "nan":
             category = ""
