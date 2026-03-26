@@ -22,14 +22,21 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 events, employees, employees_days_off, score_rules, skillset_scores = open_excel("Input_minna_gagnasett.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
+"""
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
 previous_json_list = "02_26_output_list.json" # Hef þetta svona í bili
 previous_scores = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
+
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 employees = merge_scores_into_employees(employees, previous_scores)
 employees = merge_previous_stats_into_employees(employees, previous_stats)
+"""
+
+print("")
+print(employees)
+print("")
 
 # Raða event dict eftir erfiðleika, viðburðir með hæstu einkunn fyrst
 sorted_events = dict(
@@ -121,11 +128,12 @@ hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
 
-"""
+
 print("")
 print(employees)
 print("")
 
+"""
 # Plottum fjölda klst./vakta per starfsmann
 plt.figure()
 plt.bar(employee_ids, hours)

@@ -308,9 +308,9 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         Þegar starfsmaður er úthlutaður fær hann samt upprunaleg EventRanking stig.
         """
         event = dict_events[event_id]
-        info = get_event_datetime_info(event_id)
-        event_date = info["event_date"]
-        total_shift_hours = info["total_shift_hours"]
+        datetime_info = get_event_datetime_info(event_id)
+        event_date = datetime_info["event_date"]
+        total_shift_hours = datetime_info["total_shift_hours"]
 
         raw_category = event.get("Category", "")
         category = "" if raw_category is None else str(raw_category).strip()
