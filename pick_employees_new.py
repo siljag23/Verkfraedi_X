@@ -175,8 +175,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         if req_skillset_1 + req_skillset_2 > req_employees:
             raise ValueError(
-                f"Skillset1 + Skillset2 ({req_skillset_1 + req_skillset_2}) > Employees ({req_employees}) fyrir Event {event_id}"
-            )
+                f"Skillset1 + Skillset2 ({req_skillset_1 + req_skillset_2}) > Employees ({req_employees}) fyrir Event {event_id}")
 
         roles = []
         role_id = 0
@@ -185,16 +184,14 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             roles.append({
                 "role_id": role_id,
                 "required_skill": 1,
-                "filled_by": None
-            })
+                "filled_by": None})
             role_id += 1
 
         for _ in range(req_skillset_2):
             roles.append({
                 "role_id": role_id,
                 "required_skill": 2,
-                "filled_by": None
-            })
+                "filled_by": None})
             role_id += 1
 
         remaining = req_employees - req_skillset_1 - req_skillset_2
@@ -202,8 +199,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             roles.append({
                 "role_id": role_id,
                 "required_skill": None,
-                "filled_by": None
-            })
+                "filled_by": None})
             role_id += 1
 
         return roles
@@ -465,8 +461,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                     best_option = {
                         "event_id": event_id,
                         "role_id": role["role_id"],
-                        "score": score
-                    }
+                        "score": score}
 
         return best_option
 
@@ -517,37 +512,31 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         # ATH: hér fær starfsmaður upprunaleg event-stig, ekki personal_role_score
         dict_employees[emp_id]["Score"] = to_number(
-            dict_employees[emp_id].get("Score", 0), 0
-        ) + event_score
+            dict_employees[emp_id].get("Score", 0), 0) + event_score
 
         dict_employees[emp_id]["Number_of_shifts"] = (
-            to_int(dict_employees[emp_id].get("Number_of_shifts"), 0) + 1
-        )
+            to_int(dict_employees[emp_id].get("Number_of_shifts"), 0) + 1)
 
         if event_date.weekday() in [4, 5, 6]:
             dict_employees[emp_id]["Shifts_on_weekends"] = (
-                to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1
-            )
+                to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1)
 
         if hall:
             if "Shifts_per_hall" not in dict_employees[emp_id] or not isinstance(dict_employees[emp_id]["Shifts_per_hall"], dict):
                 dict_employees[emp_id]["Shifts_per_hall"] = {}
 
             current_hall_count = to_int(
-                dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0), 0
-            )
+                dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0), 0)
             dict_employees[emp_id]["Shifts_per_hall"][hall] = current_hall_count + 1
 
         if category:
             if (
                 "current_shifts_per_category" not in dict_employees[emp_id]
-                or not isinstance(dict_employees[emp_id]["current_shifts_per_category"], dict)
-            ):
+                or not isinstance(dict_employees[emp_id]["current_shifts_per_category"], dict)):
                 dict_employees[emp_id]["current_shifts_per_category"] = {}
 
             current_cat_count = to_int(
-                dict_employees[emp_id]["current_shifts_per_category"].get(category, 0), 0
-            )
+                dict_employees[emp_id]["current_shifts_per_category"].get(category, 0), 0)
             dict_employees[emp_id]["current_shifts_per_category"][category] = current_cat_count + 1
 
         return {
@@ -563,8 +552,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             "NumberOfShifts": dict_employees[emp_id]["Number_of_shifts"],
             "ShiftsOnWeekends": dict_employees[emp_id]["Shifts_on_weekends"],
             "ShiftsPerHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0,
-            "CurrentShiftsPerCategory": dict_employees[emp_id]["current_shifts_per_category"].get(category, 0) if category else 0
-        }
+            "CurrentShiftsPerCategory": dict_employees[emp_id]["current_shifts_per_category"].get(category, 0) if category else 0}
 
     def event_is_fully_staffed(event_id: int, event_state: dict) -> bool:
         return all(role["filled_by"] is not None for role in event_state[event_id]["roles"])
@@ -575,15 +563,13 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     # Upphafsstilla Score sem tölugildi
     for emp_id in dict_employees:
         dict_employees[emp_id]["Score"] = to_number(
-            dict_employees[emp_id].get("Score", 0), 0
-        )
+            dict_employees[emp_id].get("Score", 0), 0)
 
     # Upphafsstilla event_state
     event_state = {}
     for event_id in dict_events:
         event_state[event_id] = {
-            "roles": build_event_roles(event_id)
-        }
+            "roles": build_event_roles(event_id)}
 
     all_work_results = []
 
@@ -619,24 +605,20 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                     if role["filled_by"] is None
                 ]
                 for event_id in event_state
-                if not event_is_fully_staffed(event_id, event_state)
-            }
+                if not event_is_fully_staffed(event_id, event_state)}
 
             raise ValueError(
-                f"Ekki tókst að manna öll hlutverk. Ófyllt staða: {unfilled}"
-            )
+                f"Ekki tókst að manna öll hlutverk. Ófyllt staða: {unfilled}")
 
     # Lokatékk á fullmönnuðum hópum
     for event_id in event_state:
         final_team = [
             role["filled_by"]
             for role in event_state[event_id]["roles"]
-            if role["filled_by"] is not None
-        ]
+            if role["filled_by"] is not None]
 
         if not is_valid_final_team(event_id, final_team):
             raise ValueError(
-                f"Ólöglegur lokahópur fyrir Event {event_id}. Valdir: {final_team}"
-            )
+                f"Ólöglegur lokahópur fyrir Event {event_id}. Valdir: {final_team}")
 
     return all_work_results, event_state
