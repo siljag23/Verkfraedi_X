@@ -1,6 +1,7 @@
 import pandas as pd
 import json 
 import os
+from shift_length import shift_length
 from datetime import datetime
 from collections import defaultdict
 
@@ -170,6 +171,7 @@ def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
     shifts_on_weekends = defaultdict(int)
     shifts_per_hall = defaultdict(lambda: defaultdict(int))
     worked_days = defaultdict(set)
+    hours_worked = defaultdict(float)
 
     def parse_date(x):
         if isinstance(x, str):
@@ -180,12 +182,33 @@ def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
                 except ValueError:
                     pass
         raise ValueError(f"Óþekkt dagsetning: {x}")
+    
+    def parse_time(x):
+        if isinstance(x, str):
+            x = x.strip()
+            for fmt in ("%H:%M:%S", "%H:%M"):
+                try:
+                    return datetime.strptime(x, fmt).time()
+                except ValueError:
+                    pass
+        elif hasattr(x, "time"):
+            return x.time()
+        raise ValueError(f"Óþekktur tími: {x}")
 
     for event_id, emp_id in pairs:
         event = events[str(event_id)]
 
         raw_date = event.get("Date")
         event_date = parse_date(raw_date)
+
+        raw_start = event.get("ShiftBegins")
+        raw_end = event.get("ShiftEnds")
+
+        shift_start = parse_time(raw_start)
+        shift_end = parse_time(raw_end)
+
+        duration = shift_length(shift_start, shift_end)
+        hours_worked[emp_id] += duration
 
         raw_hall = event.get("Hall", "")
         hall = "" if raw_hall is None else str(raw_hall).strip()
@@ -208,6 +231,7 @@ def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
 
         stats[emp_id] = {
             "number_of_shifts": number_of_shifts[emp_id],
+            "hours_worked": hours_worked[emp_id],
             "shifts_on_weekends": shifts_on_weekends[emp_id],
             "shifts_per_hall": dict(shifts_per_hall[emp_id]),
             "worked_days_count": len(worked_days[emp_id]),
@@ -239,6 +263,7 @@ def merge_previous_stats_into_employees(employees, previous_stats):
         stats = previous_stats.get(emp_id, {})
 
         info["prev_number_of_shifts"] = stats.get("number_of_shifts", 0)
+        info["prev_hours_worked"] = stats.get("hours_worked", 0)
         info["prev_weekend_shifts"] = stats.get("shifts_on_weekends", 0)
         info["prev_worked_days"] = stats.get("worked_days", [])
         info["prev_shifts_per_hall"] = stats.get("shifts_per_hall", {})

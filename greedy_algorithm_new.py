@@ -3,6 +3,7 @@ from open_excel_new import open_excel, open_previous_scores, open_previous_stats
 from pick_employees_new import assign_all_events
 from Print_Results_Greedy import Print_Results_Greedy
 from Plot_Results_Greedy import Plot_Results
+from Plot_Results_Over_Time_Greedy import Plot_Results_Over_Time
 from collections import defaultdict
 import json
 import matplotlib.pyplot as plt
@@ -35,18 +36,6 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
 
-
-# Raða event dict eftir erfiðleika, viðburðir með hæstu einkunn fyrst
-sorted_events = dict(
-    sorted(dict_events.items(), 
-           key=lambda item: float(item[1].get("EventRanking", float("inf"))), reverse = True)
-)
-
-
-# Sækja event ID og event rank úr sorted events dict
-for event_id, event_info in sorted_events.items():
-    event_id, event_info["EventRanking"]
-
 rows = []
 
 try:
@@ -66,40 +55,9 @@ except Exception as e:
     print("ERROR ->", e)
 
 
-# Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
-# Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
-
-# ------ Setja í sér fall! ------
-#         print(f"{name:10} | shifts: {shifts:2.0f} | hours: {hours:5.1f} | score: {score:4.0f} | weekend: {weekend_shifts:2.0f}")
-"""
-print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
-
-for emp_id, info in sorted(
-    dict_employees.items(),
-    key=lambda x: (
-        x[1].get("Score", 0),
-        shifts_per_employee.get(x[0], 0),
-        hours_per_employee.get(x[0], 0),
-        x[0]
-    )
-):
-    name = info.get("EmployeeName")
-    total = hours_per_employee.get(emp_id, 0)
-    score = info.get("Score", 0)
-    shifts = info.get("Number_of_shifts", 0)
-    weekend_shifts = info.get("Shifts_on_weekends", 0)
-
-    print(
-        f"{emp_id}: {name} -> "
-        f"{total:.2f} klst. -> "
-        f"{score:.2f} stig -> "
-        f"{shifts} vaktir -> "
-        f"{weekend_shifts} helgarvaktir"
-    )
-
-
+# Prent um niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
-    """
+
 # ------------
 # Json (reyna að setja í sér fall)
 # ------------
@@ -131,5 +89,9 @@ with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
     json.dump(info_for_json, f, indent = 4, ensure_ascii = False, default = str)
 
 
+print(dict_employees)
 # Plottum niðurstöður
+"""
 Plot_Results(dict_employees, hours_per_employee)
+"""
+Plot_Results_Over_Time(dict_employees, hours_per_employee)
