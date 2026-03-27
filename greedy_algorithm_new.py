@@ -19,10 +19,10 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-events, employees, employees_days_off, score_rules, skillset_scores = open_excel("Input_minna_gagnasett.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
+events, employees, employees_days_off, score_rules, skillset_scores = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
-"""
+
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
 previous_json_list = "02_26_output_list.json" # Hef þetta svona í bili
 previous_scores = open_previous_scores(previous_json_dict)
@@ -32,11 +32,7 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 employees = merge_scores_into_employees(employees, previous_scores)
 employees = merge_previous_stats_into_employees(employees, previous_stats)
-"""
 
-print("")
-print(employees)
-print("")
 
 # Raða event dict eftir erfiðleika, viðburðir með hæstu einkunn fyrst
 sorted_events = dict(
@@ -59,11 +55,6 @@ except Exception as e:
     print("ERROR ->", e)
 
 
-# Reiknum fjölda vakta per starfsmann
-for row in rows: 
-    shifts_per_employee[row["EmployeeID"]] += 1
-    event = events[row["EventID"]]
-
 # Prenta heildarfjölda klukkastunda hvers starfsmanns á tímabilinu
 # Byrja að prenta starfsmann með fæstar vaktir, ef jafnt í stafrófsröð
 print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
@@ -80,7 +71,7 @@ for emp_id, info in sorted(
     name = info.get("EmployeeName")
     total = hours_per_employee.get(emp_id, 0)
     score = info.get("Score", 0)
-    shifts = shifts_per_employee.get(emp_id, 0)
+    shifts = info.get("Number_of_shifts", 0)
     weekend_shifts = info.get("Shifts_on_weekends", 0)
 
     print(
@@ -127,20 +118,3 @@ employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
-
-
-print("")
-print(employees)
-print("")
-
-"""
-# Plottum fjölda klst./vakta per starfsmann
-plt.figure()
-plt.bar(employee_ids, hours)
-
-plt.xlabel("EmployeeID")
-plt.ylabel("Heildar klst.")
-plt.title("Fjöldi klukkustunda á starfsmann")
-
-plt.show()
-"""
