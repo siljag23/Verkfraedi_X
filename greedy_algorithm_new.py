@@ -1,6 +1,7 @@
 
 from open_excel_new import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
 from pick_employees_new import assign_all_events
+from Plot_Results import Plot_Results
 from collections import defaultdict
 import json
 import matplotlib.pyplot as plt
@@ -14,12 +15,16 @@ shifts_per_employee = defaultdict(int)
 employee_worked_days = defaultdict(set)
 max_daily_hours = 11
 min_rest_hours = 13
+
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
 month = input("Mánuður vaktaplans á format mm_yy: ")
 
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-events, employees, employees_days_off, score_rules, skillset_scores = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
+dict_events, dict_employees, employees_days_off, score_rules, skillset_scores = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
+
+employees = list(dict_employees.keys())
+events = list(dict_events.keys())
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 
@@ -30,13 +35,13 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
 
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
-employees = merge_scores_into_employees(employees, previous_scores)
-employees = merge_previous_stats_into_employees(employees, previous_stats)
+dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
+dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
 
 
 # Raða event dict eftir erfiðleika, viðburðir með hæstu einkunn fyrst
 sorted_events = dict(
-    sorted(events.items(), 
+    sorted(dict_events.items(), 
            key=lambda item: float(item[1].get("EventRanking", float("inf"))), reverse = True)
 )
 
@@ -48,7 +53,7 @@ for event_id, event_info in sorted_events.items():
 rows = []
 
 try:
-    rows, event_state = assign_all_events(events, employees, hours_per_employee, employees_days_off, daily_hours_per_employee, 
+    rows, event_state = assign_all_events(dict_events, dict_employees, hours_per_employee, employees_days_off, daily_hours_per_employee, 
                                           max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores)
 
 except Exception as e:
@@ -60,7 +65,7 @@ except Exception as e:
 print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
 
 for emp_id, info in sorted(
-    employees.items(),
+    dict_employees.items(),
     key=lambda x: (
         x[1].get("Score", 0),
         shifts_per_employee.get(x[0], 0),
@@ -89,7 +94,7 @@ pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 keys_to_keep = ["EmployeeID", "EmployeeName", "Score", "Skillset"]
 filtered_employees = {}
 
-for emp_id, info in employees.items():
+for emp_id, info in dict_employees.items():
     filtered_employees[emp_id] = {
         k: info[k]
         for k in keys_to_keep
@@ -98,7 +103,7 @@ for emp_id, info in employees.items():
 
 # Aðlögum events og employees fyrir json skjal
 info_for_json = {
-    "events": events,
+    "events": dict_events,
     "employees": filtered_employees
 }
 
