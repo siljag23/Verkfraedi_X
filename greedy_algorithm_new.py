@@ -1,7 +1,8 @@
 
 from open_excel_new import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
 from pick_employees_new import assign_all_events
-from Plot_Results import Plot_Results
+from shift_length import shift_length
+from Plot_Results_Greedy import Plot_Results
 from collections import defaultdict
 import json
 import matplotlib.pyplot as plt
@@ -19,12 +20,8 @@ min_rest_hours = 13
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
 month = input("Mánuður vaktaplans á format mm_yy: ")
 
-
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
 dict_events, dict_employees, employees_days_off, score_rules, skillset_scores = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
-
-employees = list(dict_employees.keys())
-events = list(dict_events.keys())
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 
@@ -53,7 +50,7 @@ for event_id, event_info in sorted_events.items():
 rows = []
 
 try:
-    rows, event_state = assign_all_events(dict_events, dict_employees, hours_per_employee, employees_days_off, daily_hours_per_employee, 
+    rows, event_state, shift_start, shift_end = assign_all_events(dict_events, dict_employees, hours_per_employee, employees_days_off, daily_hours_per_employee, 
                                           max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores)
 
 except Exception as e:
@@ -123,3 +120,4 @@ employee_ids = [emp_id for emp_id, _ in sorted_hours]
 hours = [total for _, total in sorted_hours]
 shifts = [shifts_per_employee.get(emp_id, 0) for emp_id, _ in sorted_hours]
 
+Plot_Results(dict_employees, hours_per_employee)

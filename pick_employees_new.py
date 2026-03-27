@@ -515,6 +515,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             "EmployeeName": dict_employees[emp_id].get("EmployeeName"),
             "EmployeeSkillset": dict_employees[emp_id].get("Skillset"),
             "RoleID": role_id,
+            "ShiftStart": shift_begins,
+            "ShiftEnd": shift_ends,
             "ShiftHours": total_shift_hours,
             "TotalHours": hours_per_employee[emp_id],
             "AddedScore": event_score,
