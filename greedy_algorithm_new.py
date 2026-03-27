@@ -4,9 +4,9 @@ from pick_employees_new import assign_all_events
 from Print_Results_Greedy import Print_Results_Greedy
 from Plot_Results_Greedy import Plot_Results
 from Plot_Results_Over_Time_Greedy import Plot_Results_Over_Time
+from Plot_Total_Stats_Greedy import Plot_Total_Stats
+from Export_Json_Greedy import Export_Json
 from collections import defaultdict
-import json
-import matplotlib.pyplot as plt
 
 # Upphafsstilla breytur
 hours_per_employee = defaultdict(float)
@@ -17,6 +17,7 @@ shifts_per_employee = defaultdict(int)
 employee_worked_days = defaultdict(set)
 max_daily_hours = 11
 min_rest_hours = 13
+
 
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
 month = input("Mánuður vaktaplans á format mm_yy: ")
@@ -55,43 +56,17 @@ except Exception as e:
     print("ERROR ->", e)
 
 
-# Prent um niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
+# Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 
-# ------------
-# Json (reyna að setja í sér fall)
-# ------------
 
-# Búum til lista með pörum af EventID og EmployeeED
-pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
-
-# Aðlaga employee dicts fyrir json skjal
-keys_to_keep = ["EmployeeID", "EmployeeName", "Score", "Skillset"]
-filtered_employees = {}
-
-for emp_id, info in dict_employees.items():
-    filtered_employees[emp_id] = {
-        k: info[k]
-        for k in keys_to_keep
-        if k in info
-    }
-
-# Aðlögum events og employees fyrir json skjal
-info_for_json = {
-    "events": dict_events,
-    "employees": filtered_employees
-}
-
-with open(f"{month}_output_list.json", "w", encoding = "utf-8") as f:
-    json.dump(pairs_for_json, f, indent = 4, ensure_ascii = False)
-
-with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
-    json.dump(info_for_json, f, indent = 4, ensure_ascii = False, default = str)
-
+# Vistum niðurstöður í 2 json skjöl
+Export_Json(dict_employees, dict_events, rows, month)
 
 print(dict_employees)
 # Plottum niðurstöður
 """
 Plot_Results(dict_employees, hours_per_employee)
-"""
 Plot_Results_Over_Time(dict_employees, hours_per_employee)
+"""
+Plot_Total_Stats(dict_employees, hours_per_employee)

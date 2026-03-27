@@ -247,6 +247,7 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
      - Annars: Score = 0"""
     
     for emp_id, info in employees.items(): 
+        info["prev_score"] = previous_scores.get(emp_id, 0)
         info["Score"] = previous_scores.get(emp_id, 0)
         info["Shifts_on_weekends"] = info.get("Shifts_on_weekends", 0)
         info["Number_of_shifts"] = info.get("Number_of_shifts", 0)
