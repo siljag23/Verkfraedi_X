@@ -64,5 +64,5 @@ Export_Json(dict_employees, dict_events, rows, month)
 """
 Plot_Results(dict_employees, hours_per_employee)
 Plot_Results_Over_Time(dict_employees, hours_per_employee)
-Plot_Total_Stats(dict_employees, hours_per_employee)
 """
+Plot_Total_Stats(dict_employees, hours_per_employee)

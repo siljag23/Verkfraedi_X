@@ -299,8 +299,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         """Raðar starfsmönnum í forgangsröð, lægstu stig efst"""
         return (
             to_number(dict_employees[emp_id].get("Score", 0), 0),
-            to_number(hours_per_employee.get(emp_id, 0), 0),
             to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0),
+            to_number(hours_per_employee.get(emp_id, 0), 0),
             emp_id
         )
 
@@ -319,7 +319,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         total_shift_hours = datetime_info["total_shift_hours"]
 
         hall = clean_str(event.get("Hall"))
-        category = clean_str(event.get("EventCategory"))
 
         event_score = to_number(event.get("EventRanking", 0), 0)
         current_shifts = to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0)
