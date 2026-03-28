@@ -69,6 +69,12 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         except:
             return default
 
+    def clean_str(x):
+        if x is None:
+            return ""
+        s = str(x).strip()
+        return "" if s.lower() == "nan" else s
+
     def lookup_score(rule_dict: dict, key: int, default=0):
         """
         Sækir score fyrir tiltekinn lykil úr reglutöflu.
@@ -312,15 +318,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         event_date = datetime_info["event_date"]
         total_shift_hours = datetime_info["total_shift_hours"]
 
-        raw_category = event.get("EventCategory", "")
-        category = "" if raw_category is None else str(raw_category).strip()
-        if category.lower() == "nan":
-            category = ""
-
-        raw_hall = event.get("Hall", "")
-        hall = "" if raw_hall is None else str(raw_hall).strip()
-        if hall.lower() == "nan":
-            hall = ""
+        hall = clean_str(event.get("Hall"))
+        category = clean_str(event.get("EventCategory"))
 
         event_score = to_number(event.get("EventRanking", 0), 0)
         current_shifts = to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0)
@@ -442,6 +441,9 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         event = dict_events[event_id]
         info = get_event_datetime_info(event_id)
 
+        hall = clean_str(event.get("Hall"))
+        category = clean_str(event.get("EventCategory"))
+
         event_date = info["event_date"]
         shift_begins = info["shift_begins"]
         shift_ends = info["shift_ends"]
@@ -453,16 +455,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         blocked_days = info["blocked_days"]
 
         event_score = to_number(event.get("EventRanking", 0), 0)
-
-        raw_hall = event.get("Hall", "")
-        hall = "" if raw_hall is None else str(raw_hall).strip()
-        if hall.lower() == "nan":
-            hall = ""
-
-        raw_category = event.get("EventCategory", "")
-        category = "" if raw_category is None else str(raw_category).strip()
-        if category.lower() == "nan":
-            category = ""
 
         # Merkjum role sem fyllt
         for role in event_state[event_id]["roles"]:
@@ -512,19 +504,20 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         return {
             "EventID": event_id,
             "EmployeeID": emp_id,
-            "EmployeeName": dict_employees[emp_id].get("EmployeeName"),
-            "EmployeeSkillset": dict_employees[emp_id].get("Skillset"),
+            #"EmployeeName": dict_employees[emp_id].get("EmployeeName"),
+            #"EmployeeSkillset": dict_employees[emp_id].get("Skillset"),
             "RoleID": role_id,
             "ShiftStart": shift_begins,
             "ShiftEnd": shift_ends,
             "ShiftHours": total_shift_hours,
-            "TotalHours": hours_per_employee[emp_id],
+            #"TotalHours": hours_per_employee[emp_id],
             "AddedScore": event_score,
             "NewScore": dict_employees[emp_id]["Score"],
-            "NumberOfShifts": dict_employees[emp_id]["Number_of_shifts"],
-            "ShiftsOnWeekends": dict_employees[emp_id]["Shifts_on_weekends"],
-            "ShiftsPerHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0,
-            "CurrentShiftsPerCategory": dict_employees[emp_id]["current_shifts_per_category"].get(category, 0) if category else 0}
+            #"NumberOfShifts": dict_employees[emp_id]["Number_of_shifts"],
+            #"ShiftsOnWeekends": dict_employees[emp_id]["Shifts_on_weekends"],
+            #"ShiftsPerHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0,
+            #"CurrentShiftsPerCategory": dict_employees[emp_id]["current_shifts_per_category"].get(category, 0) if category else 0
+            }
 
     def event_is_fully_staffed(event_id: int, event_state: dict) -> bool:
         return all(role["filled_by"] is not None for role in event_state[event_id]["roles"])

@@ -26,12 +26,10 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 dict_events, dict_employees, employees_days_off, score_rules, skillset_scores = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
-
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
 previous_json_list = "02_26_output_list.json" # Hef þetta svona í bili
 previous_scores = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
-
 
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
@@ -39,6 +37,7 @@ dict_employees = merge_previous_stats_into_employees(dict_employees, previous_st
 
 rows = []
 
+# Röðum starfsmönnum niður á viðburði
 try:
     rows, event_state = assign_all_events(dict_events, 
                                           dict_employees, 
@@ -55,18 +54,15 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
-
 # Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
-
 
 # Vistum niðurstöður í 2 json skjöl
 Export_Json(dict_employees, dict_events, rows, month)
 
-print(dict_employees)
 # Plottum niðurstöður
 """
 Plot_Results(dict_employees, hours_per_employee)
 Plot_Results_Over_Time(dict_employees, hours_per_employee)
-"""
 Plot_Total_Stats(dict_employees, hours_per_employee)
+"""
