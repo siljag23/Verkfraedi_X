@@ -354,10 +354,19 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             hall_adjustment = lookup_score(
                 score_rules.get("Hall", {}), hall_count, 0)
 
-        # Fjöldi vakta í þessari viku
-        shifts_this_week = current_shifts
+        # Fjöldi vakta í sömu viku og þessi vakt
+        event_iso_year, event_iso_week, _ = event_date.isocalendar()
+        week_key = f"{event_iso_year}-W{event_iso_week:02d}"
+
+        shifts_this_week = to_int(
+            dict_employees[emp_id].get("Shifts_per_week", {}).get(week_key, 0), 0
+        )
+
         shifts_this_week_adjustment = lookup_score(
-            score_rules.get("Shifts_this_week", {}), shifts_this_week, 0)
+            score_rules.get("Shifts_this_week", {}),
+            shifts_this_week,
+            0
+        )
 
         # Fjöldi vakta af þessari lengd
         shift_length_key = int(round(total_shift_hours))
@@ -530,6 +539,21 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             dict_employees[emp_id]["Shifts_over_six_hours"] = (
                 to_int(dict_employees[emp_id].get("Shifts_over_six_hours", 0), 0) + 1
             )
+
+        # Fjöldi vakta per viku
+        if (
+            "Shifts_per_week" not in dict_employees[emp_id]
+            or not isinstance(dict_employees[emp_id]["Shifts_per_week"], dict)
+        ):
+            dict_employees[emp_id]["Shifts_per_week"] = {}
+
+        event_iso_year, event_iso_week, _ = event_date.isocalendar()
+        week_key = f"{event_iso_year}-W{event_iso_week:02d}"
+
+        current_week_count = to_int(
+            dict_employees[emp_id]["Shifts_per_week"].get(week_key, 0), 0
+        )
+        dict_employees[emp_id]["Shifts_per_week"][week_key] = current_week_count + 1
 
         return {
             "EventID": event_id,

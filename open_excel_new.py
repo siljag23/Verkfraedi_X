@@ -53,6 +53,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         dict_employees[emp_id]["current_shifts_per_category"] = {}
         dict_employees[emp_id]["Shifts_per_length"] = {}
         dict_employees[emp_id]["Shifts_over_six_hours"] = 0
+        dict_employees[emp_id]["Shifts_per_week"] = {}
     
     days_off = days_off.fillna(0)
 
