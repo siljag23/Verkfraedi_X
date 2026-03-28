@@ -342,7 +342,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         # Helgarvaktir frá síðasta tímabili
         prev_weekend_count = to_int(
-            dict_employees[emp_id].get("prev_shifts_on_weekends", 0), 0)
+            dict_employees[emp_id].get("prev_weekend_shifts", 0), 0)
         weekend_last_period_adjustment = 0
         if event_date.weekday() in [4, 5, 6]:
             weekend_last_period_adjustment = lookup_score(
@@ -359,16 +359,28 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         shifts_this_week_adjustment = lookup_score(
             score_rules.get("Shifts_this_week", {}), shifts_this_week, 0)
 
-        # Lengd vaktar
+        # Fjöldi vakta af þessari lengd
+        shift_length_key = int(round(total_shift_hours))
+
+        current_count_same_length = to_int(
+            dict_employees[emp_id].get("Shifts_per_length", {}).get(shift_length_key, 0), 0
+        )
+
         shift_length_adjustment = lookup_score(
             score_rules.get("Shifts_this_length", {}),
-            int(round(total_shift_hours)), 0)
+            current_count_same_length, 0)
 
-        # Extra refsing ef vakt er yfir 6 klst
+        # Fjöldi vakta 6+ klst.
         shift_over_six_hours_adjustment = 0
+
         if total_shift_hours > 6:
+            current_over_six_count = to_int(
+                dict_employees[emp_id].get("Shifts_over_six_hours", 0), 0
+            )
+
             shift_over_six_hours_adjustment = lookup_score(
-                score_rules.get("Shift_over_six_hours", {}), 1, 0)
+                score_rules.get("Shift_over_six_hours", {}),
+                current_over_six_count, 0)
 
         # =========================
         # Skillset score úr SkillsetScores
@@ -499,6 +511,25 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             current_cat_count = to_int(
                 dict_employees[emp_id]["current_shifts_per_category"].get(category, 0), 0)
             dict_employees[emp_id]["current_shifts_per_category"][category] = current_cat_count + 1
+
+        # Fjöldi vakta per lengd
+        if (
+            "Shifts_per_length" not in dict_employees[emp_id]
+            or not isinstance(dict_employees[emp_id]["Shifts_per_length"], dict)
+        ):
+            dict_employees[emp_id]["Shifts_per_length"] = {}
+
+        shift_length_key = int(round(total_shift_hours))
+        current_length_count = to_int(
+            dict_employees[emp_id]["Shifts_per_length"].get(shift_length_key, 0), 0
+        )
+        dict_employees[emp_id]["Shifts_per_length"][shift_length_key] = current_length_count + 1
+
+        # Fjöldi vakta yfir 6 klst
+        if total_shift_hours > 6:
+            dict_employees[emp_id]["Shifts_over_six_hours"] = (
+                to_int(dict_employees[emp_id].get("Shifts_over_six_hours", 0), 0) + 1
+            )
 
         return {
             "EventID": event_id,
