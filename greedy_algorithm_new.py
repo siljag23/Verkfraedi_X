@@ -67,6 +67,7 @@ export_schedule_to_excel(rows, dict_events, dict_employees, f"{month}_schedule_r
 # Plottum niðurstöður
 """
 Plot_Results(dict_employees, hours_per_employee)
+"""
 Plot_Results_Over_Time(dict_employees, hours_per_employee)
 Plot_Total_Stats(dict_employees, hours_per_employee)
-"""
+
