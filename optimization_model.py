@@ -14,6 +14,7 @@ from Employee_Diagnostics import Employee_Diagnostics
 from compute_shift_duration import compute_shift_duration
 
 # -------------------------
+
 # SETTINGS
 # -------------------------
 input_excel = "Input.xlsx"
@@ -129,6 +130,7 @@ Export_Json(
 # -------------------------
 # PLOTS
 # -------------------------
+"""
 Plot_Results_Over_Time(
     employees,
     events,
@@ -142,6 +144,7 @@ Plot_Results_Over_Time(
     hist_scores,
     hist_weekend
 )
+"""
 
 Plot_Total_Stats(
     employees,

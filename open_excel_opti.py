@@ -46,9 +46,6 @@ def open_excel_opti(file_name, sheet_events, sheet_employees, sheet_daysoff, she
                     continue
                 employee_days[emp_id].add(date)
 
-    # -------------------------
-    # Event requests (matrix → pairs)
-    # -------------------------
     requests = set()
 
     if sheet_requests is not None:
