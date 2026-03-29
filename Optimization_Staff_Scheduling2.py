@@ -100,6 +100,8 @@ def Optimization_Staff_Scheduling2(
         days_off = employee_days.get(i, set())
         availability[i] = (total_days - len(days_off)) / total_days if total_days > 0 else 1
 
+    scale = max(availability[i], 0.1)
+
     # =========================================================
     # MODEL
     # =========================================================
@@ -109,7 +111,6 @@ def Optimization_Staff_Scheduling2(
     # DECISION VARIABLES
     # =========================================================
     works = model.addVars(employees, events, vtype=GRB.BINARY, name="works")
-    change = model.addVars(employees, events, vtype=GRB.BINARY, name="change")
     works_hall = model.addVars(employees, halls, vtype=GRB.BINARY, name="works_hall")
 
     # =========================================================
@@ -189,14 +190,6 @@ def Optimization_Staff_Scheduling2(
         model.addConstr(total_halls >= min_halls)
         model.addConstr(total_halls <= max_halls)
 
-    # Change constraints
-    if current_schedule is not None:
-        for i in employees:
-            for j in events:
-                curr = current_schedule.get((i,j), 0)
-                model.addConstr(change[i,j] >= works[i,j] - curr)
-                model.addConstr(change[i,j] >= curr - works[i,j])
-
     # Fairness constraints
     for i in employees:
 
@@ -207,8 +200,6 @@ def Optimization_Staff_Scheduling2(
 
         total_shifts = hist_shifts.get(i,0) + shifts_i
         total_hours = hist_hours.get(i,0) + hours_i
-
-        scale = max(availability[i], 0.1)
 
         model.addConstr(total_shifts >= min_shifts * scale)
         model.addConstr(total_shifts <= max_shifts * scale)
@@ -222,6 +213,25 @@ def Optimization_Staff_Scheduling2(
         model.addConstr(weekend_i >= min_weekend * scale)
         model.addConstr(weekend_i <= max_weekend * scale)
 
+    # ---------------------------------
+    # HALL FAIRNESS (PER HALL)
+    # ---------------------------------
+
+    min_hall = {h: model.addVar() for h in halls}
+    max_hall = {h: model.addVar() for h in halls}
+
+    for h in halls:
+        for i in employees:
+
+            y_i_h = gp.quicksum(
+                works[i,j] for j in events if hall[j] == h
+            )
+
+            scale = max(availability[i], 0.1)
+
+            model.addConstr(y_i_h >= min_hall[h] * scale)
+            model.addConstr(y_i_h <= max_hall[h] * scale)
+
     # =========================================================
     # OBJECTIVE
     # =========================================================
@@ -231,25 +241,23 @@ def Optimization_Staff_Scheduling2(
     )
 
     history_penalty = gp.quicksum(hist_shifts.get(i,0) for i in employees)
-    change_penalty = gp.quicksum(change[i,j] for i in employees for j in events)
 
     model.setObjective(
         - W_SHIFTS * (max_shifts - min_shifts)
         - W_HOURS * (max_hours - min_hours)
         - W_SCORE * (max_score - min_score)
         - W_WEEKEND * (max_weekend - min_weekend)
-        - W_HALLS * (max_halls - min_halls)
+        - W_HALLS * gp.quicksum(max_hall[h] - min_hall[h] for h in halls)
         - W_WEEKLY_BALANCE * (max_weekly - min_weekly)
         + REWARD_REQUEST * request_term
-        - PENALTY_HISTORY * history_penalty
-        - PENALTY_CHANGE * change_penalty,
+        - PENALTY_HISTORY * history_penalty,
         GRB.MAXIMIZE
     )
 
     # =========================================================
     # SOLVER
     # =========================================================
-    model.setParam("MIPGap", 0.05)
+    model.setParam("MIPGap", 0.02)
     model.setParam("TimeLimit", 60)
     model.setParam("MIPFocus", 1)
 
