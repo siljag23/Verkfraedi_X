@@ -95,4 +95,3 @@ def export_schedule_to_excel(
         schedule_df.to_excel(writer, sheet_name="Schedule", index=False)
         employee_days_df.to_excel(writer, sheet_name="EmployeeDays", index=False)
 
-    print(f"Excel file created: {filename}")
