@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 def Plot_Total_Stats(
     employees,
     events,
@@ -67,12 +68,15 @@ def Plot_Total_Stats(
         current_weekend.append(c_weekend)
         hist_weekend_vals.append(h_weekend)
 
-    # -------------------------
+    COLOR_HIST = "black"
+    COLOR_NEW = "orange"
+
+    # =====================================================
     # SHIFTS
-    # -------------------------
+    # =====================================================
     plt.figure(figsize=(12,6))
-    plt.bar(names, hist_shifts_vals, label="Fyrra tímabil")
-    plt.bar(names, current_shifts, bottom=hist_shifts_vals, label="Nýtt plan")
+    plt.bar(names, hist_shifts_vals, color=COLOR_HIST, label="Fyrra tímabil")
+    plt.bar(names, current_shifts, bottom=hist_shifts_vals, color=COLOR_NEW, label="Nýtt plan")
     plt.title("Heildarfjöldi vakta")
     plt.ylabel("Vaktir")
     plt.xticks(rotation=90)
@@ -80,12 +84,12 @@ def Plot_Total_Stats(
     plt.tight_layout()
     plt.show()
 
-    # -------------------------
+    # =====================================================
     # HOURS
-    # -------------------------
+    # =====================================================
     plt.figure(figsize=(12,6))
-    plt.bar(names, hist_hours_vals, label="Fyrra tímabil")
-    plt.bar(names, current_hours, bottom=hist_hours_vals, label="Nýtt plan")
+    plt.bar(names, hist_hours_vals, color=COLOR_HIST, label="Fyrra tímabil")
+    plt.bar(names, current_hours, bottom=hist_hours_vals, color=COLOR_NEW, label="Nýtt plan")
     plt.title("Heildar vinnustundir")
     plt.ylabel("Klst")
     plt.xticks(rotation=90)
@@ -93,12 +97,12 @@ def Plot_Total_Stats(
     plt.tight_layout()
     plt.show()
 
-    # -------------------------
+    # =====================================================
     # SCORE
-    # -------------------------
+    # =====================================================
     plt.figure(figsize=(12,6))
-    plt.bar(names, hist_scores_vals, label="Fyrra tímabil")
-    plt.bar(names, current_scores, bottom=hist_scores_vals, label="Nýtt plan")
+    plt.bar(names, hist_scores_vals, color=COLOR_HIST, label="Fyrra tímabil")
+    plt.bar(names, current_scores, bottom=hist_scores_vals, color=COLOR_NEW, label="Nýtt plan")
     plt.title("Heildar score")
     plt.ylabel("Score")
     plt.xticks(rotation=90)
@@ -106,12 +110,12 @@ def Plot_Total_Stats(
     plt.tight_layout()
     plt.show()
 
-    # -------------------------
+    # =====================================================
     # WEEKEND
-    # -------------------------
+    # =====================================================
     plt.figure(figsize=(12,6))
-    plt.bar(names, hist_weekend_vals, label="Fyrra tímabil")
-    plt.bar(names, current_weekend, bottom=hist_weekend_vals, label="Nýtt plan")
+    plt.bar(names, hist_weekend_vals, color=COLOR_HIST, label="Fyrra tímabil")
+    plt.bar(names, current_weekend, bottom=hist_weekend_vals, color=COLOR_NEW, label="Nýtt plan")
     plt.title("Heildar helgarvaktir")
     plt.ylabel("Vaktir")
     plt.xticks(rotation=90)

@@ -255,41 +255,4 @@ def Optimization_Staff_Scheduling2(
 
     model.optimize()
 
-    print("\n--- FULL MODEL DIAGNOSTICS ---\n")
-
-    total_shifts = sum(works[i,j].X for i in employees for j in events)
-    total_hours = sum(works[i,j].X * shift_dur[j] for i in employees for j in events)
-    total_score = sum(works[i,j].X * shift_score[j] for i in employees for j in events)
-    total_weekend = sum(works[i,j].X * weekend[j] for i in employees for j in events)
-
-    for i in employees:
-
-        name = dict_employees[i]["EmployeeName"]
-        avail = availability[i]
-
-        shifts = sum(works[i,j].X for j in events)
-        hours = sum(works[i,j].X * shift_dur[j] for j in events)
-        score = sum(works[i,j].X * shift_score[j] for j in events)
-        weekend_count = sum(works[i,j].X * weekend[j] for j in events)
-
-        # Expected (proportional)
-        exp_shifts = avail * total_shifts / len(employees)
-        exp_hours = avail * total_hours / len(employees)
-        exp_score = avail * total_score / len(employees)
-        exp_weekend = avail * total_weekend / len(employees)
-
-        # Requests
-        req_total = sum(1 for (ii,jj) in requests if ii == i)
-        req_ok = sum(1 for (ii,jj) in requests if ii == i and works[ii,jj].X > 0.5)
-
-        print(
-            f"{name:12} | "
-            f"Avail: {avail:.2f} | "
-            f"S: {shifts:4.1f} ({exp_shifts:4.1f}) | "
-            f"H: {hours:5.1f} ({exp_hours:5.1f}) | "
-            f"Sc: {score:5.0f} ({exp_score:5.0f}) | "
-            f"W: {weekend_count:3.1f} ({exp_weekend:3.1f}) | "
-            f"Req: {req_ok}/{req_total}"
-        )
-
     return model, works, shift_dur, weekend, weeks, event_date
