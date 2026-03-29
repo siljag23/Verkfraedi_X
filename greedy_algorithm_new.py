@@ -6,6 +6,7 @@ from Plot_Results_Greedy import Plot_Results
 from Plot_Results_Over_Time_Greedy import Plot_Results_Over_Time
 from Plot_Total_Stats_Greedy import Plot_Total_Stats
 from Export_Json_Greedy import Export_Json
+from export_schedule_to_excel_greedy import export_schedule_to_excel
 from collections import defaultdict
 
 # Upphafsstilla breytur
@@ -59,6 +60,9 @@ Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 
 # Vistum niðurstöður í 2 json skjöl
 Export_Json(dict_employees, dict_events, rows, month)
+
+# Prentum niðurstöðurnar í excel
+export_schedule_to_excel(rows, dict_events, dict_employees, f"{month}_schedule_results.xlsx")
 
 # Plottum niðurstöður
 """

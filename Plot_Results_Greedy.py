@@ -75,7 +75,7 @@ def Plot_Results(dict_employees, hours_per_employee):
     # Plot 4 – Föstudagur + laugardagur
     plt.figure(figsize=(12,6))
     plt.bar(names, weekend_shifts)
-    plt.title("Vaktir á föstudegi og laugardegi")
+    plt.title("Vaktir um helgar")
     plt.ylabel("Fjöldi vakta")
     plt.xticks(rotation=90)
     plt.tight_layout()
