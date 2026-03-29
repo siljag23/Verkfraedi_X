@@ -69,6 +69,12 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         except:
             return default
 
+    def clean_str(x):
+        if x is None:
+            return ""
+        s = str(x).strip()
+        return "" if s.lower() == "nan" else s
+
     def lookup_score(rule_dict: dict, key: int, default=0):
         """
         Sækir score fyrir tiltekinn lykil úr reglutöflu.
@@ -293,8 +299,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         """Raðar starfsmönnum í forgangsröð, lægstu stig efst"""
         return (
             to_number(dict_employees[emp_id].get("Score", 0), 0),
-            to_number(hours_per_employee.get(emp_id, 0), 0),
             to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0),
+            to_number(hours_per_employee.get(emp_id, 0), 0),
             emp_id
         )
 
@@ -312,15 +318,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         event_date = datetime_info["event_date"]
         total_shift_hours = datetime_info["total_shift_hours"]
 
-        raw_category = event.get("EventCategory", "")
-        category = "" if raw_category is None else str(raw_category).strip()
-        if category.lower() == "nan":
-            category = ""
-
-        raw_hall = event.get("Hall", "")
-        hall = "" if raw_hall is None else str(raw_hall).strip()
-        if hall.lower() == "nan":
-            hall = ""
+        hall = clean_str(event.get("Hall"))
 
         event_score = to_number(event.get("EventRanking", 0), 0)
         current_shifts = to_int(dict_employees[emp_id].get("Number_of_shifts", 0), 0)
@@ -344,7 +342,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         # Helgarvaktir frá síðasta tímabili
         prev_weekend_count = to_int(
-            dict_employees[emp_id].get("prev_shifts_on_weekends", 0), 0)
+            dict_employees[emp_id].get("prev_weekend_shifts", 0), 0)
         weekend_last_period_adjustment = 0
         if event_date.weekday() in [4, 5, 6]:
             weekend_last_period_adjustment = lookup_score(
@@ -356,21 +354,42 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             hall_adjustment = lookup_score(
                 score_rules.get("Hall", {}), hall_count, 0)
 
-        # Fjöldi vakta í þessari viku
-        shifts_this_week = current_shifts
-        shifts_this_week_adjustment = lookup_score(
-            score_rules.get("Shifts_this_week", {}), shifts_this_week, 0)
+        # Fjöldi vakta í sömu viku og þessi vakt
+        event_iso_year, event_iso_week, _ = event_date.isocalendar()
+        week_key = f"{event_iso_year}-W{event_iso_week:02d}"
 
-        # Lengd vaktar
+        shifts_this_week = to_int(
+            dict_employees[emp_id].get("Shifts_per_week", {}).get(week_key, 0), 0
+        )
+
+        shifts_this_week_adjustment = lookup_score(
+            score_rules.get("Shifts_this_week", {}),
+            shifts_this_week,
+            0
+        )
+
+        # Fjöldi vakta af þessari lengd
+        shift_length_key = int(round(total_shift_hours))
+
+        current_count_same_length = to_int(
+            dict_employees[emp_id].get("Shifts_per_length", {}).get(shift_length_key, 0), 0
+        )
+
         shift_length_adjustment = lookup_score(
             score_rules.get("Shifts_this_length", {}),
-            int(round(total_shift_hours)), 0)
+            current_count_same_length, 0)
 
-        # Extra refsing ef vakt er yfir 6 klst
+        # Fjöldi vakta 6+ klst.
         shift_over_six_hours_adjustment = 0
+
         if total_shift_hours > 6:
+            current_over_six_count = to_int(
+                dict_employees[emp_id].get("Shifts_over_six_hours", 0), 0
+            )
+
             shift_over_six_hours_adjustment = lookup_score(
-                score_rules.get("Shift_over_six_hours", {}), 1, 0)
+                score_rules.get("Shift_over_six_hours", {}),
+                current_over_six_count, 0)
 
         # =========================
         # Skillset score úr SkillsetScores
@@ -434,13 +453,75 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                         "event_id": event_id,
                         "role_id": role["role_id"],
                         "score": score}
+        """
+        # Gott tékk fyrir úthlutun vakta m.v. persónuleg stig
+        print(f"\n{'='*60}")
+        print(f"Starfsmaður {emp_id} ({dict_employees[emp_id].get('EmployeeName')}) - Tiltækar vaktir:")
 
+        for event_id, state in event_state.items():
+            for role in state["roles"]:
+                if not can_take_role(emp_id, event_id, role, event_state):
+                    continue
+
+                event = dict_events[event_id]
+                datetime_info = get_event_datetime_info(event_id)
+                event_date = datetime_info["event_date"]
+                total_shift_hours = datetime_info["total_shift_hours"]
+
+                hall = clean_str(event.get("Hall"))
+                event_score = to_number(event.get("EventRanking", 0), 0)
+                weekend_count = to_int(dict_employees[emp_id].get("Shifts_on_weekends", 0), 0)
+                prev_weekend_count = to_int(dict_employees[emp_id].get("prev_weekend_shifts", 0), 0)
+                hall_count = to_int(dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0), 0)
+
+                event_iso_year, event_iso_week, _ = event_date.isocalendar()
+                week_key = f"{event_iso_year}-W{event_iso_week:02d}"
+                shifts_this_week = to_int(dict_employees[emp_id].get("Shifts_per_week", {}).get(week_key, 0), 0)
+                shift_length_key = int(round(total_shift_hours))
+                same_length_count = to_int(dict_employees[emp_id].get("Shifts_per_length", {}).get(shift_length_key, 0), 0)
+                over_six_count = to_int(dict_employees[emp_id].get("Shifts_over_six_hours", 0), 0)
+                emp_current_skill = emp_skill(emp_id)
+                required_skill = role.get("required_skill")
+
+                weekend_adj = 0
+                weekend_last_adj = 0
+                if event_date.weekday() in [4, 5, 6]:
+                    weekend_adj = lookup_score(score_rules.get("Weekend", {}), weekend_count, 0)
+                    weekend_last_adj = lookup_score(score_rules.get("Weekend_last_period", {}), prev_weekend_count, 0)
+
+                hall_adj = lookup_score(score_rules.get("Hall", {}), hall_count, 0) if hall else 0
+                week_adj = lookup_score(score_rules.get("Shifts_this_week", {}), shifts_this_week, 0)
+                length_adj = lookup_score(score_rules.get("Shifs_this_length", {}), same_length_count, 0)
+                over_six_adj = lookup_score(score_rules.get("Shift_over_six_hours", {}), over_six_count, 0) if total_shift_hours > 6 else 0
+                skill_adj = skillset_scores.get(required_skill, {}).get(emp_current_skill, 0) if required_skill is not None else 0
+
+                total_personal = event_score + weekend_adj + weekend_last_adj + hall_adj + week_adj + length_adj + over_six_adj + skill_adj
+
+                is_best = (best_option is not None and 
+                        best_option["event_id"] == event_id and 
+                        best_option["role_id"] == role["role_id"])
+
+                print(f"\n  {'*** ' if is_best else '    '}Event {event_id} ({event.get('Event', '')}) - Role {role['role_id']} ({'BESTA' if is_best else ''})")
+                print(f"      EventRanking:          {event_score:.1f}")
+                print(f"      Weekend:               {weekend_adj:.1f}  (fjöldi: {weekend_count})")
+                print(f"      Weekend síðasti:       {weekend_last_adj:.1f}  (fjöldi: {prev_weekend_count})")
+                print(f"      Hall ({hall}):         {hall_adj:.1f}  (fjöldi: {hall_count})")
+                print(f"      Shifts þessari viku:   {week_adj:.1f}  (fjöldi: {shifts_this_week})")
+                print(f"      Shift lengd ({shift_length_key}h):    {length_adj:.1f}  (fjöldi: {same_length_count})")
+                print(f"      Shift yfir 6h:         {over_six_adj:.1f}  (fjöldi: {over_six_count})")
+                print(f"      Skillset:              {skill_adj:.1f}  (req: {required_skill}, emp: {emp_current_skill})")
+                print(f"      Heildarstig:           {total_personal:.1f}")
+        """        
+        
         return best_option
 
     def assign_employee_to_role(emp_id: int, event_id: int, role_id: int, event_state: dict):
         """Úthlutar starfsmanni á tiltekið hlutverk og uppfærir allar stöðubreytur"""
         event = dict_events[event_id]
         info = get_event_datetime_info(event_id)
+
+        hall = clean_str(event.get("Hall"))
+        category = clean_str(event.get("EventCategory"))
 
         event_date = info["event_date"]
         shift_begins = info["shift_begins"]
@@ -453,16 +534,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         blocked_days = info["blocked_days"]
 
         event_score = to_number(event.get("EventRanking", 0), 0)
-
-        raw_hall = event.get("Hall", "")
-        hall = "" if raw_hall is None else str(raw_hall).strip()
-        if hall.lower() == "nan":
-            hall = ""
-
-        raw_category = event.get("EventCategory", "")
-        category = "" if raw_category is None else str(raw_category).strip()
-        if category.lower() == "nan":
-            category = ""
 
         # Merkjum role sem fyllt
         for role in event_state[event_id]["roles"]:
@@ -480,7 +551,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         assigned_shifts[emp_id].append((shift_begins, shift_ends))
 
-        # ATH: hér fær starfsmaður upprunaleg event-stig, ekki personal_role_score
         dict_employees[emp_id]["Score"] = to_number(
             dict_employees[emp_id].get("Score", 0), 0) + event_score
 
@@ -492,37 +562,44 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                 to_int(dict_employees[emp_id].get("Shifts_on_weekends"), 0) + 1)
 
         if hall:
-            if "Shifts_per_hall" not in dict_employees[emp_id] or not isinstance(dict_employees[emp_id]["Shifts_per_hall"], dict):
+            if not isinstance(dict_employees[emp_id].get("Shifts_per_hall"), dict):
                 dict_employees[emp_id]["Shifts_per_hall"] = {}
-
-            current_hall_count = to_int(
-                dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0), 0)
-            dict_employees[emp_id]["Shifts_per_hall"][hall] = current_hall_count + 1
+            dict_employees[emp_id]["Shifts_per_hall"][hall] = (
+                to_int(dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0), 0) + 1)
 
         if category:
-            if (
-                "current_shifts_per_category" not in dict_employees[emp_id]
-                or not isinstance(dict_employees[emp_id]["current_shifts_per_category"], dict)):
+            if not isinstance(dict_employees[emp_id].get("current_shifts_per_category"), dict):
                 dict_employees[emp_id]["current_shifts_per_category"] = {}
+            dict_employees[emp_id]["current_shifts_per_category"][category] = (
+                to_int(dict_employees[emp_id]["current_shifts_per_category"].get(category, 0), 0) + 1)
 
-            current_cat_count = to_int(
-                dict_employees[emp_id]["current_shifts_per_category"].get(category, 0), 0)
-            dict_employees[emp_id]["current_shifts_per_category"][category] = current_cat_count + 1
+        if not isinstance(dict_employees[emp_id].get("Shifts_per_length"), dict):
+            dict_employees[emp_id]["Shifts_per_length"] = {}
+        shift_length_key = int(round(total_shift_hours))
+        dict_employees[emp_id]["Shifts_per_length"][shift_length_key] = (
+            to_int(dict_employees[emp_id]["Shifts_per_length"].get(shift_length_key, 0), 0) + 1)
+
+        if total_shift_hours > 6:
+            dict_employees[emp_id]["Shifts_over_six_hours"] = (
+                to_int(dict_employees[emp_id].get("Shifts_over_six_hours", 0), 0) + 1)
+
+        if not isinstance(dict_employees[emp_id].get("Shifts_per_week"), dict):
+            dict_employees[emp_id]["Shifts_per_week"] = {}
+        event_iso_year, event_iso_week, _ = event_date.isocalendar()
+        week_key = f"{event_iso_year}-W{event_iso_week:02d}"
+        dict_employees[emp_id]["Shifts_per_week"][week_key] = (
+            to_int(dict_employees[emp_id]["Shifts_per_week"].get(week_key, 0), 0) + 1)
 
         return {
             "EventID": event_id,
             "EmployeeID": emp_id,
-            "EmployeeName": dict_employees[emp_id].get("EmployeeName"),
-            "EmployeeSkillset": dict_employees[emp_id].get("Skillset"),
             "RoleID": role_id,
+            "ShiftStart": shift_begins,
+            "ShiftEnd": shift_ends,
             "ShiftHours": total_shift_hours,
-            "TotalHours": hours_per_employee[emp_id],
             "AddedScore": event_score,
             "NewScore": dict_employees[emp_id]["Score"],
-            "NumberOfShifts": dict_employees[emp_id]["Number_of_shifts"],
-            "ShiftsOnWeekends": dict_employees[emp_id]["Shifts_on_weekends"],
-            "ShiftsPerHall": dict_employees[emp_id]["Shifts_per_hall"].get(hall, 0) if hall else 0,
-            "CurrentShiftsPerCategory": dict_employees[emp_id]["current_shifts_per_category"].get(category, 0) if category else 0}
+        }
 
     def event_is_fully_staffed(event_id: int, event_state: dict) -> bool:
         return all(role["filled_by"] is not None for role in event_state[event_id]["roles"])
