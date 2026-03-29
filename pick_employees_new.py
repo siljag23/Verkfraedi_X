@@ -17,36 +17,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     - event_state: staða allra viðburða eftir úthlutun
     """
 
-    def parse_event_date(ev):
-        """Les dagsetningu úr event dict og skilar henni sem date object"""
-        raw = ev["Date"]
-        if isinstance(raw, str):
-            return datetime.strptime(raw.strip(), "%d.%m.%Y").date()
-        elif hasattr(raw, "date"):
-            return raw.date()
-        return raw
-
-    def ensure_time(x):
-        """Breytum dagsetningum á röngu formi í datetime.time"""
-        if isinstance(x, time):
-            return x
-        if isinstance(x, timedelta):
-            total_seconds = int(x.total_seconds())
-            hours = (total_seconds // 3600) % 24
-            minutes = (total_seconds % 3600) // 60
-            seconds = total_seconds % 60
-            return time(hours, minutes, seconds)
-        if hasattr(x, "time"):
-            return x.time()
-        if isinstance(x, str):
-            x = x.strip()
-            for fmt in ("%H:%M:%S", "%H:%M"):
-                try:
-                    return datetime.strptime(x, fmt).time()
-                except ValueError:
-                    pass
-        raise ValueError(f"Óþekkt tímaformat: {x} ({type(x)})")
-
     def to_int(x, default=0):
         """Breytum gildum í heiltölu"""
         if x is None:
@@ -100,7 +70,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         return to_int(dict_employees[emp_id].get("Skillset", 0), 0)
 
     # Reiknum tímabil fyrir 48 klst/viku meðaltalsreglu
-    all_event_dates = [parse_event_date(ev) for ev in dict_events.values()]
+    all_event_dates = [ev["Date"] for ev in dict_events.values()]
     period_start = min(all_event_dates)
     period_end = max(all_event_dates)
 
@@ -121,8 +91,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         else:
             event_date = raw_date
 
-        shift_begins_time = ensure_time(event["ShiftBegins"])
-        shift_ends_time = ensure_time(event["ShiftEnds"])
+        shift_begins_time = event["ShiftBegins"]
+        shift_ends_time = event["ShiftEnds"]
 
         shift_begins_date = datetime.combine(event_date, shift_begins_time)
         shift_ends_date = datetime.combine(event_date, shift_ends_time)

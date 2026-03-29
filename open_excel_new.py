@@ -2,7 +2,7 @@ import pandas as pd
 import json 
 import os
 from shift_length import shift_length
-from datetime import datetime
+from datetime import datetime, time, timedelta
 from collections import defaultdict
 
 def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name, sheet_5_name):
@@ -45,6 +45,36 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
     
+    for event_id, event in dict_events.items():
+        # Umbreyta dagsetningu
+        raw_date = event["Date"]
+        if isinstance(raw_date, str):
+            event["Date"] = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
+        elif hasattr(raw_date, "date"):
+            event["Date"] = raw_date.date()
+
+        # Umbreyta tímum
+        for time_col in ["ShiftBegins", "ShiftEnds"]:
+            raw = event[time_col]
+            if isinstance(raw, time):
+                pass
+            elif isinstance(raw, timedelta):
+                total_seconds = int(raw.total_seconds())
+                event[time_col] = time(
+                    (total_seconds // 3600) % 24,
+                    (total_seconds % 3600) // 60,
+                    total_seconds % 60)
+            elif hasattr(raw, "time"):
+                event[time_col] = raw.time()
+            elif isinstance(raw, str):
+                raw = raw.strip()
+                for fmt in ("%H:%M:%S", "%H:%M"):
+                    try:
+                        event[time_col] = datetime.strptime(raw, fmt).time()
+                        break
+                    except ValueError:
+                        pass
+
     # Núllstillum breytur
     for emp_id in dict_employees:
         dict_employees[emp_id]["Shifts_on_weekends"] = 0

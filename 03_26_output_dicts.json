@@ -9,7 +9,7 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 2,
-            "Date": "1.5.2024",
+            "Date": "2024-05-01",
             "ShiftBegins": "15:00:00",
             "ShiftEnds": "18:00:00"
         },
@@ -22,7 +22,7 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 2,
-            "Date": "1.5.2024",
+            "Date": "2024-05-01",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -35,7 +35,7 @@
             "Skillset1": 1,
             "Skillset2": 0,
             "Employees": 3,
-            "Date": "1.5.2024",
+            "Date": "2024-05-01",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -48,7 +48,7 @@
             "Skillset1": 1,
             "Skillset2": 0,
             "Employees": 3,
-            "Date": "2.5.2024",
+            "Date": "2024-05-02",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -61,7 +61,7 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 2,
-            "Date": "3.5.2024",
+            "Date": "2024-05-03",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -74,7 +74,7 @@
             "Skillset1": 1,
             "Skillset2": 2,
             "Employees": 11,
-            "Date": "4.5.2024",
+            "Date": "2024-05-04",
             "ShiftBegins": "14:00:00",
             "ShiftEnds": "18:00:00"
         },
@@ -87,7 +87,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "4.5.2024",
+            "Date": "2024-05-04",
             "ShiftBegins": "18:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -100,7 +100,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "5.5.2024",
+            "Date": "2024-05-05",
             "ShiftBegins": "16:00:00",
             "ShiftEnds": "20:00:00"
         },
@@ -113,7 +113,7 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 2,
-            "Date": "5.5.2024",
+            "Date": "2024-05-05",
             "ShiftBegins": "12:00:00",
             "ShiftEnds": "16:00:00"
         },
@@ -126,7 +126,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "8.5.2024",
+            "Date": "2024-05-08",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -139,7 +139,7 @@
             "Skillset1": 1,
             "Skillset2": 3,
             "Employees": 11,
-            "Date": "9.5.2024",
+            "Date": "2024-05-09",
             "ShiftBegins": "18:30:00",
             "ShiftEnds": "22:00:00"
         },
@@ -152,7 +152,7 @@
             "Skillset1": 1,
             "Skillset2": 6,
             "Employees": 11,
-            "Date": "10.5.2024",
+            "Date": "2024-05-10",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "23:00:00"
         },
@@ -165,7 +165,7 @@
             "Skillset1": 1,
             "Skillset2": 6,
             "Employees": 11,
-            "Date": "11.05.2024",
+            "Date": "2024-05-11",
             "ShiftBegins": "20:00:00",
             "ShiftEnds": "00:00:00"
         },
@@ -178,7 +178,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "11.05.2024",
+            "Date": "2024-05-11",
             "ShiftBegins": "18:00:00",
             "ShiftEnds": "20:00:00"
         },
@@ -191,7 +191,7 @@
             "Skillset1": 1,
             "Skillset2": 2,
             "Employees": 5,
-            "Date": "12.05.2024",
+            "Date": "2024-05-12",
             "ShiftBegins": "20:00:00",
             "ShiftEnds": "00:00:00"
         },
@@ -204,7 +204,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "12.05.2024",
+            "Date": "2024-05-12",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -217,7 +217,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 2,
-            "Date": "13.05.2024",
+            "Date": "2024-05-13",
             "ShiftBegins": "18:30:00",
             "ShiftEnds": "23:00:00"
         },
@@ -230,7 +230,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "14.05.2024",
+            "Date": "2024-05-14",
             "ShiftBegins": "18:30:00",
             "ShiftEnds": "23:00:00"
         },
@@ -243,7 +243,7 @@
             "Skillset1": 1,
             "Skillset2": 3,
             "Employees": 11,
-            "Date": "16.05.2024",
+            "Date": "2024-05-16",
             "ShiftBegins": "18:30:00",
             "ShiftEnds": "22:00:00"
         },
@@ -256,7 +256,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "17.05.2024",
+            "Date": "2024-05-17",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -269,7 +269,7 @@
             "Skillset1": 1,
             "Skillset2": 6,
             "Employees": 11,
-            "Date": "18.05.2024",
+            "Date": "2024-05-18",
             "ShiftBegins": "10:00:00",
             "ShiftEnds": "14:00:00"
         },
@@ -282,7 +282,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "19.05.2024",
+            "Date": "2024-05-19",
             "ShiftBegins": "12:00:00",
             "ShiftEnds": "16:00:00"
         },
@@ -295,7 +295,7 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 2,
-            "Date": "19.05.2024",
+            "Date": "2024-05-19",
             "ShiftBegins": "20:00:00",
             "ShiftEnds": "23:00:00"
         },
@@ -308,7 +308,7 @@
             "Skillset1": 1,
             "Skillset2": 2,
             "Employees": 11,
-            "Date": "20.05.2024",
+            "Date": "2024-05-20",
             "ShiftBegins": "18:00:00",
             "ShiftEnds": "21:00:00"
         },
@@ -321,7 +321,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "23.05.2024",
+            "Date": "2024-05-23",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -334,9 +334,9 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 3,
-            "Date": "24.05.2024",
+            "Date": "2024-05-24",
             "ShiftBegins": "20:00:00",
-            "ShiftEnds": "0:00:00"
+            "ShiftEnds": "00:00:00"
         },
         "27": {
             "Event": "Maxi",
@@ -347,7 +347,7 @@
             "Skillset1": 1,
             "Skillset2": 2,
             "Employees": 11,
-            "Date": "25.05.2024",
+            "Date": "2024-05-25",
             "ShiftBegins": "12:00:00",
             "ShiftEnds": "16:00:00"
         },
@@ -360,7 +360,7 @@
             "Skillset1": 1,
             "Skillset2": 2,
             "Employees": 11,
-            "Date": "26.05.2024",
+            "Date": "2024-05-26",
             "ShiftBegins": "10:00:00",
             "ShiftEnds": "13:00:00"
         },
@@ -373,7 +373,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "30.05.2024",
+            "Date": "2024-05-30",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
@@ -386,7 +386,7 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 2,
-            "Date": "31.05.2024",
+            "Date": "2024-05-31",
             "ShiftBegins": "18:00:00",
             "ShiftEnds": "22:00:00"
         }
