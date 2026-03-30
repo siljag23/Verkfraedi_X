@@ -45,6 +45,23 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
     
+    # Breytum skillset og score í tölur
+    for emp_id, info in dict_employees.items():
+        info["Skillset"] = int(info.get("Skillset", 0) or 0)
+        info["Score"] = float(info.get("Score", 0) or 0)
+
+    # Breytum gildum úr dict_events í tölur
+    for event_id, event in dict_events.items():
+        event["Employees"] = int(event.get("Employees", 0) or 0)
+        event["Skillset1"] = int(event.get("Skillset1", 0) or 0)
+        event["Skillset2"] = int(event.get("Skillset2", 0) or 0)
+        event["EventRanking"] = float(event.get("EventRanking", 0) or 0)
+
+        for col in ["Hall", "EventCategory", "Event", "EventType"]:
+            raw = event.get(col, "")
+            s = str(raw).strip() if raw is not None else ""
+            event[col] = "" if s.lower() == "nan" else s
+
     for event_id, event in dict_events.items():
         # Umbreyta dagsetningu
         raw_date = event["Date"]
@@ -84,6 +101,11 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         dict_employees[emp_id]["Shifts_per_length"] = {}
         dict_employees[emp_id]["Shifts_over_six_hours"] = 0
         dict_employees[emp_id]["Shifts_per_week"] = {}
+        dict_employees[emp_id]["prev_weekend_shifts"] = 0
+        dict_employees[emp_id]["prev_number_of_shifts"] = 0
+        dict_employees[emp_id]["prev_hours_worked"] = 0
+        dict_employees[emp_id]["prev_worked_days"] = []
+        dict_employees[emp_id]["prev_shifts_per_hall"] = {}
     
     days_off = days_off.fillna(0)
 
