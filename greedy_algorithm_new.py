@@ -55,6 +55,68 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
+"""
+# Sýnir hvernig vaktir skiptast á vikur
+print("\nVaktir per starfsmaður per viku:")
+print("-" * 50)
+
+# Safna saman öllum vikum
+all_weeks = set()
+for emp_id, info in dict_employees.items():
+    all_weeks.update(info.get("Shifts_per_week", {}).keys())
+
+all_weeks = sorted(all_weeks)
+
+# Prenta haus
+header = f"{'Starfsmaður':<20}" + "".join(f"{w:>12}" for w in all_weeks) + f"{'Samtals':>10}"
+print(header)
+print("-" * len(header))
+
+# Prenta hverja línu
+for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("EmployeeName", "")):
+    name = info.get("EmployeeName", str(emp_id))
+    shifts_per_week = info.get("Shifts_per_week", {})
+    total = info.get("Number_of_shifts", 0)
+    
+    row = f"{name:<20}"
+    for week in all_weeks:
+        count = shifts_per_week.get(week, 0)
+        row += f"{count:>12}"
+    row += f"{total:>10}"
+    print(row)
+"""
+
+"""
+# Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
+print("\nVaktir per starfsmaður per category:")
+print("-" * 50)
+
+# Safna saman öllum categories
+all_categories = set()
+for emp_id, info in dict_employees.items():
+    all_categories.update(info.get("current_shifts_per_category", {}).keys())
+
+all_categories = sorted(all_categories)
+
+# Prenta haus
+header = f"{'Starfsmaður':<20}" + "".join(f"{c:>12}" for c in all_categories) + f"{'Samtals':>10}"
+print(header)
+print("-" * len(header))
+
+# Prenta hverja línu
+for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("EmployeeName", "")):
+    name = info.get("EmployeeName", str(emp_id))
+    shifts_per_category = info.get("current_shifts_per_category", {})
+    total = info.get("Number_of_shifts", 0)
+
+    row = f"{name:<20}"
+    for category in all_categories:
+        count = shifts_per_category.get(category, 0)
+        row += f"{count:>12}"
+    row += f"{total:>10}"
+    print(row)
+"""
+
 # Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 
