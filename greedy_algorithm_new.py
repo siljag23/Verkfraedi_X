@@ -24,7 +24,7 @@ min_rest_hours = 13
 month = input("Mánuður vaktaplans á format mm_yy: ")
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-dict_events, dict_employees, employees_days_off, score_rules, skillset_scores = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores")
+dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili

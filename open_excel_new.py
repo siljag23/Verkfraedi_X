@@ -5,7 +5,7 @@ from shift_length import shift_length
 from datetime import datetime, time, timedelta
 from collections import defaultdict
 
-def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name, sheet_5_name):
+def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name, sheet_5_name, sheet_requests=None):
     """
     Les excel input skjalið og skilar:
     - dict_events: upplýsingar um viðburði
@@ -182,7 +182,44 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
 
         skillset_scores[req_skill][emp_skill] = score
 
-    return dict_events, dict_employees, employee_days, score_rules, skillset_scores
+    # Lesa inn beiðnir starfsmanna um ákveðnar vaktir
+    requests = set()
+
+    if sheet_requests is not None:
+        try:
+            event_req = pd.read_excel(file_name, sheet_name=sheet_requests)
+            event_req.columns = event_req.columns.str.strip()
+
+            employee_names = list(event_req.columns[2:])
+
+            name_to_id = {
+                dict_employees[i]["EmployeeName"]: i
+                for i in dict_employees
+            }
+
+            event_name_to_id = {
+                dict_events[j]["Event"]: j
+                for j in dict_events
+            }
+
+            for _, row in event_req.iterrows():
+                event_name = row["Event"]
+
+                if event_name not in event_name_to_id:
+                    continue
+
+                event_id = event_name_to_id[event_name]
+
+                for name in employee_names:
+                    if str(row[name]).strip().lower() == "x":
+                        if name in name_to_id:
+                            emp_id = name_to_id[name]
+                            requests.add((emp_id, event_id))
+
+        except Exception as e:
+            print(f"Villa við lestur beiðna: {e}")
+
+    return dict_events, dict_employees, employee_days, score_rules, skillset_scores, requests
 
 
 def open_previous_scores(json_path: str) -> dict[int, float]:
