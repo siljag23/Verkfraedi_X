@@ -1,6 +1,7 @@
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
+from datetime import timedelta
 
 
 def Optimization_Staff_Scheduling2(
@@ -40,7 +41,6 @@ def Optimization_Staff_Scheduling2(
 
     REWARD_REQUEST = 75
     PENALTY_HISTORY = 5
-    PENALTY_CHANGE = 20
 
     # =========================================================
     # HELPER
@@ -92,6 +92,34 @@ def Optimization_Staff_Scheduling2(
             dur = 4
 
         shift_dur[j] = dur
+
+    # -------------------------
+    # SHIFT TIMES
+    # -------------------------
+    shift_start = {}
+    shift_end = {}
+
+    for j in events:
+        start_h = to_hours(start[j])
+        shift_start[j] = event_date[j] + pd.to_timedelta(start_h, unit="h")
+        shift_end[j] = shift_start[j] + pd.to_timedelta(shift_dur[j], unit="h")
+
+    # -------------------------
+    # BLOCKED PAIRS (11h rest)
+    # -------------------------
+    blocked_pairs = set()
+
+    sorted_events = sorted(events, key=lambda j: shift_start[j])
+
+    for idx, j1 in enumerate(sorted_events):
+        for j2 in sorted_events[idx+1:]:
+
+            rest_time = shift_start[j2] - shift_end[j1]
+
+            if rest_time >= timedelta(hours=11):
+                break
+
+            blocked_pairs.add((j1, j2))
 
     total_days = len(set(event_date[j].date() for j in events))
 
@@ -158,6 +186,25 @@ def Optimization_Staff_Scheduling2(
         model.addConstr(
             gp.quicksum(works[i,j] for j in events) >= availability[i] * 3
         )
+    
+    # MAX 1 SHIFT PER DAY
+    for i in employees:
+        for d in set(event_date[j].date() for j in events):
+
+            model.addConstr(
+                gp.quicksum(
+                    works[i,j]
+                    for j in events
+                    if event_date[j].date() == d
+                ) <= 1
+            )
+
+    # 11 HOUR REST
+    model.addConstrs(
+        (works[i,j1] + works[i,j2] <= 1
+        for i in employees
+        for (j1,j2) in blocked_pairs)
+    )
 
     # Weekly constraints
     for i in employees:
@@ -257,7 +304,7 @@ def Optimization_Staff_Scheduling2(
     # =========================================================
     # SOLVER
     # =========================================================
-    model.setParam("MIPGap", 0.02)
+    model.setParam("MIPGap", 0.01)
     model.setParam("TimeLimit", 60)
     model.setParam("MIPFocus", 1)
 
