@@ -17,10 +17,14 @@ def Plot_Results(dict_employees, hours_per_employee):
 
     names = [dict_employees[i]["EmployeeName"] for i in sorted_ids]
     scores = [dict_employees[i].get("Score", 0) for i in sorted_ids]
-    
+    prev_scores = [dict_employees[i].get("prev_score", 0) for i in sorted_ids]
+    scores_now = [
+        scores[i] - prev_scores[i]
+        for i in range(len(scores))]
+
     # Plot 1 – Score
     plt.figure(figsize=(12,6))
-    plt.bar(names, scores)
+    plt.bar(names, scores_now)
     plt.title("Score dreifing")
     plt.ylabel("Score")
     plt.xticks(rotation=90)
