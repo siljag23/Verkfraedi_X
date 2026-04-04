@@ -264,7 +264,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         datetime_info = get_event_datetime_info(event_id)
         event_date = datetime_info["event_date"]
         total_shift_hours = datetime_info["total_shift_hours"]
-
+        
         hall = event.get("Hall")
 
         event_score = event["EventRanking"]

@@ -121,6 +121,10 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     period_end = max(event["Date"] for event in dict_events.values())
     period_days = (period_end - period_start).days + 1
 
+    print("days_off dálkar:", days_off.columns.tolist())
+    print("days_off gildi:")
+    print(days_off.head())
+
     for emp_id in dict_employees:
         days_off_count = len(employee_days.get(emp_id, set()))
         available_days = period_days - days_off_count
@@ -132,17 +136,20 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
             employee_days[emp_id] = set()
 
         for col in days_off.columns[1:]:
-
             if row[col] == 1:
-                
-                # Ef Excel date
                 if hasattr(col, "date"):
                     date = col.date()
-                
-                # Ef string
-                else: 
-                    date = datetime.strptime(str(col), "%d.%m.%Y").date()
-
+                else:
+                    # Bæta við fleiri formats
+                    for fmt in ("%d.%m.%Y", "%d.%m.%Y", "%-d.%-m.%Y"):
+                        try:
+                            date = datetime.strptime(str(col).strip(), fmt).date()
+                            break
+                        except ValueError:
+                            continue
+                    else:
+                        # Nota pandas ef strptime klikkar
+                        date = pd.to_datetime(str(col), dayfirst=True).date()
                 employee_days[emp_id].add(date)
 
     # Tryggjum að allir starfsmenn séu í employee_days þó þeir eigi enga frídaga
