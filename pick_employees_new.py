@@ -3,7 +3,7 @@ from shift_length import shift_length
 
 
 def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee,
-                      max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores):
+                      max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores, event_requests):
     """
     Aðalfall:
     - velur starfsmann fyrst út frá forgangi
@@ -319,12 +319,14 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                 score_rules.get("Shift_over_six_hours", {}),
                 current_over_six_count, 0)
 
-        # =========================
         # Skillset score úr SkillsetScores
-        # =========================
         skill_adjustment = 0
         if required_skill is not None:
             skill_adjustment = skillset_scores.get(required_skill, {}).get(emp_current_skill, 0)
+
+        req_adjustment = 0
+        if (emp_id, event_id) in event_requests:
+            req_adjustment = lookup_score(score_rules.get("Req_this_shift", {}), 1, 0)
 
         return (
             event_score
@@ -335,6 +337,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             + shift_length_adjustment
             + shift_over_six_hours_adjustment
             + skill_adjustment
+            + req_adjustment
         )
 
     def can_take_role(emp_id: int, event_id: int, role: dict, event_state: dict) -> bool:

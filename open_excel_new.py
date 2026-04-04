@@ -116,10 +116,20 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     # Geymir þá daga sem hver starfsmaður er skráður í frí
     employee_days = {}
 
-    # Tökum saman daga sem starfsmenn eru skráðir í frí 
-    for _, row in days_off.iterrows():
-        emp_id = int(row["EmployeeID"])
-        employee_days[emp_id] = set()
+    # Reiknum tiltækt hlutfall fyrir hvern starfsmann
+    period_start = min(event["Date"] for event in dict_events.values())
+    period_end = max(event["Date"] for event in dict_events.values())
+    period_days = (period_end - period_start).days + 1
+
+    for emp_id in dict_employees:
+        days_off_count = len(employee_days.get(emp_id, set()))
+        available_days = period_days - days_off_count
+        dict_employees[emp_id]["availability_ratio"] = available_days / period_days
+
+        # Tökum saman daga sem starfsmenn eru skráðir í frí 
+        for _, row in days_off.iterrows():
+            emp_id = int(row["EmployeeID"])
+            employee_days[emp_id] = set()
 
         for col in days_off.columns[1:]:
 
