@@ -130,8 +130,16 @@ Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 # Vistum niðurstöður í 2 json skjöl
 Export_Json(dict_employees, dict_events, rows, month)
 
+period_start = min(event["Date"] for event in dict_events.values())
+period_end = max(event["Date"] for event in dict_events.values())
+
 # Prentum niðurstöðurnar í excel
-export_schedule_to_excel(rows, dict_events, dict_employees, f"{month}_schedule_results.xlsx")
+export_schedule_to_excel(rows, 
+                         dict_events, 
+                         dict_employees, 
+                         f"{month}_schedule_results.xlsx", 
+                         period_start = period_start, 
+                         period_end=period_end )
 
 # Plottum niðurstöður
 """
