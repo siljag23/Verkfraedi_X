@@ -6,23 +6,15 @@ from datetime import datetime, time, timedelta
 from collections import defaultdict
 
 def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name, sheet_5_name, sheet_requests=None):
-    """
-    Les excel input skjalið og skilar:
-    - dict_events: upplýsingar um viðburði
-    - dict_employees: upplýsingar um starfsmenn
-    - employee_days: frídagar starfsmanna
-    - score_rules: almenn stigaregla, t.d. Weekend, Hall o.s.frv.
-    - skillset_scores: stig fyrir skillset samanburð
-    """
 
-    # Lesa inn sheets í excel skjali
-    events = pd.read_excel(file_name, sheet_name = sheet_1_name)
-    employees  = pd.read_excel(file_name, sheet_name = sheet_2_name)
-    days_off = pd.read_excel(file_name, sheet_name = sheet_3_name)
+    # Lesa inn sheets
+    events = pd.read_excel(file_name, sheet_name=sheet_1_name)
+    employees = pd.read_excel(file_name, sheet_name=sheet_2_name)
+    days_off = pd.read_excel(file_name, sheet_name=sheet_3_name)
     score_keys = pd.read_excel(file_name, sheet_name=sheet_4_name)
     skillset_scores_df = pd.read_excel(file_name, sheet_name=sheet_5_name)
 
-    # Hreinsa skjölin, eyða tómum og ónenfndum línum/dálkum
+    # Hreinsa
     events = events.dropna(how="all")
     employees = employees.dropna(how="all")
     days_off = days_off.dropna(how="all")
@@ -40,17 +32,17 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     score_keys.columns = score_keys.columns.str.strip()
     skillset_scores_df.columns = skillset_scores_df.columns.str.strip()
     days_off.columns = [str(col).strip() if not hasattr(col, "date") else col for col in days_off.columns]
-    
-    # Búum til dictionary með upplýsingum úr sheetum þar sem ID er lykill
+
+    # Búum til dicts
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
-    
-    # Breytum skillset og score í tölur
+
+    # Umbreyta gildum í dict_employees
     for emp_id, info in dict_employees.items():
         info["Skillset"] = int(info.get("Skillset", 0) or 0)
         info["Score"] = float(info.get("Score", 0) or 0)
 
-    # Breytum gildum úr dict_events í tölur
+    # Umbreyta gildum í dict_events
     for event_id, event in dict_events.items():
         event["Employees"] = int(event.get("Employees", 0) or 0)
         event["Skillset1"] = int(event.get("Skillset1", 0) or 0)
@@ -62,15 +54,12 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
             s = str(raw).strip() if raw is not None else ""
             event[col] = "" if s.lower() == "nan" else s
 
-    for event_id, event in dict_events.items():
-        # Umbreyta dagsetningu
         raw_date = event["Date"]
         if isinstance(raw_date, str):
             event["Date"] = datetime.strptime(raw_date.strip(), "%d.%m.%Y").date()
         elif hasattr(raw_date, "date"):
             event["Date"] = raw_date.date()
 
-        # Umbreyta tímum
         for time_col in ["ShiftBegins", "ShiftEnds"]:
             raw = event[time_col]
             if isinstance(raw, time):
@@ -106,127 +95,77 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         dict_employees[emp_id]["prev_hours_worked"] = 0
         dict_employees[emp_id]["prev_worked_days"] = []
         dict_employees[emp_id]["prev_shifts_per_hall"] = {}
-    
-    days_off = days_off.fillna(0)
 
-    # Breytum EmployeeID í heiltölu
+    # Lesa frídaga
+    days_off = days_off.fillna(0)
     days_off["EmployeeID"] = days_off["EmployeeID"].astype(int)
     employees["EmployeeID"] = employees["EmployeeID"].astype(int)
 
-    # Geymir þá daga sem hver starfsmaður er skráður í frí
     employee_days = {}
 
-    # Reiknum tiltækt hlutfall fyrir hvern starfsmann
-    period_start = min(event["Date"] for event in dict_events.values())
-    period_end = max(event["Date"] for event in dict_events.values())
-    period_days = (period_end - period_start).days + 1
-
-    print("days_off dálkar:", days_off.columns.tolist())
-    print("days_off gildi:")
-    print(days_off.head())
-
-    for emp_id in dict_employees:
-        days_off_count = len(employee_days.get(emp_id, set()))
-        available_days = period_days - days_off_count
-        dict_employees[emp_id]["availability_ratio"] = available_days / period_days
-
-        # Tökum saman daga sem starfsmenn eru skráðir í frí 
-        for _, row in days_off.iterrows():
-            emp_id = int(row["EmployeeID"])
-            employee_days[emp_id] = set()
+    for _, row in days_off.iterrows():
+        emp_id = int(row["EmployeeID"])
+        employee_days[emp_id] = set()
 
         for col in days_off.columns[1:]:
             if row[col] == 1:
                 if hasattr(col, "date"):
                     date = col.date()
                 else:
-                    # Bæta við fleiri formats
-                    for fmt in ("%d.%m.%Y", "%d.%m.%Y", "%-d.%-m.%Y"):
-                        try:
-                            date = datetime.strptime(str(col).strip(), fmt).date()
-                            break
-                        except ValueError:
-                            continue
-                    else:
-                        # Nota pandas ef strptime klikkar
-                        date = pd.to_datetime(str(col), dayfirst=True).date()
+                    date = pd.to_datetime(str(col), dayfirst=True).date()
                 employee_days[emp_id].add(date)
 
-    # Tryggjum að allir starfsmenn séu í employee_days þó þeir eigi enga frídaga
+    # Tryggja að allir starfsmenn séu í employee_days
     for emp_id in dict_employees:
         if emp_id not in employee_days:
             employee_days[emp_id] = set()
 
-     # =========================
-    # Lesa inn almenn stig úr ScoreKeys
-    # score_rules verður á forminu:
-    # {
-    #   "Weekend": {0: 50, 1: 30, 2: 15, ...},
-    #   "Hall": {1: 20, 2: 10, ...},
-    #   ...
-    # }
-    # =========================
-    score_rules = {}
+    # Reikna availability_ratio - EFTIR að frídagar eru lesdir
+    period_start = min(event["Date"] for event in dict_events.values())
+    period_end = max(event["Date"] for event in dict_events.values())
+    period_days = (period_end - period_start).days + 1
 
+    for emp_id in dict_employees:
+        days_off_count = len(employee_days.get(emp_id, set()))
+        available_days = period_days - days_off_count
+        dict_employees[emp_id]["availability_ratio"] = available_days / period_days
+
+    # Lesa score_rules
+    score_rules = {}
     for _, row in score_keys.iterrows():
         rule_type = str(row["RuleType"]).strip()
         key = int(row["Key"])
         score = float(row["Score"])
-
         if rule_type not in score_rules:
             score_rules[rule_type] = {}
-
         score_rules[rule_type][key] = score
 
-    # =========================
-    # Lesa inn skillset stig úr SkillsetScores
-    # skillset_scores verður á forminu:
-    # {
-    #   1: {1: 100, 2: -200, 3: -200},
-    #   2: {1: -200, 2: 100, 3: -50},
-    #   3: {1: -1000, 2: -1000, 3: 100}
-    # }
-    # =========================
+    # Lesa skillset_scores
     skillset_scores = {}
-
     for _, row in skillset_scores_df.iterrows():
         req_skill = int(row["ReqSkillset"])
         emp_skill = int(row["EmpSkillset"])
         score = float(row["Score"])
-
         if req_skill not in skillset_scores:
             skillset_scores[req_skill] = {}
-
         skillset_scores[req_skill][emp_skill] = score
 
-    # Lesa inn beiðnir starfsmanna um ákveðnar vaktir
+    # Lesa óskir um vaktir
     requests = set()
-
     if sheet_requests is not None:
         try:
             event_req = pd.read_excel(file_name, sheet_name=sheet_requests)
             event_req.columns = event_req.columns.str.strip()
-
             employee_names = list(event_req.columns[2:])
 
-            name_to_id = {
-                dict_employees[i]["EmployeeName"]: i
-                for i in dict_employees
-            }
-
-            event_name_to_id = {
-                dict_events[j]["Event"]: j
-                for j in dict_events
-            }
+            name_to_id = {dict_employees[i]["EmployeeName"]: i for i in dict_employees}
+            event_name_to_id = {dict_events[j]["Event"]: j for j in dict_events}
 
             for _, row in event_req.iterrows():
                 event_name = row["Event"]
-
                 if event_name not in event_name_to_id:
                     continue
-
                 event_id = event_name_to_id[event_name]
-
                 for name in employee_names:
                     if str(row[name]).strip().lower() == "x":
                         if name in name_to_id:
@@ -237,7 +176,6 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
             print(f"Villa við lestur beiðna: {e}")
 
     return dict_events, dict_employees, employee_days, score_rules, skillset_scores, requests
-
 
 def open_previous_scores(json_path: str) -> dict[int, float]:
     """Les json skjal síðasta mánaðar (ef til) og skilar {EmployeeID: Score}"""

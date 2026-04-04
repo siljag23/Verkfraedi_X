@@ -27,6 +27,9 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
             "Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
 
+print("id:", id(employees_days_off))
+print("gildi:", employees_days_off.get(1))
+
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
 previous_json_list = "02_26_output_list.json" # Hef þetta svona í bili
@@ -36,6 +39,8 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
+
+print("Eftir merge:", employees_days_off.get(1))
 
 rows = []
 
