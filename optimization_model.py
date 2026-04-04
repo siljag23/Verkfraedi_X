@@ -118,6 +118,29 @@ Employee_Diagnostics(
 # -------------------------
 # EXPORT
 # -------------------------
+
+for i in employees:
+
+    # total shifts
+    dict_employees[i]["Number_of_shifts"] = sum(
+        works[i,j].X for j in events
+    )
+
+    # weekend shifts
+    dict_employees[i]["Shifts_on_weekends"] = sum(
+        works[i,j].X * weekend[j] for j in events
+    )
+
+    # shifts per hall
+    shifts_per_hall = {}
+
+    for j in events:
+        if works[i,j].X > 0.5:
+            h = dict_events[j]["Hall"]
+            shifts_per_hall[h] = shifts_per_hall.get(h, 0) + 1
+
+    dict_employees[i]["Shifts_per_hall"] = shifts_per_hall
+    
 Export_Json(
     dict_events,
     dict_employees,
