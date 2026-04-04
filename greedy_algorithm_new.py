@@ -24,7 +24,8 @@ min_rest_hours = 13
 month = input("Mánuður vaktaplans á format mm_yy: ")
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
-dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel("Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
+dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
+            "Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
@@ -50,12 +51,13 @@ try:
                                           min_rest_hours,
                                           employee_worked_days, 
                                           score_rules, 
-                                          skillset_scores)
+                                          skillset_scores,
+                                          event_requests)
 
 except Exception as e:
     print("ERROR ->", e)
 
-"""
+
 # Sýnir hvernig vaktir skiptast á vikur
 print("\nVaktir per starfsmaður per viku:")
 print("-" * 50)
@@ -84,9 +86,9 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
         row += f"{count:>12}"
     row += f"{total:>10}"
     print(row)
-"""
 
-"""
+
+
 # Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
 print("\nVaktir per starfsmaður per category:")
 print("-" * 50)
@@ -115,7 +117,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
         row += f"{count:>12}"
     row += f"{total:>10}"
     print(row)
-"""
+
 
 # Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
@@ -127,8 +129,9 @@ Export_Json(dict_employees, dict_events, rows, month)
 export_schedule_to_excel(rows, dict_events, dict_employees, f"{month}_schedule_results.xlsx")
 
 # Plottum niðurstöður
-"""
+
 Plot_Results(dict_employees, hours_per_employee)
+
 Plot_Results_Over_Time(dict_employees, hours_per_employee)
 Plot_Total_Stats(dict_employees, hours_per_employee)
-"""
+
