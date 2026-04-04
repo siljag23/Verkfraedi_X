@@ -46,6 +46,13 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     if period_weeks <= 0:
         period_weeks = 1
 
+    # Reikna lágmarksvaktir m.v. frí
+    base_min_shifts = 4
+
+    for emp_id in dict_employees:
+        ratio = dict_employees[emp_id].get("availability_ratio", 1.0)
+        dict_employees[emp_id]["min_shifts"] = round(base_min_shifts * ratio)
+
     def get_event_datetime_info(event_id: int):
         """Sækir allar grunnupplýsingar um dagsetningu, tíma og skiptingu vaktar á daga"""
         event = dict_events[event_id]
@@ -211,6 +218,9 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             return False
 
         if not respects_min_rest(emp_id, shift_begins, shift_ends):
+            return False
+        
+        if dict_employees[emp_id]["Number_of_shifts"] >= dict_employees[emp_id].get("max_shifts", float("inf")):
             return False
 
         return True
