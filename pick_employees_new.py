@@ -47,7 +47,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         period_weeks = 1
 
     # Reikna lágmarksvaktir m.v. frí
-    base_min_shifts = 4
+    base_min_shifts = 3
 
     for emp_id in dict_employees:
         ratio = dict_employees[emp_id].get("availability_ratio", 1.0)
