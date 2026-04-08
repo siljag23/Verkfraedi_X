@@ -37,6 +37,7 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
 
+
 rows = []
 
 # Röðum starfsmönnum niður á viðburði
@@ -57,7 +58,7 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
-
+"""
 # Sýnir hvernig vaktir skiptast á vikur
 print("\nVaktir per starfsmaður per viku:")
 print("-" * 50)
@@ -86,9 +87,9 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
         row += f"{count:>12}"
     row += f"{total:>10}"
     print(row)
+"""
 
-
-
+"""
 # Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
 print("\nVaktir per starfsmaður per category:")
 print("-" * 50)
@@ -117,7 +118,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
         row += f"{count:>12}"
     row += f"{total:>10}"
     print(row)
-
+"""
 
 # Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
@@ -125,13 +126,20 @@ Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 # Vistum niðurstöður í 2 json skjöl
 Export_Json(dict_employees, dict_events, rows, month)
 
+period_start = min(event["Date"] for event in dict_events.values())
+period_end = max(event["Date"] for event in dict_events.values())
+
 # Prentum niðurstöðurnar í excel
-export_schedule_to_excel(rows, dict_events, dict_employees, f"{month}_schedule_results.xlsx")
+export_schedule_to_excel(rows, 
+                         dict_events, 
+                         dict_employees, 
+                         f"{month}_schedule_results.xlsx", 
+                         period_start = period_start, 
+                         period_end=period_end )
 
 # Plottum niðurstöður
-
+"""
 Plot_Results(dict_employees, hours_per_employee)
-
-Plot_Results_Over_Time(dict_employees, hours_per_employee)
+"""
 Plot_Total_Stats(dict_employees, hours_per_employee)
 

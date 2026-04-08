@@ -6,7 +6,7 @@ def Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee
     for emp_id, info in sorted(
         dict_employees.items(),
         key=lambda x: (
-            x[1].get("Score", 0),
+            x[1].get("Score", 0) - x[1].get("prev_score", 0),
             shifts_per_employee.get(x[0], 0),
             hours_per_employee.get(x[0], 0),
             x[0]

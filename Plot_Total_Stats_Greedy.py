@@ -1,5 +1,6 @@
 
 import matplotlib.pyplot as plt
+import locale
 
 def Plot_Total_Stats(dict_employees, hours_per_employee):
 
@@ -40,20 +41,25 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     def plot_stacked(names, prev_vals, current_vals, title, ylabel):
         combined = list(zip(names, prev_vals, current_vals))
 
-        # hockey stick út frá heild
-        combined.sort(key=lambda x: x[1] + x[2], reverse=True)
+        # Röðum starfsmönnum í stafrófsröð
+        try:
+            locale.setlocale(locale.LC_ALL, "is_IS.UTF-8")
+            combined = sorted(combined, key=lambda x: locale.strxfrm(x[0]))
+        except:
+            # fallback ef locale virkar ekki (algengt á Windows)
+            combined = sorted(combined, key=lambda x: x[0].lower())
 
         sorted_names = [x[0] for x in combined]
         sorted_prev = [x[1] for x in combined]
         sorted_current = [x[2] for x in combined]
 
         plt.figure(figsize=(12, 6))
-        plt.bar(sorted_names, sorted_prev, label="Fyrra tímabil")
-        plt.bar(sorted_names, sorted_current, bottom=sorted_prev, label="Nýtt plan")
+        plt.bar(sorted_names, sorted_prev, color = "black", label="Last period")
+        plt.bar(sorted_names, sorted_current, bottom=sorted_prev, color = "#ff6e1b", label="Current period")
         plt.title(title)
         plt.ylabel(ylabel)
         plt.xticks(rotation=90)
-        plt.legend()
+        plt.legend(loc="upper right")
         plt.tight_layout()
         plt.show()
 
@@ -61,23 +67,23 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         names,
         prev_shifts,
         current_shifts,
-        "Heildarfjöldi vakta",
-        "Vaktir",
+        "Total Shifts",
+        "Number of shifts",
     )
 
     plot_stacked(
         names,
         prev_hours,
         current_hours,
-        "Heildar vinnustundir",
-        "Klst",
+        "Total work hours",
+        "Hours",
     )
 
     plot_stacked(
         names,
         prev_scores,
         current_scores,
-        "Heildar score",
+        "Total score",
         "Score",
     )
 
@@ -85,6 +91,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         names,
         prev_weekends,
         current_weekends,
-        "Heildar helgarvaktir",
-        "Vaktir",
+        "Total Shifts on Weekends",
+        "Number of Shifts on Weekends",
     )

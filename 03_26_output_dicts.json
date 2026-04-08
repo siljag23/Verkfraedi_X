@@ -394,102 +394,102 @@
     "employees": {
         "1": {
             "EmployeeName": "Ásdís",
-            "Score": 290.0,
+            "Score": 270.0,
             "Skillset": 3
         },
         "2": {
             "EmployeeName": "Helgi",
-            "Score": 290.0,
+            "Score": 280.0,
             "Skillset": 3
         },
         "3": {
             "EmployeeName": "Össur",
-            "Score": 280.0,
+            "Score": 240.0,
             "Skillset": 3
         },
         "4": {
             "EmployeeName": "Thelma",
-            "Score": 290.0,
+            "Score": 320.0,
             "Skillset": 3
         },
         "5": {
             "EmployeeName": "Pétur",
-            "Score": 220.0,
+            "Score": 270.0,
             "Skillset": 2
         },
         "6": {
             "EmployeeName": "Unnur",
-            "Score": 230.0,
+            "Score": 260.0,
             "Skillset": 2
         },
         "7": {
             "EmployeeName": "Harpa",
-            "Score": 300.0,
+            "Score": 260.0,
             "Skillset": 2
         },
         "8": {
             "EmployeeName": "Vala",
-            "Score": 290.0,
+            "Score": 260.0,
             "Skillset": 2
         },
         "9": {
             "EmployeeName": "Freyja",
-            "Score": 240.0,
+            "Score": 260.0,
             "Skillset": 2
         },
         "10": {
             "EmployeeName": "Björk",
-            "Score": 270.0,
+            "Score": 300.0,
             "Skillset": 2
         },
         "11": {
             "EmployeeName": "Oliver",
-            "Score": 270.0,
+            "Score": 290.0,
             "Skillset": 2
         },
         "12": {
             "EmployeeName": "Lísa",
-            "Score": 270.0,
+            "Score": 290.0,
             "Skillset": 1
         },
         "13": {
             "EmployeeName": "Erla",
-            "Score": 270.0,
+            "Score": 290.0,
             "Skillset": 2
         },
         "14": {
             "EmployeeName": "Rakel",
-            "Score": 260.0,
+            "Score": 270.0,
             "Skillset": 2
         },
         "15": {
             "EmployeeName": "Davíð",
-            "Score": 260.0,
+            "Score": 250.0,
             "Skillset": 2
         },
         "16": {
             "EmployeeName": "Laufey",
-            "Score": 260.0,
+            "Score": 240.0,
             "Skillset": 2
         },
         "17": {
             "EmployeeName": "Aron",
-            "Score": 290.0,
+            "Score": 280.0,
             "Skillset": 2
         },
         "18": {
             "EmployeeName": "Sara",
-            "Score": 290.0,
+            "Score": 280.0,
             "Skillset": 1
         },
         "19": {
             "EmployeeName": "Úlfur",
-            "Score": 310.0,
+            "Score": 280.0,
             "Skillset": 1
         },
         "20": {
             "EmployeeName": "Máni",
-            "Score": 250.0,
+            "Score": 270.0,
             "Skillset": 2
         },
         "21": {
@@ -504,22 +504,22 @@
         },
         "23": {
             "EmployeeName": "Kata",
-            "Score": 250.0,
+            "Score": 300.0,
             "Skillset": 2
         },
         "24": {
             "EmployeeName": "Ylfa",
-            "Score": 250.0,
+            "Score": 290.0,
             "Skillset": 2
         },
         "25": {
             "EmployeeName": "Jóna",
-            "Score": 290.0,
+            "Score": 250.0,
             "Skillset": 2
         },
         "26": {
             "EmployeeName": "Silja",
-            "Score": 340.0,
+            "Score": 270.0,
             "Skillset": 1
         },
         "27": {
@@ -534,12 +534,12 @@
         },
         "29": {
             "EmployeeName": "Ólafur",
-            "Score": 270.0,
+            "Score": 260.0,
             "Skillset": 1
         },
         "30": {
             "EmployeeName": "Anna",
-            "Score": 290.0,
+            "Score": 280.0,
             "Skillset": 1
         },
         "31": {
@@ -549,7 +549,7 @@
         },
         "32": {
             "EmployeeName": "Gunnar",
-            "Score": 280.0,
+            "Score": 290.0,
             "Skillset": 1
         }
     }
