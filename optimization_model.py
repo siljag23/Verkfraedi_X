@@ -72,7 +72,8 @@ model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Schedul
     dict_employees,
     employee_days,
     hist_shifts,
-    hist_hours,
+    hist_hours = None,
+    hist_weekend = hist_weekend,
     requests=requests
 )
 
@@ -88,6 +89,7 @@ else:
 # -------------------------
 # PRINT RESULTS
 # -------------------------
+
 Print_Results(
     model,
     employees,
@@ -101,6 +103,21 @@ Print_Results(
     shift_dur,
     shift_score,
     weekend
+)
+
+stats = Total_Stats(
+    employees,
+    events,
+    works,
+    dict_employees,
+    shift_dur,
+    shift_score,
+    event_date,
+    employee_days,
+    hist_shifts,
+    hist_hours,
+    hist_scores,
+    hist_weekend
 )
 
 Employee_Diagnostics(
@@ -118,7 +135,6 @@ Employee_Diagnostics(
 # -------------------------
 # EXPORT
 # -------------------------
-
 for i in employees:
 
     # total shifts
@@ -153,21 +169,6 @@ Export_Json(
 # -------------------------
 # PLOTS
 # -------------------------
-"""
-Plot_Results_Over_Time(
-    employees,
-    events,
-    works,
-    shift_dur,
-    shift_score,
-    event_date,
-    dict_employees,
-    hist_shifts,
-    hist_hours,
-    hist_scores,
-    hist_weekend
-)
-"""
 
 Plot_Total_Stats(
     employees,
@@ -177,6 +178,7 @@ Plot_Total_Stats(
     shift_dur,
     shift_score,
     event_date,
+    employee_days, 
     hist_shifts,
     hist_hours,
     hist_scores,

@@ -12,6 +12,7 @@ def Optimization_Staff_Scheduling2(
     hist_shifts=None,
     hist_hours=None,
     hist_halls=None,
+    hist_weekend=None,
     current_schedule=None,
     requests=None
 ):
@@ -22,19 +23,20 @@ def Optimization_Staff_Scheduling2(
     hist_shifts = hist_shifts or {}
     hist_hours = hist_hours or {}
     hist_halls = hist_halls or {}
+    hist_weekend = hist_weekend or {}
     requests = requests or set()
 
     MAX_WORKHOURS_PER_WEEK = 48
     MAX_WORKDAYS_PER_WEEK = 6
 
     W_SHIFTS = 1
-    W_HOURS = 1.25
+    W_HOURS = 5
     W_SCORE = 0.8
-    W_WEEKEND = 0.6
+    W_WEEKEND = 5
     W_HALLS = 0.5
     W_WEEKLY_BALANCE = 0.7
 
-    REWARD_REQUEST = 75
+    REWARD_REQUEST = 10
     PENALTY_HISTORY = 5
 
     def to_hours(t):
@@ -48,6 +50,7 @@ def Optimization_Staff_Scheduling2(
                 return t.hour + t.minute / 60
             except:
                 return 0
+
 
     emp_demand = {j: dict_events[j]["Employees"] for j in events}
     skill1_req = {j: dict_events[j]["Skillset1"] for j in events}
@@ -205,6 +208,7 @@ def Optimization_Staff_Scheduling2(
         hours_i = gp.quicksum(works[i,j]*shift_dur[j] for j in events)
         score_i = gp.quicksum(works[i,j]*shift_score[j] for j in events)
         weekend_i = gp.quicksum(works[i,j]*weekend[j] for j in events)
+        total_weekend_i = hist_weekend.get(i, 0) + weekend_i
 
         total_shifts = hist_shifts.get(i,0) + shifts_i
         total_hours = hist_hours.get(i,0) + hours_i
@@ -218,8 +222,8 @@ def Optimization_Staff_Scheduling2(
         model.addConstr(score_i >= min_score * scale[i])
         model.addConstr(score_i <= max_score * scale[i])
 
-        model.addConstr(weekend_i >= min_weekend * scale[i])
-        model.addConstr(weekend_i <= max_weekend * scale[i])
+        model.addConstr(total_weekend_i >= min_weekend)
+        model.addConstr(total_weekend_i <= max_weekend)
 
     min_hall = {h: model.addVar() for h in halls}
     max_hall = {h: model.addVar() for h in halls}
@@ -239,7 +243,10 @@ def Optimization_Staff_Scheduling2(
         if i in employees and j in events
     )
 
-    history_penalty = gp.quicksum(hist_shifts.get(i,0) for i in employees)
+    history_penalty = gp.quicksum(
+        hist_shifts.get(i, 0) * gp.quicksum(works[i, j] for j in events)
+        for i in employees
+)
 
     model.setObjective(
         - W_SHIFTS * (max_shifts - min_shifts)
@@ -253,7 +260,7 @@ def Optimization_Staff_Scheduling2(
         GRB.MAXIMIZE
     )
 
-    model.setParam("MIPGap", 0.05)
+    model.setParam("MIPGap", 0.02)
     model.setParam("TimeLimit", 60)
     model.setParam("MIPFocus", 1)
 
