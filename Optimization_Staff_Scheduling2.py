@@ -113,11 +113,6 @@ def Optimization_Staff_Scheduling2(
         availability[i] = (total_days - len(days_off)) / total_days if total_days > 0 else 1
         scale[i] = max(availability[i], 0.1)
 
-    print("\n--- Availability per employee ---")
-    for i in employees:
-        name = dict_employees[i]["EmployeeName"]
-        print(f"{name}: availability={availability[i]:.2f}, scale={scale[i]:.2f}")
-
     model = gp.Model("Event_staffing")
 
     works = model.addVars(employees, events, vtype=GRB.BINARY, name="works")
@@ -260,7 +255,7 @@ def Optimization_Staff_Scheduling2(
         GRB.MAXIMIZE
     )
 
-    model.setParam("MIPGap", 0.02)
+    model.setParam("MIPGap", 0.03)
     model.setParam("TimeLimit", 60)
     model.setParam("MIPFocus", 1)
 

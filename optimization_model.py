@@ -1,20 +1,15 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from gurobipy import GRB
-
 from open_excel_opti import open_excel_opti
 from Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
 from export_schedule_to_excel import export_schedule_to_excel
-from Plot_Results_Over_Time import Plot_Results_Over_Time
 from Plot_Total_Stats import Plot_Total_Stats
 from Load_JSON_History import Load_JSON_History
 from Export_Json import Export_Json
 from Print_Results import Print_Results
 from Employee_Diagnostics import Employee_Diagnostics
 from compute_shift_duration import compute_shift_duration
+from Total_Stats import Total_Stats
 
 # -------------------------
-
 # SETTINGS
 # -------------------------
 input_excel = "Input.xlsx"
@@ -105,19 +100,17 @@ Print_Results(
     weekend
 )
 
-stats = Total_Stats(
+Total_Stats(
     employees,
     events,
-    works,
+    dict_events,
     dict_employees,
-    shift_dur,
-    shift_score,
-    event_date,
     employee_days,
     hist_shifts,
     hist_hours,
     hist_scores,
-    hist_weekend
+    hist_weekend,
+    requests
 )
 
 Employee_Diagnostics(
