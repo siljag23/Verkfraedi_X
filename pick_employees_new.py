@@ -328,6 +328,15 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             shift_over_six_hours_adjustment = lookup_score(
                 score_rules.get("Shift_over_six_hours", {}),
                 current_over_six_count, 0)
+            
+        # Fjöldi vakta af sömu category
+        category = event["EventCategory"]
+        category_count = dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0)
+
+        category_adjustment = 0
+        if category:
+            category_adjustment = lookup_score(
+                score_rules.get("Category", {}), category_count, 0)        
 
         # Skillset score úr SkillsetScores
         skill_adjustment = 0
@@ -348,6 +357,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             + shift_over_six_hours_adjustment
             + skill_adjustment
             + req_adjustment
+            + category_adjustment
         )
 
     def can_take_role(emp_id: int, event_id: int, role: dict, event_state: dict) -> bool:

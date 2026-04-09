@@ -58,7 +58,7 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
-"""
+
 # Sýnir hvernig vaktir skiptast á vikur
 print("\nVaktir per starfsmaður per viku:")
 print("-" * 50)
@@ -87,9 +87,9 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
         row += f"{count:>12}"
     row += f"{total:>10}"
     print(row)
-"""
 
-"""
+
+
 # Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
 print("\nVaktir per starfsmaður per category:")
 print("-" * 50)
@@ -118,7 +118,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
         row += f"{count:>12}"
     row += f"{total:>10}"
     print(row)
-"""
+
 
 # Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
