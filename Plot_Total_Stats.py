@@ -177,3 +177,21 @@ def Plot_Total_Stats(
     plt.xticks(rotation=90)
     plt.tight_layout()
     plt.show()
+
+    # =====================================================
+    # PRINT STATS 📊
+    # =====================================================
+    print("\n================ TOTAL STATS =================\n")
+
+    def print_stats(label, values):
+        print(f"{label}:")
+        print(f"  Avg: {np.mean(values):.2f}")
+        print(f"  Min: {np.min(values):.2f}")
+        print(f"  Max: {np.max(values):.2f}")
+        print(f"  Std: {np.std(values):.2f}\n")
+
+    print_stats("Total Shifts", [h + c for h, c in zip(hist_shifts_vals, current_shifts)])
+    print_stats("Total Hours", total_hours_vals)
+    print_stats("Normalized Hours", norm_hours_vals)
+    print_stats("Total Score", [h + c for h, c in zip(hist_scores_vals, current_scores)])
+    print_stats("Weekend Shifts", [h + c for h, c in zip(hist_weekend_vals, current_weekend)])
