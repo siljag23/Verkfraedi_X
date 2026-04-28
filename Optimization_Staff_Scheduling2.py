@@ -255,10 +255,6 @@ def Optimization_Staff_Scheduling2(
         GRB.MAXIMIZE
     )
 
-    model.setParam("MIPGap", 0.03)
-    model.setParam("TimeLimit", 60)
-    model.setParam("MIPFocus", 1)
-
     model.optimize()
 
     return model, works, shift_dur, weekend, weeks, event_date
