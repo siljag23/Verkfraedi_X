@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, time
 from shift_length import shift_length
 
 
-def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee, max_daily_hours, 
+def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee, max_daily_hours, max_weekly_hours, 
                       assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores, event_requests, base_min_shifts):
     """
     Aðalfall:
@@ -176,7 +176,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         return True
 
     def is_eligible_for_event(emp_id: int, event_id: int) -> bool:
-        """Almenn gjaldgengni starfsmanns fyrir event, óháð því hvaða hlutverk innan vaktar er valið"""
+        """Almenn gjaldgengni starfsmanns fyrir viðburð, óháð því hvaða hlutverk innan vaktar er valið"""
         datetime_info = get_event_datetime_info(event_id)
 
         event_date = datetime_info["event_date"]
@@ -207,23 +207,18 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         projected_total_hours = hours_per_employee.get(emp_id, 0) + total_shift_hours
         avg_weekly_hours = projected_total_hours / period_weeks
-        if avg_weekly_hours > 48:
+        if avg_weekly_hours > max_weekly_hours:
             return False
 
         if not respects_min_rest(emp_id, shift_begins, shift_ends):
             return False
-        
-        if dict_employees[emp_id]["Number_of_shifts"] >= dict_employees[emp_id].get("max_shifts", float("inf")):
-            return False
 
         return True
 
-    def is_valid_final_team(event_id: int, employee_ids: list[int]) -> bool:
+    def is_valid_final_team(employee_ids: list[int]) -> bool:
         """
         Lokatékk á hópnum þegar event er fullmannað.
-
-        Núverandi regla:
-        - ef einhver skillset 3 er í hópnum, þá má hópurinn ekki eingöngu vera skillset 3
+        Núverandi regla: ef einhver skillset 3 er í hópnum, þá má hópurinn ekki eingöngu vera skillset 3
         """
         if not employee_ids:
             return True
@@ -236,50 +231,40 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         return True
 
     def employee_priority(emp_id: int):
-        """Raðar starfsmönnum í forgangsröð, lægstu stig efst"""
-        current_shifts = dict_employees[emp_id]["Number_of_shifts"]
+        """Raðar starfsmönnum í forgangsröð, sá sem er lengst frá því að uppfylla lágmarksfjölda vakta er efst"""
+        number_of_current_shifts = dict_employees[emp_id]["Number_of_shifts"]
         min_shifts = dict_employees[emp_id].get("min_shifts", base_min_shifts)
         
-        # Hlutfall lokið - 0.0 = ekkert lokið, 1.0 = allt lokið
+        # Ef 0.0 = ekkert lokið, 1.0 = allt lokið
         if min_shifts > 0:
-            completion_ratio = current_shifts / min_shifts
+            completion_ratio = number_of_current_shifts / min_shifts
         else:
             completion_ratio = 1.0
         return (
-            completion_ratio,                        # Lægra hlutfall = forgang
+            completion_ratio,                        
             dict_employees[emp_id]["Score"],
-            current_shifts,
+            number_of_current_shifts,
             hours_per_employee[emp_id],
             emp_id
         )
 
     def personal_role_score(emp_id: int, event_id: int, role: dict) -> float:
         """
-        Persónulegt val-score fyrir starfsmann á tiltekið hlutverk á tilteknum event.
-
-        HÆRRA score = betra val fyrir þennan starfsmann.
-
-        Þetta score er aðeins notað við valið.
-        Þegar starfsmaður er úthlutaður fær hann samt upprunaleg EventRanking stig.
+        Persónuleg stig fyrir starfsmenn fyrir hvert hlutverk á hverjum event.
+        HÆRRA score = betri kostur fyrir starfsmanninn.
         """
         event = dict_events[event_id]
         datetime_info = get_event_datetime_info(event_id)
         event_date = datetime_info["event_date"]
         total_shift_hours = datetime_info["total_shift_hours"]
-        
         hall = event.get("Hall")
-
         event_score = event["EventRanking"]
         weekend_count = dict_employees[emp_id]["Shifts_on_weekends"]
-
         hall_count = dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0)
-
         emp_current_skill = dict_employees[emp_id]["Skillset"]
         required_skill = role.get("required_skill")
 
-        # =========================
-        # Score úr ScoreKeys
-        # =========================
+        # -----Stig sótt úr ScoreKeys úr excel input-----
 
         # Helgarvakt í núverandi tímabili
         weekend_adjustment = 0
@@ -366,11 +351,9 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         """
         Finnur besta lausa hlutverkið fyrir starfsmann yfir alla eventa.
         Skilar t.d.
-        {
-            "event_id": 15,
-            "role_id": 2,
-            "score": 11.5
-        }
+        {"event_id": 15,
+         "role_id": 2,
+         "score": 11.5}
         """
         best_option = None
 
@@ -381,7 +364,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                 if not is_eligible_for_event(emp_id, event_id):
                     continue
                 current_team = [r["filled_by"] for r in event_state[event_id]["roles"] if r["filled_by"] is not None]
-                if not is_valid_final_team(event_id, current_team + [emp_id]):
+                if not is_valid_final_team(current_team + [emp_id]):
                     continue
 
                 score = personal_role_score(emp_id, event_id, role)
@@ -525,7 +508,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             for role in event_state[event_id]["roles"]
             if role["filled_by"] is not None]
 
-        if not is_valid_final_team(event_id, final_team):
+        if not is_valid_final_team(final_team):
             raise ValueError(
                 f"Ólöglegur lokahópur fyrir Event {event_id}. Valdir: {final_team}")
 

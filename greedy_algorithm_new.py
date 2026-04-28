@@ -16,6 +16,7 @@ assigned_shifts = defaultdict(list)
 shifts_per_employee = defaultdict(int)
 employee_worked_days = defaultdict(set)
 max_daily_hours = 11
+max_weekly_hours = 48
 min_rest_hours = 13
 base_min_shifts = 3
 
@@ -48,6 +49,7 @@ try:
                                           employees_days_off, 
                                           daily_hours_per_employee, 
                                           max_daily_hours, 
+                                          max_weekly_hours,
                                           assigned_shifts,
                                           min_rest_hours,
                                           employee_worked_days, 
@@ -144,6 +146,7 @@ Plot_Results(dict_employees, hours_per_employee)
 Plot_Total_Stats(dict_employees, hours_per_employee)
 """
 
+"""
 from collections import defaultdict
 from itertools import combinations
 
@@ -164,3 +167,4 @@ for (a, b), count in sorted(pair_counts.items(), key=lambda x: -x[1]):
     name_a = dict_employees[a].get("EmployeeName", str(a))
     name_b = dict_employees[b].get("EmployeeName", str(b))
     print(f"{name_a} & {name_b:<20} {count:>8}")
+"""
