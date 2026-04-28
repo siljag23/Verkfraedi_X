@@ -3,7 +3,6 @@ from open_excel_new import open_excel, open_previous_scores, open_previous_stats
 from pick_employees_new import assign_all_events
 from Print_Results_Greedy import Print_Results_Greedy
 from Plot_Results_Greedy import Plot_Results
-from Plot_Results_Over_Time_Greedy import Plot_Results_Over_Time
 from Plot_Total_Stats_Greedy import Plot_Total_Stats
 from Export_Json_Greedy import Export_Json
 from export_schedule_to_excel_greedy import export_schedule_to_excel
@@ -18,6 +17,7 @@ shifts_per_employee = defaultdict(int)
 employee_worked_days = defaultdict(set)
 max_daily_hours = 11
 min_rest_hours = 13
+base_min_shifts = 3
 
 
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
@@ -53,7 +53,8 @@ try:
                                           employee_worked_days, 
                                           score_rules, 
                                           skillset_scores,
-                                          event_requests)
+                                          event_requests,
+                                          base_min_shifts)
 
 except Exception as e:
     print("ERROR ->", e)
