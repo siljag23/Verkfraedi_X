@@ -244,9 +244,18 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
     def employee_priority(emp_id: int):
         """Raðar starfsmönnum í forgangsröð, lægstu stig efst"""
+        current_shifts = dict_employees[emp_id]["Number_of_shifts"]
+        min_shifts = dict_employees[emp_id].get("min_shifts", base_min_shifts)
+        
+        # Hlutfall lokið - 0.0 = ekkert lokið, 1.0 = allt lokið
+        if min_shifts > 0:
+            completion_ratio = current_shifts / min_shifts
+        else:
+            completion_ratio = 1.0
         return (
+            completion_ratio,                        # Lægra hlutfall = forgang
             dict_employees[emp_id]["Score"],
-            dict_employees[emp_id]["Number_of_shifts"],
+            current_shifts,
             hours_per_employee[emp_id],
             emp_id
         )

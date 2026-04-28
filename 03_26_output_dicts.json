@@ -429,7 +429,7 @@
         },
         "8": {
             "EmployeeName": "Vala",
-            "Score": 250.0,
+            "Score": 320.0,
             "Skillset": 2
         },
         "9": {
@@ -444,12 +444,12 @@
         },
         "11": {
             "EmployeeName": "Oliver",
-            "Score": 300.0,
+            "Score": 320.0,
             "Skillset": 2
         },
         "12": {
             "EmployeeName": "Lísa",
-            "Score": 270.0,
+            "Score": 310.0,
             "Skillset": 1
         },
         "13": {
@@ -474,7 +474,7 @@
         },
         "17": {
             "EmployeeName": "Aron",
-            "Score": 270.0,
+            "Score": 170.0,
             "Skillset": 2
         },
         "18": {
@@ -494,7 +494,7 @@
         },
         "21": {
             "EmployeeName": "Inga",
-            "Score": 280.0,
+            "Score": 250.0,
             "Skillset": 2
         },
         "22": {
@@ -539,7 +539,7 @@
         },
         "30": {
             "EmployeeName": "Anna",
-            "Score": 280.0,
+            "Score": 300.0,
             "Skillset": 1
         },
         "31": {
@@ -549,7 +549,7 @@
         },
         "32": {
             "EmployeeName": "Gunnar",
-            "Score": 310.0,
+            "Score": 290.0,
             "Skillset": 1
         }
     }
