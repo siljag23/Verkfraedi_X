@@ -2,8 +2,8 @@ from datetime import datetime, timedelta, time
 from shift_length import shift_length
 
 
-def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee,
-                      max_daily_hours, assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores, event_requests):
+def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee, max_daily_hours, 
+                      assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores, event_requests, base_min_shifts):
     """
     Aðalfall:
     - velur starfsmann fyrst út frá forgangi
@@ -47,7 +47,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         period_weeks = 1
 
     # Reikna lágmarksvaktir m.v. frí
-    base_min_shifts = 3
 
     for emp_id in dict_employees:
         ratio = dict_employees[emp_id].get("availability_ratio", 1.0)

@@ -18,6 +18,7 @@ shifts_per_employee = defaultdict(int)
 employee_worked_days = defaultdict(set)
 max_daily_hours = 11
 min_rest_hours = 13
+base_min_shifts = 3
 
 
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
@@ -53,7 +54,8 @@ try:
                                           employee_worked_days, 
                                           score_rules, 
                                           skillset_scores,
-                                          event_requests)
+                                          event_requests,
+                                          base_min_shifts)
 
 except Exception as e:
     print("ERROR ->", e)
