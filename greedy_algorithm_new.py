@@ -3,7 +3,6 @@ from open_excel_new import open_excel, open_previous_scores, open_previous_stats
 from pick_employees_new import assign_all_events
 from Print_Results_Greedy import Print_Results_Greedy
 from Plot_Results_Greedy import Plot_Results
-from Plot_Results_Over_Time_Greedy import Plot_Results_Over_Time
 from Plot_Total_Stats_Greedy import Plot_Total_Stats
 from Export_Json_Greedy import Export_Json
 from export_schedule_to_excel_greedy import export_schedule_to_excel
