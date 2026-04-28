@@ -46,8 +46,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     if period_weeks <= 0:
         period_weeks = 1
 
-    # Reikna lágmarksvaktir m.v. frí
-
+    # Reikna lágmarksvaktir m.v. frí - starfsmaður í engu fríi á að fá a.m.k. 3 vaktir
     for emp_id in dict_employees:
         ratio = dict_employees[emp_id].get("availability_ratio", 1.0)
         dict_employees[emp_id]["min_shifts"] = round(base_min_shifts * ratio)
@@ -104,30 +103,25 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
     def build_event_roles(event_id: int):
         """
-        Býr til hlutverk/sæti fyrir event.
-
-        Dæmi:
-        Employees=4, Skillset1=1, Skillset2=1
+        Býr til hlutverk fyrir event.
+        Dæmi: Employees=3, Skillset1=1, Skillset2=1
         =>
-        [
-            {"role_id": 0, "required_skill": 1},
-            {"role_id": 1, "required_skill": 2},
-            {"role_id": 2, "required_skill": None},
-            {"role_id": 3, "required_skill": None},
-        ]
+        [{"role_id": 0, "required_skill": 1},
+         {"role_id": 1, "required_skill": 2},
+         {"role_id": 2, "required_skill": None}]
         """
         event = dict_events[event_id]
-
+        
         req_employees = event["Employees"]
         req_skillset_1 = event["Skillset1"]
         req_skillset_2 = event["Skillset2"]
 
+        roles = []
+        role_id = 0
+
         if req_skillset_1 + req_skillset_2 > req_employees:
             raise ValueError(
                 f"Skillset1 + Skillset2 ({req_skillset_1 + req_skillset_2}) > Employees ({req_employees}) fyrir Event {event_id}")
-
-        roles = []
-        role_id = 0
 
         for _ in range(req_skillset_1):
             roles.append({
@@ -154,11 +148,11 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         return roles
 
     def respects_min_rest(emp_id: int, shift_begins: datetime, shift_ends: datetime) -> bool:
-        """Athugar hvort starfsmenn uppfylli lágmarks hvíldartíma"""
+        """Athugar hvort starfsmenn uppfylli lágmarks hvíldartíma milli vakta"""
         rest_delta = timedelta(hours=min_rest_hours)
 
-        for old_begins, old_ends in assigned_shifts.get(emp_id, []):
-            ok = (shift_begins >= old_ends + rest_delta) or (old_begins >= shift_ends + rest_delta)
+        for prev_begins, prev_ends in assigned_shifts.get(emp_id, []):
+            ok = (shift_begins >= prev_ends + rest_delta) or (prev_begins >= shift_ends + rest_delta)
             if not ok:
                 return False
         return True
@@ -183,17 +177,17 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
     def is_eligible_for_event(emp_id: int, event_id: int) -> bool:
         """Almenn gjaldgengni starfsmanns fyrir event, óháð því hvaða hlutverk innan vaktar er valið"""
-        info = get_event_datetime_info(event_id)
+        datetime_info = get_event_datetime_info(event_id)
 
-        event_date = info["event_date"]
-        shift_begins = info["shift_begins"]
-        shift_ends = info["shift_ends"]
-        total_shift_hours = info["total_shift_hours"]
-        day_1 = info["day_1"]
-        day_2 = info["day_2"]
-        hours_day_1 = info["hours_day_1"]
-        hours_day_2 = info["hours_day_2"]
-        blocked_days = info["blocked_days"]
+        event_date = datetime_info["event_date"]
+        shift_begins = datetime_info["shift_begins"]
+        shift_ends = datetime_info["shift_ends"]
+        total_shift_hours = datetime_info["total_shift_hours"]
+        day_1 = datetime_info["day_1"]
+        day_2 = datetime_info["day_2"]
+        hours_day_1 = datetime_info["hours_day_1"]
+        hours_day_2 = datetime_info["hours_day_2"]
+        blocked_days = datetime_info["blocked_days"]
 
         if event_date in employee_days_off[emp_id]:
             return False
@@ -368,29 +362,9 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             + category_adjustment
         )
 
-    def can_take_role(emp_id: int, event_id: int, role: dict, event_state: dict) -> bool:
-        """Athugar hvort starfsmaður megi taka ákveðið hlutverk á ákveðnum event"""
-        if role["filled_by"] is not None:
-            return False
-
-        if not is_eligible_for_event(emp_id, event_id):
-            return False
-
-        current_team = [
-            r["filled_by"]
-            for r in event_state[event_id]["roles"]
-            if r["filled_by"] is not None
-        ]
-        projected_team = current_team + [emp_id]
-        if not is_valid_final_team(event_id, projected_team):
-            return False
-
-        return True
-
     def choose_best_role_for_employee(emp_id: int, event_state: dict):
         """
         Finnur besta lausa hlutverkið fyrir starfsmann yfir alla eventa.
-
         Skilar t.d.
         {
             "event_id": 15,
@@ -402,7 +376,12 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         for event_id, state in event_state.items():
             for role in state["roles"]:
-                if not can_take_role(emp_id, event_id, role, event_state):
+                if role["filled_by"] is not None:
+                    continue
+                if not is_eligible_for_event(emp_id, event_id):
+                    continue
+                current_team = [r["filled_by"] for r in event_state[event_id]["roles"] if r["filled_by"] is not None]
+                if not is_valid_final_team(event_id, current_team + [emp_id]):
                     continue
 
                 score = personal_role_score(emp_id, event_id, role)
@@ -411,86 +390,27 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                     best_option = {
                         "event_id": event_id,
                         "role_id": role["role_id"],
-                        "score": score}
-        """
-        # Gott tékk fyrir úthlutun vakta m.v. persónuleg stig
-        print(f"\n{'='*60}")
-        print(f"Starfsmaður {emp_id} ({dict_employees[emp_id].get('EmployeeName')}) - Tiltækar vaktir:")
-
-        for event_id, state in event_state.items():
-            for role in state["roles"]:
-                if not can_take_role(emp_id, event_id, role, event_state):
-                    continue
-
-                event = dict_events[event_id]
-                datetime_info = get_event_datetime_info(event_id)
-                event_date = datetime_info["event_date"]
-                total_shift_hours = datetime_info["total_shift_hours"]
-
-                hall = event.get("Hall")
-                event_score = event["EventRanking"]
-                weekend_count = dict_employees[emp_id]["Shifts_on_weekends"]
-                prev_weekend_count = dict_employees[emp_id]["prev_weekend_shifts"], 0), 0)
-                hall_count = dict_employees[emp_id].get("Shifts_per_hall", {}).get(hall, 0)
-
-                event_iso_year, event_iso_week, _ = event_date.isocalendar()
-                week_key = f"{event_iso_year}-W{event_iso_week:02d}"
-                shifts_this_week = dict_employees[emp_id].get("Shifts_per_week", {}).get(week_key, 0)
-                shift_length_key = int(round(total_shift_hours))
-                same_length_count = dict_employees[emp_id].get("Shifts_per_length", {}).get(shift_length_key, 0)
-                over_six_count = dict_employees[emp_id].get("Shifts_over_six_hours", 0)
-                emp_current_skill = dict_employees[emp_id]["Skillset"]
-                required_skill = role.get("required_skill")
-
-                weekend_adj = 0
-                weekend_last_adj = 0
-                if event_date.weekday() in [4, 5, 6]:
-                    weekend_adj = lookup_score(score_rules.get("Weekend", {}), weekend_count, 0)
-                    weekend_last_adj = lookup_score(score_rules.get("Weekend_last_period", {}), prev_weekend_count, 0)
-
-                hall_adj = lookup_score(score_rules.get("Hall", {}), hall_count, 0) if hall else 0
-                week_adj = lookup_score(score_rules.get("Shifts_this_week", {}), shifts_this_week, 0)
-                length_adj = lookup_score(score_rules.get("Shifs_this_length", {}), same_length_count, 0)
-                over_six_adj = lookup_score(score_rules.get("Shift_over_six_hours", {}), over_six_count, 0) if total_shift_hours > 6 else 0
-                skill_adj = skillset_scores.get(required_skill, {}).get(emp_current_skill, 0) if required_skill is not None else 0
-
-                total_personal = event_score + weekend_adj + weekend_last_adj + hall_adj + week_adj + length_adj + over_six_adj + skill_adj
-
-                is_best = (best_option is not None and 
-                        best_option["event_id"] == event_id and 
-                        best_option["role_id"] == role["role_id"])
-
-                print(f"\n  {'*** ' if is_best else '    '}Event {event_id} ({event.get('Event', '')}) - Role {role['role_id']} ({'BESTA' if is_best else ''})")
-                print(f"      EventRanking:          {event_score:.1f}")
-                print(f"      Weekend:               {weekend_adj:.1f}  (fjöldi: {weekend_count})")
-                print(f"      Weekend síðasti:       {weekend_last_adj:.1f}  (fjöldi: {prev_weekend_count})")
-                print(f"      Hall ({hall}):         {hall_adj:.1f}  (fjöldi: {hall_count})")
-                print(f"      Shifts þessari viku:   {week_adj:.1f}  (fjöldi: {shifts_this_week})")
-                print(f"      Shift lengd ({shift_length_key}h):    {length_adj:.1f}  (fjöldi: {same_length_count})")
-                print(f"      Shift yfir 6h:         {over_six_adj:.1f}  (fjöldi: {over_six_count})")
-                print(f"      Skillset:              {skill_adj:.1f}  (req: {required_skill}, emp: {emp_current_skill})")
-                print(f"      Heildarstig:           {total_personal:.1f}")
-        """        
+                        "score": score}    
         
         return best_option
 
     def assign_employee_to_role(emp_id: int, event_id: int, role_id: int, event_state: dict):
         """Úthlutar starfsmanni á tiltekið hlutverk og uppfærir allar stöðubreytur"""
         event = dict_events[event_id]
-        info = get_event_datetime_info(event_id)
+        datetime_info = get_event_datetime_info(event_id)
 
         hall = event.get("Hall")
         category = event.get("EventCategory")
 
-        event_date = info["event_date"]
-        shift_begins = info["shift_begins"]
-        shift_ends = info["shift_ends"]
-        total_shift_hours = info["total_shift_hours"]
-        day_1 = info["day_1"]
-        day_2 = info["day_2"]
-        hours_day_1 = info["hours_day_1"]
-        hours_day_2 = info["hours_day_2"]
-        blocked_days = info["blocked_days"]
+        event_date = datetime_info["event_date"]
+        shift_begins = datetime_info["shift_begins"]
+        shift_ends = datetime_info["shift_ends"]
+        total_shift_hours = datetime_info["total_shift_hours"]
+        day_1 = datetime_info["day_1"]
+        day_2 = datetime_info["day_2"]
+        hours_day_1 = datetime_info["hours_day_1"]
+        hours_day_2 = datetime_info["hours_day_2"]
+        blocked_days = datetime_info["blocked_days"]
 
         event_score = event["EventRanking"]
 
@@ -553,9 +473,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     def event_is_fully_staffed(event_id: int, event_state: dict) -> bool:
         return all(role["filled_by"] is not None for role in event_state[event_id]["roles"])
 
-    def all_events_fully_staffed(event_state: dict) -> bool:
-        return all(event_is_fully_staffed(event_id, event_state) for event_id in event_state)
-
     # Upphafsstilla event_state
     event_state = {}
     for event_id in dict_events:
@@ -569,7 +486,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     # 2. finna bestu vakt/hlutverk fyrir hann
     # 3. úthluta
     # 4. endurtaka
-    while not all_events_fully_staffed(event_state):
+    while not all(all(r["filled_by"] is not None for r in state["roles"]) for state in event_state.values()):
         progress = False
 
         employees_sorted = sorted(dict_employees.keys(), key=employee_priority)
