@@ -141,6 +141,26 @@ export_schedule_to_excel(rows,
 # Plottum niðurstöður
 """
 Plot_Results(dict_employees, hours_per_employee)
-"""
 Plot_Total_Stats(dict_employees, hours_per_employee)
+"""
 
+from collections import defaultdict
+from itertools import combinations
+
+# Reikna fjölda þegar par vinnur saman
+pair_counts = defaultdict(int)
+
+for event_id, state in event_state.items():
+    workers = [role["filled_by"] for role in state["roles"] if role["filled_by"] is not None]
+    for a, b in combinations(sorted(workers), 2):
+        pair_counts[(a, b)] += 1
+
+# Prentum hversu oft hvert par vinnur saman
+print("\nFjöldi þegar starfsmenn vinna saman:")
+print(f"{'Par':<30} {'Fjöldi':>8}")
+print("-" * 40)
+
+for (a, b), count in sorted(pair_counts.items(), key=lambda x: -x[1]):
+    name_a = dict_employees[a].get("EmployeeName", str(a))
+    name_b = dict_employees[b].get("EmployeeName", str(b))
+    print(f"{name_a} & {name_b:<20} {count:>8}")
