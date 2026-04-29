@@ -36,7 +36,7 @@ def run_greedy(input_path):
         # Load Excel
         # =========================
         dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
-            input_path,
+            filename,
             "Events",
             "Employees",
             "DaysOff",
