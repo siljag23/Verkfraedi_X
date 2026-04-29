@@ -12,7 +12,7 @@ def Total_Stats(
     hist_scores=None,
     hist_weekend=None,
     requests=None,
-    NUM_RUNS=50
+    NUM_RUNS=1
 ):
 
     hist_shifts = hist_shifts or {}
