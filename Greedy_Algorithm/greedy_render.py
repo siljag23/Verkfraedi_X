@@ -1,9 +1,9 @@
 import os
 from collections import defaultdict
-from open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
-from pick_employees import assign_all_events
-from Export_Json_Greedy import Export_Json
-from export_schedule_to_excel_greedy import export_schedule_to_excel
+from .open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
+from .pick_employees import assign_all_events
+from .Export_Json_Greedy import Export_Json
+from .export_schedule_to_excel_greedy import export_schedule_to_excel
 import traceback
 
 
