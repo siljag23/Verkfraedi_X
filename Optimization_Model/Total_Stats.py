@@ -5,7 +5,6 @@ def Total_Stats(
     employees,
     events,
     works,
-    dict_employees,
     dict_events,
     employee_days,
     shift_dur,
@@ -14,11 +13,6 @@ def Total_Stats(
     hist_scores=None,
     hist_weekend=None,
 ):
-
-    # -------------------------
-    # Parameters
-    # -------------------------
-    min_avail_floor = 0.3
 
     # -------------------------
     # Defaults
@@ -86,7 +80,8 @@ def Total_Stats(
     # -------------------------
     for i in active_employees:
 
-        denom = availability[i]
+        denom_current = availability[i]
+        denom_hist = 1.0
 
         shifts_i = sum(works[i, j].X for j in events)
         hours_i = sum(works[i, j].X * shift_dur[j] for j in events)
@@ -97,17 +92,17 @@ def Total_Stats(
         )
 
         # CURRENT
-        norm_current["shifts"].append(shifts_i / denom)
-        norm_current["hours"].append(hours_i / denom)
-        norm_current["weekend"].append(weekend_i / denom)
-        norm_current["score"].append(score_i / denom)
+        norm_current["shifts"].append(shifts_i / denom_current)
+        norm_current["hours"].append(hours_i / denom_current)
+        norm_current["weekend"].append(weekend_i / denom_current)
+        norm_current["score"].append(score_i / denom_current)
 
         # TOTAL
-        norm_total["shifts"].append((shifts_i + hist_shifts.get(i, 0)) / denom)
-        norm_total["hours"].append((hours_i + hist_hours.get(i, 0)) / denom)
-        norm_total["weekend"].append((weekend_i + hist_weekend.get(i, 0)) / denom)
-        norm_total["score"].append((score_i + hist_scores.get(i, 0)) / denom)
-
+        norm_total["shifts"].append(hist_shifts.get(i, 0) / denom_hist + shifts_i / denom_current)
+        norm_total["hours"].append(hist_hours.get(i, 0) / denom_hist + hours_i / denom_current)
+        norm_total["weekend"].append(hist_weekend.get(i, 0) / denom_hist + weekend_i / denom_current)
+        norm_total["score"].append(hist_scores.get(i, 0) / denom_hist + score_i / denom_current)
+    
     # -------------------------
     # PRINT RESULTS
     # -------------------------

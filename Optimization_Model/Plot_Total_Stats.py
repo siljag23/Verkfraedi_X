@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import locale
 
 def Plot_Total_Stats(
     employees,
@@ -19,15 +20,10 @@ def Plot_Total_Stats(
     hist_scores = hist_scores or {}
     hist_weekend = hist_weekend or {}
 
-    names = []
-    c_shifts = []
-    h_shifts_vals = []
-    c_hours = []
-    h_hours_vals = []
-    c_scores = []
-    h_scores_vals = []
-    c_weekend = []
-    h_weekend_vals = []
+    # -------------------------
+    # BUILD DATA
+    # -------------------------
+    data = []
 
     for i in employees:
 
@@ -49,19 +45,43 @@ def Plot_Total_Stats(
         hsc = hist_scores.get(i, 0)
         hw = hist_weekend.get(i, 0)
 
-        names.append(name)
+        data.append({
+            "name": name,
+            "c_shifts": s,
+            "h_shifts": hs,
+            "c_hours": h,
+            "h_hours": hh,
+            "c_score": sc,
+            "h_score": hsc,
+            "c_weekend": w,
+            "h_weekend": hw
+        })
 
-        c_shifts.append(s)
-        h_shifts_vals.append(hs)
+    # -------------------------
+    # SORT (ICELANDIC)
+    # -------------------------
+    try:
+        locale.setlocale(locale.LC_ALL, 'is_IS.UTF-8')
+        data = sorted(data, key=lambda x: locale.strxfrm(x["name"]))
+    except:
+        data = sorted(data, key=lambda x: x["name"])
 
-        c_hours.append(h)
-        h_hours_vals.append(hh)
+    # -------------------------
+    # UNPACK
+    # -------------------------
+    names = [d["name"] for d in data]
 
-        c_scores.append(sc)
-        h_scores_vals.append(hsc)
+    c_shifts = [d["c_shifts"] for d in data]
+    h_shifts_vals = [d["h_shifts"] for d in data]
 
-        c_weekend.append(w)
-        h_weekend_vals.append(hw)
+    c_hours = [d["c_hours"] for d in data]
+    h_hours_vals = [d["h_hours"] for d in data]
+
+    c_scores = [d["c_score"] for d in data]
+    h_scores_vals = [d["h_score"] for d in data]
+
+    c_weekend = [d["c_weekend"] for d in data]
+    h_weekend_vals = [d["h_weekend"] for d in data]
 
     COLOR_HIST = "black"
     COLOR_NEW = "#ff6e1b"
@@ -69,10 +89,11 @@ def Plot_Total_Stats(
     # -------------------------
     # SHIFTS
     # -------------------------
-    plt.figure()
+    plt.figure(figsize=(12,6))
     plt.bar(names, h_shifts_vals, color=COLOR_HIST, label="Last period")
     plt.bar(names, c_shifts, bottom=h_shifts_vals, color=COLOR_NEW, label="Current period")
-    plt.title("Total Shifts")
+    plt.title("Total Shifts", fontweight="bold")
+    plt.ylabel("Number of Shifts")
     plt.xticks(rotation=90)
     plt.legend()
     plt.tight_layout()
@@ -81,10 +102,11 @@ def Plot_Total_Stats(
     # -------------------------
     # HOURS
     # -------------------------
-    plt.figure()
+    plt.figure(figsize=(12,6))
     plt.bar(names, h_hours_vals, color=COLOR_HIST, label="Last period")
     plt.bar(names, c_hours, bottom=h_hours_vals, color=COLOR_NEW, label="Current period")
-    plt.title("Total Work Hours")
+    plt.title("Total Work Hours", fontweight="bold")
+    plt.ylabel("Hours")
     plt.xticks(rotation=90)
     plt.legend()
     plt.tight_layout()
@@ -93,10 +115,11 @@ def Plot_Total_Stats(
     # -------------------------
     # SCORE
     # -------------------------
-    plt.figure()
+    plt.figure(figsize=(12,6))
     plt.bar(names, h_scores_vals, color=COLOR_HIST, label="Last period")
     plt.bar(names, c_scores, bottom=h_scores_vals, color=COLOR_NEW, label="Current period")
-    plt.title("Total Score")
+    plt.title("Total Score", fontweight="bold")
+    plt.ylabel("Score")
     plt.xticks(rotation=90)
     plt.legend()
     plt.tight_layout()
@@ -105,10 +128,11 @@ def Plot_Total_Stats(
     # -------------------------
     # WEEKEND
     # -------------------------
-    plt.figure()
+    plt.figure(figsize=(12,6))
     plt.bar(names, h_weekend_vals, color=COLOR_HIST, label="Last period")
     plt.bar(names, c_weekend, bottom=h_weekend_vals, color=COLOR_NEW, label="Current period")
-    plt.title("Total Weekend Shifts")
+    plt.title("Total Weekend Shifts", fontweight="bold")
+    plt.ylabel("Number of Shifts")
     plt.xticks(rotation=90)
     plt.legend()
     plt.tight_layout()
