@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 import shutil
 import os
 from greedy_render import run_greedy
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -25,3 +26,8 @@ async def run(file: UploadFile = File(...)):
     result = run_greedy(filename)
 
     return result
+
+@app.get("/download/{filename}")
+def download(filename: str):
+    path = os.path.join("Data", filename)
+    return FileResponse(path, media_type='application/octet-stream', filename=filename)
