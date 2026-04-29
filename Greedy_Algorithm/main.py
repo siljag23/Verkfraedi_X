@@ -27,6 +27,6 @@ async def run(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     # keyra greedy
-    result = run_greedy(input_path, month)
+    result = run_greedy(input_path)
 
     return result
