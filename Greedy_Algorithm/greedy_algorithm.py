@@ -35,11 +35,11 @@ base_path = Path(__file__).resolve().parent
 
 previous_json_dict = base_path.parent / "Data" / "02_26_output_dicts.json"
 previous_json_list = base_path.parent / "Data" / "02_26_output_list.json"
-previous_scores = open_previous_scores(previous_json_dict)
+previous_scores, previous_availability = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
-dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
+dict_employees = merge_scores_into_employees(dict_employees, previous_scores, previous_availability)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
 
 rows = []
@@ -144,8 +144,9 @@ export_schedule_to_excel(rows,
                          period_end=period_end )
 
 # Plottum niðurstöður
-
+"""
 Plot_Results(dict_employees, hours_per_employee)
+"""
 Plot_Total_Stats(dict_employees, hours_per_employee)
 
 
