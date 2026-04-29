@@ -1,12 +1,18 @@
 import json
+from pathlib import Path
 
 def Export_Json(dict_employees, dict_events, rows, month):
+
+    base_path = Path(__file__).resolve().parent
+
+    output_list_path = base_path.parent / "Data" / f"{month}_output_list.json"
+    output_dict_path = base_path.parent / "Data" / f"{month}_output_dicts.json"
 
     # Búum til lista með pörum af EventID og EmployeeED
     pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 
     # Aðlaga employee dicts fyrir json skjal
-    keys_to_keep = ["EmployeeID", "EmployeeName", "Score", "Skillset"]
+    keys_to_keep = ["EmployeeID", "EmployeeName", "Score", "Skillset", "Availability_ratio"]
     filtered_employees = {}
 
     for emp_id, info in dict_employees.items():
@@ -25,8 +31,8 @@ def Export_Json(dict_employees, dict_events, rows, month):
         "employees": filtered_employees
     }
 
-    with open(f"{month}_output_list.json", "w", encoding = "utf-8") as f:
-        json.dump(pairs_for_json, f, indent = 4, ensure_ascii = False)
+    with open(output_list_path, "w", encoding="utf-8") as f:
+        json.dump(pairs_for_json, f, indent=4, ensure_ascii=False)
 
-    with open(f"{month}_output_dicts.json", "w", encoding = "utf-8") as f:
-        json.dump(info_for_json, f, indent = 4, ensure_ascii = False, default = str)
+    with open(output_dict_path, "w", encoding="utf-8") as f:
+        json.dump(info_for_json, f, indent=4, ensure_ascii=False, default=str)

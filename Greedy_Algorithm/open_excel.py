@@ -124,7 +124,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         if emp_id not in employee_days:
             employee_days[emp_id] = set()
 
-    # Reikna availability_ratio - EFTIR að frídagar eru lesdir
+    # Reikna availability_ratio - EFTIR að frídagar eru lesnir
     period_start = min(event["Date"] for event in dict_events.values())
     period_end = max(event["Date"] for event in dict_events.values())
     period_days = (period_end - period_start).days + 1
@@ -132,7 +132,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     for emp_id in dict_employees:
         days_off_count = len(employee_days.get(emp_id, set()))
         available_days = period_days - days_off_count
-        dict_employees[emp_id]["availability_ratio"] = available_days / period_days
+        dict_employees[emp_id]["Availability_ratio"] = available_days / period_days
 
     # Lesa score_rules
     score_rules = {}
@@ -186,22 +186,26 @@ def open_previous_scores(json_path) -> dict[int, float]:
     json_path = Path(json_path)
 
     if not json_path.exists():
-        return {}
+        return {}, {}
     
     with open(json_path, "r", encoding = "utf-8") as f:
         data = json.load(f)
 
     employees_last = data.get("employees", {})
 
-    scores = {}
+    previous_scores = {}
+    previous_availability = {}
+
     for k, info in employees_last.items():
         try:
             emp_id = int(k)
         except ValueError:
             continue
-        scores[emp_id] = info.get("Score", 0)
-
-    return scores  
+        print(emp_id, info.keys())
+        previous_scores[emp_id] = info.get("Score", 0)
+        previous_availability[emp_id] = info.get("Availability_ratio", 1)
+    
+    return previous_scores, previous_availability  
 
 
 
@@ -294,18 +298,37 @@ def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
     return stats
 
 
-def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dict[int,float]) -> dict[int,dict]:
+def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dict[int,float], previous_availability) -> dict[int,dict]:
     """Tekur employees úr Excel og bætir Score við það
      - Ef starfsmaður var til áður: heldur gamla Score
      - Annars: Score = 0"""
     
+    eligible_scores = [
+        previous_scores[emp_id]
+        for emp_id, availability in previous_availability.items()
+        if availability >= 0.75 and emp_id in previous_scores]
+    
+    average_score = (
+        sum(eligible_scores) / len(eligible_scores)
+        if eligible_scores else 0)
+    
+    print("average score:", average_score)
+ 
     for emp_id, info in employees.items(): 
-        info["prev_score"] = previous_scores.get(emp_id, 0)
-        info["Score"] = previous_scores.get(emp_id, 0)
+        prev_availability = previous_availability.get(emp_id, None)
+
+        if emp_id not in previous_scores or prev_availability is None or prev_availability < 0.75:
+            prev_score = round(average_score, 1)
+
+        else: prev_score = previous_scores[emp_id]
+
+        info["prev_score"] = prev_score
+        info["Score"] = prev_score
+        info["Previous_availability"] = prev_availability if prev_availability is not None else 1
         info["Shifts_on_weekends"] = info.get("Shifts_on_weekends", 0)
         info["Number_of_shifts"] = info.get("Number_of_shifts", 0)
         info["Shifts_per_hall"] = info.get("Shifts_per_hall", {})
-
+        
     return employees
 
 
