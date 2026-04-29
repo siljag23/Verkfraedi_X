@@ -181,9 +181,11 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
 
     return dict_events, dict_employees, employee_days, score_rules, skillset_scores, requests
 
-def open_previous_scores(json_path: str) -> dict[int, float]:
+def open_previous_scores(json_path) -> dict[int, float]:
     """Les json skjal síðasta mánaðar (ef til) og skilar {EmployeeID: Score}"""
-    if not os.path.exists(json_path):
+    json_path = Path(json_path)
+
+    if not json_path.exists():
         return {}
     
     with open(json_path, "r", encoding = "utf-8") as f:
