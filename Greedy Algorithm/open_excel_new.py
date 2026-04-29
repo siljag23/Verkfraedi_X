@@ -10,6 +10,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
 
     base_path = Path(__file__).resolve().parent
     file_path = base_path.parent/"Data"/file_name
+
     # Lesa inn sheets
     events = pd.read_excel(file_path, sheet_name=sheet_1_name)
     employees = pd.read_excel(file_path, sheet_name=sheet_2_name)
@@ -157,7 +158,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     requests = set()
     if sheet_requests is not None:
         try:
-            event_req = pd.read_excel(file_name, sheet_name=sheet_requests)
+            event_req = pd.read_excel(file_path, sheet_name=sheet_requests)
             event_req.columns = event_req.columns.str.strip()
             employee_names = list(event_req.columns[2:])
 
