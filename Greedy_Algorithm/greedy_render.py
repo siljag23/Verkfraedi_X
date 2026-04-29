@@ -83,7 +83,7 @@ def run_greedy(input_path):
         # =========================
         # Export JSON (í Data)
         # =========================
-        Export_Json(dict_employees, dict_events, rows, os.path.join("Data", month))
+        Export_Json(dict_employees, dict_events, rows, month)
 
         # =========================
         # Export Excel (í Data)
