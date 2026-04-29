@@ -264,8 +264,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         emp_current_skill = dict_employees[emp_id]["Skillset"]
         required_skill = role.get("required_skill")
 
-        # -----Stig sótt úr ScoreKeys úr excel input-----
-
+        # Stig sótt úr ScoreKeys úr excel input
         # Helgarvakt í núverandi tímabili
         weekend_adjustment = 0
         if event_date.weekday() in [4, 5, 6]:
@@ -381,10 +380,8 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         """Úthlutar starfsmanni á tiltekið hlutverk og uppfærir allar stöðubreytur"""
         event = dict_events[event_id]
         datetime_info = get_event_datetime_info(event_id)
-
-        hall = event.get("Hall")
-        category = event.get("EventCategory")
-
+        hall = event["Hall"]
+        category = event["EventCategory"]
         event_date = datetime_info["event_date"]
         shift_begins = datetime_info["shift_begins"]
         shift_ends = datetime_info["shift_ends"]
@@ -394,7 +391,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         hours_day_1 = datetime_info["hours_day_1"]
         hours_day_2 = datetime_info["hours_day_2"]
         blocked_days = datetime_info["blocked_days"]
-
         event_score = event["EventRanking"]
 
         # Merkjum role sem fyllt
@@ -414,7 +410,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         assigned_shifts[emp_id].append((shift_begins, shift_ends))
 
         dict_employees[emp_id]["Score"] += event_score
-
         
         dict_employees[emp_id]["Number_of_shifts"] += 1
 
@@ -428,7 +423,6 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
         if category:
             dict_employees[emp_id]["current_shifts_per_category"][category] = (
                 dict_employees[emp_id]["current_shifts_per_category"].get(category, 0) + 1)
-
 
         shift_length_key = int(round(total_shift_hours))
         dict_employees[emp_id]["Shifts_per_length"][shift_length_key] = (
