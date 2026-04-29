@@ -1,9 +1,9 @@
 import os
 from collections import defaultdict
-from .open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
-from .pick_employees import assign_all_events
-from .Export_Json_Greedy import Export_Json
-from .export_schedule_to_excel_greedy import export_schedule_to_excel
+from open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
+from pick_employees import assign_all_events
+from Export_Json_Greedy import Export_Json
+from export_schedule_to_excel_greedy import export_schedule_to_excel
 import traceback
 
 
@@ -11,13 +11,16 @@ def run_greedy(input_path):
 
     try:
         # =========================
-        # Extract month from filename
+        # Extract month
         # =========================
         filename = os.path.basename(input_path)
-        month = filename.replace(".xlsx", "")  # t.d. 03_26
+        month = filename.replace(".xlsx", "")
+
+        # tryggja Data mappa
+        os.makedirs("Data", exist_ok=True)
 
         # =========================
-        # Initialize variables
+        # Initialize
         # =========================
         hours_per_employee = defaultdict(float)
         daily_hours_per_employee = defaultdict(float)
@@ -30,7 +33,7 @@ def run_greedy(input_path):
         base_min_shifts = 3
 
         # =========================
-        # Load Excel input
+        # Load Excel
         # =========================
         dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
             input_path,
@@ -43,10 +46,10 @@ def run_greedy(input_path):
         )
 
         # =========================
-        # Load previous data (optional)
+        # Load previous (úr Data)
         # =========================
-        previous_dict_file = f"{month}_output_dicts.json"
-        previous_list_file = f"{month}_output_list.json"
+        previous_dict_file = os.path.join("Data", f"{month}_output_dicts.json")
+        previous_list_file = os.path.join("Data", f"{month}_output_list.json")
 
         if os.path.exists(previous_dict_file) and os.path.exists(previous_list_file):
             previous_scores = open_previous_scores(previous_dict_file)
@@ -58,7 +61,7 @@ def run_greedy(input_path):
             print("No previous data found – skipping history merge")
 
         # =========================
-        # Run greedy algorithm
+        # Run greedy
         # =========================
         rows, event_state = assign_all_events(
             dict_events,
@@ -78,17 +81,17 @@ def run_greedy(input_path):
         )
 
         # =========================
-        # Export JSON
+        # Export JSON (í Data)
         # =========================
-        Export_Json(dict_employees, dict_events, rows, month)
+        Export_Json(dict_employees, dict_events, rows, os.path.join("Data", month))
 
         # =========================
-        # Export Excel
+        # Export Excel (í Data)
         # =========================
         period_start = min(event["Date"] for event in dict_events.values())
         period_end = max(event["Date"] for event in dict_events.values())
 
-        output_file = f"{month}_schedule_results.xlsx"
+        output_file = os.path.join("Data", f"{month}_schedule_results.xlsx")
 
         export_schedule_to_excel(
             rows,
