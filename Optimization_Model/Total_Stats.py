@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-
 def Total_Stats(
     employees,
     events,
@@ -14,16 +13,12 @@ def Total_Stats(
     hist_hours=None,
     hist_scores=None,
     hist_weekend=None,
-    min_avail_floor=0.1
 ):
-    
-    print(type(dict_events))
-    print(len(dict_events))
-    print(list(dict_events.items())[:1])
 
-    for j in dict_events:
-        if "Date" not in dict_events[j]:
-            print("Missing Date:", j, dict_events[j])
+    # -------------------------
+    # Parameters
+    # -------------------------
+    min_avail_floor = 0.3
 
     # -------------------------
     # Defaults
@@ -34,7 +29,7 @@ def Total_Stats(
     hist_weekend = hist_weekend or {}
 
     # -------------------------
-    # Availability (robust – only uses dict_events)
+    # Total days in period
     # -------------------------
     total_days = len(
         set(
@@ -43,6 +38,9 @@ def Total_Stats(
         )
     )
 
+    # -------------------------
+    # Availability
+    # -------------------------
     availability = {}
     for i in employees:
         days_off = employee_days.get(i, set())
@@ -52,15 +50,22 @@ def Total_Stats(
         )
 
     # -------------------------
-    # Weekend lookup (robust)
+    # REMOVE employees with 0 availability
+    # -------------------------
+    active_employees = [
+        i for i in employees if availability[i] > 0
+    ]
+
+    # -------------------------
+    # Weekend lookup
     # -------------------------
     is_weekend = {}
     for j in events:
         d = pd.to_datetime(dict_events[j]["Date"], dayfirst=True)
-        is_weekend[j] = 1 if d.weekday() in [4, 5, 6] else 0
+        is_weekend[j] = 1 if d.weekday() in [4, 5, 6] else 0  # Sat, Sun
 
     # -------------------------
-    # Containers (NORMALIZED ONLY)
+    # Containers
     # -------------------------
     norm_current = {
         "shifts": [],
@@ -77,10 +82,11 @@ def Total_Stats(
     }
 
     # -------------------------
-    # Compute normalized stats
+    # Compute stats
     # -------------------------
-    for i in employees:
-        denom = max(availability[i], min_avail_floor)
+    for i in active_employees:
+
+        denom = availability[i]
 
         shifts_i = sum(works[i, j].X for j in events)
         hours_i = sum(works[i, j].X * shift_dur[j] for j in events)
@@ -90,20 +96,20 @@ def Total_Stats(
             for j in events
         )
 
-        # CURRENT (normalized)
+        # CURRENT
         norm_current["shifts"].append(shifts_i / denom)
         norm_current["hours"].append(hours_i / denom)
         norm_current["weekend"].append(weekend_i / denom)
         norm_current["score"].append(score_i / denom)
 
-        # TOTAL = history + current (normalized)
+        # TOTAL
         norm_total["shifts"].append((shifts_i + hist_shifts.get(i, 0)) / denom)
         norm_total["hours"].append((hours_i + hist_hours.get(i, 0)) / denom)
         norm_total["weekend"].append((weekend_i + hist_weekend.get(i, 0)) / denom)
         norm_total["score"].append((score_i + hist_scores.get(i, 0)) / denom)
 
     # -------------------------
-    # PRINT NORMALIZED STATS
+    # PRINT RESULTS
     # -------------------------
     print("\n--- Current Period (NORMALIZED) ---")
     for key, values in norm_current.items():
