@@ -426,18 +426,19 @@
         "4": {
             "EmployeeName": "Thelma",
             "Skillset": 3,
-            "Number_of_shifts": 5.0,
+            "Number_of_shifts": 4.0,
             "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "SB": 1
+                "EB": 2,
+                "SB": 1,
+                "KL": 1
             }
         },
         "5": {
             "EmployeeName": "Pétur",
             "Skillset": 2,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
                 "EB": 4
             }
@@ -446,10 +447,9 @@
             "EmployeeName": "Unnur",
             "Skillset": 2,
             "Number_of_shifts": 5.0,
-            "Shifts_on_weekends": 2.0,
+            "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
-                "NL": 1,
-                "EB": 3,
+                "EB": 4,
                 "KL": 1
             }
         },
@@ -457,9 +457,9 @@
             "EmployeeName": "Harpa",
             "Skillset": 2,
             "Number_of_shifts": 3.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
-                "KL": 1,
+                "BL": 1,
                 "SB": 1,
                 "EB": 1
             }
@@ -470,25 +470,26 @@
             "Number_of_shifts": 5.0,
             "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
-                "EB": 5
+                "EB": 4,
+                "NL": 1
             }
         },
         "9": {
             "EmployeeName": "Freyja",
             "Skillset": 2,
-            "Number_of_shifts": 5.0,
-            "Shifts_on_weekends": 3.0,
+            "Number_of_shifts": 4.0,
+            "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
-                "KL": 1,
+                "NL": 1,
                 "SB": 1,
-                "EB": 3
+                "EB": 2
             }
         },
         "10": {
             "EmployeeName": "Björk",
             "Skillset": 2,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 4.0,
             "Shifts_per_hall": {
                 "EB": 3,
                 "Fatahengi": 1
@@ -508,10 +509,10 @@
             "EmployeeName": "Lísa",
             "Skillset": 1,
             "Number_of_shifts": 5.0,
-            "Shifts_on_weekends": 2.0,
+            "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "SB": 1
+                "KL": 1,
+                "EB": 4
             }
         },
         "13": {
@@ -520,7 +521,7 @@
             "Number_of_shifts": 5.0,
             "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
-                "NL": 1,
+                "KL": 1,
                 "EB": 4
             }
         },
@@ -530,7 +531,8 @@
             "Number_of_shifts": 4.0,
             "Shifts_on_weekends": 4.0,
             "Shifts_per_hall": {
-                "EB": 3,
+                "KL": 1,
+                "EB": 2,
                 "Fatahengi": 1
             }
         },
@@ -538,10 +540,9 @@
             "EmployeeName": "Davíð",
             "Skillset": 2,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
-                "KL": 1,
-                "EB": 2,
+                "EB": 3,
                 "Fatahengi": 1
             }
         },
@@ -549,10 +550,11 @@
             "EmployeeName": "Laufey",
             "Skillset": 2,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
                 "NL": 1,
-                "EB": 3
+                "KL": 1,
+                "EB": 2
             }
         },
         "17": {
@@ -570,19 +572,18 @@
             "Number_of_shifts": 5.0,
             "Shifts_on_weekends": 4.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "NL": 1
+                "NL": 1,
+                "EB": 4
             }
         },
         "19": {
             "EmployeeName": "Úlfur",
             "Skillset": 1,
             "Number_of_shifts": 5.0,
-            "Shifts_on_weekends": 2.0,
+            "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
                 "KL": 1,
-                "NL": 1,
-                "EB": 3
+                "EB": 4
             }
         },
         "20": {
@@ -609,16 +610,18 @@
             "EmployeeName": "Helena",
             "Skillset": 1,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 4.0,
+            "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
-                "EB": 4
+                "NL": 1,
+                "EB": 2,
+                "Fatahengi": 1
             }
         },
         "23": {
             "EmployeeName": "Kata",
             "Skillset": 2,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
                 "KL": 1,
                 "EB": 3
@@ -630,57 +633,56 @@
             "Number_of_shifts": 4.0,
             "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
-                "BL": 1,
-                "EB": 3
+                "EB": 4
             }
         },
         "25": {
             "EmployeeName": "Jóna",
             "Skillset": 2,
-            "Number_of_shifts": 5.0,
-            "Shifts_on_weekends": 2.0,
-            "Shifts_per_hall": {
-                "KL": 2,
-                "EB": 3
-            }
-        },
-        "26": {
-            "EmployeeName": "Silja",
-            "Skillset": 1,
             "Number_of_shifts": 4.0,
             "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
                 "NL": 1,
                 "EB": 2,
-                "SB": 1
+                "Fatahengi": 1
+            }
+        },
+        "26": {
+            "EmployeeName": "Silja",
+            "Skillset": 1,
+            "Number_of_shifts": 5.0,
+            "Shifts_on_weekends": 3.0,
+            "Shifts_per_hall": {
+                "KL": 1,
+                "EB": 4
             }
         },
         "27": {
             "EmployeeName": "Camilla",
             "Skillset": 1,
-            "Number_of_shifts": 4.0,
+            "Number_of_shifts": 5.0,
             "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
-                "NL": 1,
-                "KL": 1,
-                "EB": 2
+                "EB": 4,
+                "SB": 1
             }
         },
         "28": {
             "EmployeeName": "Nanna",
             "Skillset": 1,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 3.0,
+            "Shifts_on_weekends": 4.0,
             "Shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
+                "EB": 2,
+                "KL": 1,
+                "SB": 1
             }
         },
         "29": {
             "EmployeeName": "Ólafur",
             "Skillset": 1,
             "Number_of_shifts": 4.0,
-            "Shifts_on_weekends": 2.0,
+            "Shifts_on_weekends": 3.0,
             "Shifts_per_hall": {
                 "EB": 4
             }
@@ -691,18 +693,18 @@
             "Number_of_shifts": 5.0,
             "Shifts_on_weekends": 4.0,
             "Shifts_per_hall": {
-                "KL": 2,
-                "EB": 3
+                "KL": 1,
+                "EB": 4
             }
         },
         "31": {
             "EmployeeName": "Bergur",
             "Skillset": 2,
-            "Number_of_shifts": 4.0,
+            "Number_of_shifts": 5.0,
             "Shifts_on_weekends": 2.0,
             "Shifts_per_hall": {
-                "EB": 3,
-                "Fatahengi": 1
+                "NL": 1,
+                "EB": 4
             }
         },
         "32": {
