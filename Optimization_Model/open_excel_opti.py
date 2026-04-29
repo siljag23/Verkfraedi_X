@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
-def open_excel_opti(file_name, sheet_events, sheet_employees, sheet_daysoff, sheet_requests=None):
+def Open_Excel_Opti(file_name, sheet_events, sheet_employees, sheet_daysoff, sheet_requests=None):
 
     # -------------------------
     # Read sheets
