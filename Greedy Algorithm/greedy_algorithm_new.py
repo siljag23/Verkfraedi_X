@@ -91,7 +91,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
     row += f"{total:>10}"
     print(row)
 
-
+# -----Auka prent-----
 
 # Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
 print("\nVaktir per starfsmaður per category:")
