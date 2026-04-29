@@ -1,24 +1,22 @@
 from fastapi import FastAPI, UploadFile, File
-import pandas as pd
-import io
-
-from greedy_core import run_greedy  # eða þinn greedy file
+import shutil
+from greedy_render import run_greedy
 
 app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"message": "API is running"}
+    return {"message": "Vaktaplan app is running"}
 
-@app.post("/schedule/")
-async def schedule(file: UploadFile = File(...)):
-    try:
-        contents = await file.read()
-        excel = pd.ExcelFile(io.BytesIO(contents))
+@app.post("/run")
+async def run(file: UploadFile = File(...)):
 
-        rows, dict_events, dict_employees = run_greedy(excel, "05_24")
+    # vista uploaded file
+    input_path = "Input.xlsx"
+    with open(input_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-        return {"status": "ok", "rows": rows[:10]}
+    # keyra greedy
+    result = run_greedy(input_path)
 
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    return result
