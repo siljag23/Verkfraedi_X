@@ -1,6 +1,6 @@
 
-from open_excel_new import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
-from pick_employees_new import assign_all_events
+from open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
+from pick_employees import assign_all_events
 from Print_Results_Greedy import Print_Results_Greedy
 from Plot_Results_Greedy import Plot_Results
 from Plot_Total_Stats_Greedy import Plot_Total_Stats
@@ -91,7 +91,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
     row += f"{total:>10}"
     print(row)
 
-
+# -----Auka prent-----
 
 # Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
 print("\nVaktir per starfsmaður per category:")
