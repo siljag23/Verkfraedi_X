@@ -49,7 +49,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         employees_sorted = sorted(dict_employees.keys(),
             key=lambda emp_id: employee_priority(emp_id, dict_employees, hours_per_employee, base_min_shifts))
-        """
+        
         # 1. Prenta forgangsröðun
         print(f"\n{'='*70}")
         print(f"{'Starfsmaður':<20} {'Completion':>12} {'Vaktir':>8} {'Min':>6} {'Stig':>10}")
@@ -61,7 +61,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             ratio = current / min_s if min_s > 0 else 1.0
             score = dict_employees[emp_id]["Score"]
             print(f"{name:<20} {ratio:>12.2f} {current:>8} {min_s:>6} {score:>10.1f}")
-        """
+        
 
         for emp_id in employees_sorted:
             best_option = choose_best_role_for_employee(emp_id, event_state, dict_events, employee_days_off, employee_worked_days, daily_hours_per_employee, max_daily_hours,
@@ -72,7 +72,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
             event_id = best_option["event_id"]
             role_id = best_option["role_id"]
-            """
+            
             # ------ Print -------
             event = dict_events[event_id]
             datetime_info = get_event_datetime_info(event_id, dict_events)
@@ -121,7 +121,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             print(f"  {'Skillset':<30} {skill_adj:>8.1f}  (req: {required_skill}, emp: {emp_skill})")
             print(f"  {'Request':<30} {req_adj:>8.1f}")
             print(f"  {'Heildarstig':<30} {total:>8.1f}")
-            """
+            
             # ------ Print búið ------
 
             result = assign_employee_to_role(emp_id, event_id, role_id, event_state, dict_events, hours_per_employee, 
