@@ -7,6 +7,8 @@ from Plot_Total_Stats_Greedy import Plot_Total_Stats
 from Export_Json_Greedy import Export_Json
 from export_schedule_to_excel_greedy import export_schedule_to_excel
 from collections import defaultdict
+from pathlib import Path
+import os
 
 # Upphafsstilla breytur
 hours_per_employee = defaultdict(float)
@@ -29,8 +31,11 @@ dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, e
             "Input.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
-previous_json_dict = "02_26_output_dicts.json" # Hef þetta svona í bili
-previous_json_list = "02_26_output_list.json" # Hef þetta svona í bili
+base_path = Path(__file__).resolve().parent
+
+previous_json_dict = base_path.parent / "Data" / "02_26_output_dicts.json"
+previous_json_list = base_path.parent / "Data" / "02_26_output_list.json"
+
 previous_scores = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
