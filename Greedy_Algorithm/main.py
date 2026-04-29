@@ -11,12 +11,13 @@ def root():
 @app.post("/run")
 async def run(file: UploadFile = File(...)):
 
-    # vista uploaded file
-    input_path = "Input.xlsx"
+    input_path = file.filename
+
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # keyra greedy
-    result = run_greedy(input_path)
+    month = file.filename.replace(".xlsx", "")
+
+    result = run_greedy(input_path, month)
 
     return result
