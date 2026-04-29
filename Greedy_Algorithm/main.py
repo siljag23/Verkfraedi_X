@@ -8,7 +8,7 @@ app = FastAPI()
 @app.post("/run")
 async def run(file: UploadFile = File(...)):
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_dir = os.path.join(BASE_DIR, "Data")
 
     os.makedirs(data_dir, exist_ok=True)
@@ -16,11 +16,9 @@ async def run(file: UploadFile = File(...)):
     filename = file.filename
     input_path = os.path.join(data_dir, filename)
 
-    # vista file á réttum stað
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # senda bara filename áfram
     result = run_greedy(filename)
 
     return result
