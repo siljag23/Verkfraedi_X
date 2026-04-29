@@ -4,15 +4,18 @@ import os
 from shift_length import shift_length
 from datetime import datetime, time, timedelta
 from collections import defaultdict
+from pathlib import Path
 
 def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name, sheet_5_name, sheet_requests=None):
 
+    base_path = Path(__file__).resolve().parent
+    file_path = base_path.parent/"Data"/file_name
     # Lesa inn sheets
-    events = pd.read_excel(file_name, sheet_name=sheet_1_name)
-    employees = pd.read_excel(file_name, sheet_name=sheet_2_name)
-    days_off = pd.read_excel(file_name, sheet_name=sheet_3_name)
-    score_keys = pd.read_excel(file_name, sheet_name=sheet_4_name)
-    skillset_scores_df = pd.read_excel(file_name, sheet_name=sheet_5_name)
+    events = pd.read_excel(file_path, sheet_name=sheet_1_name)
+    employees = pd.read_excel(file_path, sheet_name=sheet_2_name)
+    days_off = pd.read_excel(file_path, sheet_name=sheet_3_name)
+    score_keys = pd.read_excel(file_path, sheet_name=sheet_4_name)
+    skillset_scores_df = pd.read_excel(file_path, sheet_name=sheet_5_name)
 
     # Hreinsa
     events = events.dropna(how="all")
