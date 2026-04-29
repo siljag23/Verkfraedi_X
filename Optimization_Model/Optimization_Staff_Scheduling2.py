@@ -37,7 +37,7 @@ def Optimization_Staff_Scheduling2(
     W_WEEKLY_BALANCE = 0.7
 
     REWARD_REQUEST = 10
-    PENALTY_HISTORY = 5
+    PENALTY_HISTORY = 0.5
 
     def to_hours(t):
         if hasattr(t, "total_seconds"):
@@ -205,14 +205,11 @@ def Optimization_Staff_Scheduling2(
         weekend_i = gp.quicksum(works[i,j]*weekend[j] for j in events)
         total_weekend_i = hist_weekend.get(i, 0) + weekend_i
 
-        total_shifts = hist_shifts.get(i,0) + shifts_i
-        total_hours = hist_hours.get(i,0) + hours_i
+        model.addConstr(shifts_i >= min_shifts * scale[i])
+        model.addConstr(shifts_i <= max_shifts * scale[i])
 
-        model.addConstr(total_shifts >= min_shifts * scale[i])
-        model.addConstr(total_shifts <= max_shifts * scale[i])
-
-        model.addConstr(total_hours >= min_hours * scale[i])
-        model.addConstr(total_hours <= max_hours * scale[i])
+        model.addConstr(hours_i >= min_hours * scale[i])
+        model.addConstr(hours_i <= max_hours * scale[i])
 
         model.addConstr(score_i >= min_score * scale[i])
         model.addConstr(score_i <= max_score * scale[i])
@@ -238,10 +235,13 @@ def Optimization_Staff_Scheduling2(
         if i in employees and j in events
     )
 
-    history_penalty = gp.quicksum(
-        hist_shifts.get(i, 0) * gp.quicksum(works[i, j] for j in events)
+    avg_hist = sum(hist_shifts.get(i,0) for i in employees) / len(employees)
+
+    history_balance = gp.quicksum(
+        ((hist_shifts.get(i,0) - avg_hist) / scale[i]) *
+        gp.quicksum(works[i,j] for j in events)
         for i in employees
-)
+    )
 
     model.setObjective(
         - W_SHIFTS * (max_shifts - min_shifts)
@@ -251,11 +251,12 @@ def Optimization_Staff_Scheduling2(
         - W_HALLS * gp.quicksum(max_hall[h] - min_hall[h] for h in halls)
         - W_WEEKLY_BALANCE * (max_weekly - min_weekly)
         + REWARD_REQUEST * request_term
-        - PENALTY_HISTORY * history_penalty,
+        - PENALTY_HISTORY * history_balance,
         GRB.MAXIMIZE
     )
 
-    model.setParam('MIPGap', 0.03)  
+    model.setParam('MIPGap', 0.03)
+    model.setParam('TimeLimit', 10)  
 
     model.optimize()
 

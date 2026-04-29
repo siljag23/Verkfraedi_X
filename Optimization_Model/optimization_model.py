@@ -12,10 +12,10 @@ from Optimization_Model.Total_Stats import Total_Stats
 # -------------------------
 # SETTINGS
 # -------------------------
-input_excel = "Input.xlsx"
+input_excel = "Data/Input.xlsx"
 
-previous_file = "04_24_optioutput"
-output_file = "05_24_optioutput"
+previous_file = "Optimization_Model/04_24_optioutput"
+output_file = "Optimization_Model/05_24_optioutput"
 
 # -------------------------
 # Load data 
@@ -36,14 +36,6 @@ shift_score = {j: dict_events[j]["EventRanking"] for j in events}
 
 # Compute shift_dur
 shift_dur = compute_shift_duration(dict_events)
-
-# Load history
-hist_shifts, hist_hours, hist_scores, hist_weekend = Load_JSON_History(
-    f"{previous_file}_list.json",
-    dict_events,
-    shift_dur,
-    shift_score
-)
 
 # =========================================================
 # STEP 2 — LOAD HISTORY
@@ -66,9 +58,9 @@ model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Schedul
     dict_events,
     dict_employees,
     employee_days,
-    hist_shifts,
-    hist_hours = None,
-    hist_weekend = hist_weekend,
+    hist_shifts=hist_shifts,
+    hist_hours=hist_hours,
+    hist_weekend=hist_weekend,
     requests=requests
 )
 
