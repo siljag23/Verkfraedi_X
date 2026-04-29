@@ -1,9 +1,10 @@
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
-from datetime import timedelta
 import numpy as np
-
+from datetime import timedelta
+from Optimization_Model.Compute_Shift_Duration import To_Hours
+from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 
 def Optimization_Staff_Scheduling2(
     dict_events,
@@ -13,7 +14,6 @@ def Optimization_Staff_Scheduling2(
     hist_hours=None,
     hist_halls=None,
     hist_weekend=None,
-    current_schedule=None,
     requests=None
 ):
 
@@ -37,20 +37,7 @@ def Optimization_Staff_Scheduling2(
     W_WEEKLY_BALANCE = 0.7
 
     REWARD_REQUEST = 10
-    PENALTY_HISTORY = 0.5
-
-    def to_hours(t):
-        if hasattr(t, "total_seconds"):
-            return t.total_seconds() / 3600
-        elif hasattr(t, "hour"):
-            return t.hour + t.minute / 60
-        else:
-            try:
-                t = pd.to_datetime(t)
-                return t.hour + t.minute / 60
-            except:
-                return 0
-
+    PENALTY_HISTORY = 0.1
 
     emp_demand = {j: dict_events[j]["Employees"] for j in events}
     skill1_req = {j: dict_events[j]["Skillset1"] for j in events}
@@ -59,7 +46,6 @@ def Optimization_Staff_Scheduling2(
     hall = {j: dict_events[j]["Hall"] for j in events}
 
     start = {j: dict_events[j]["ShiftBegins"] for j in events}
-    end = {j: dict_events[j]["ShiftEnds"] for j in events}
 
     event_date = {j: pd.to_datetime(dict_events[j]["Date"], dayfirst=True) for j in events}
     skill = {i: dict_employees[i]["Skillset"] for i in employees}
@@ -68,25 +54,13 @@ def Optimization_Staff_Scheduling2(
     weeks = sorted(set(event_date[j].isocalendar().week for j in events))
     halls = list(set(hall.values()))
 
-    shift_dur = {}
-    for j in events:
-        start_h = to_hours(start[j])
-        end_h = to_hours(end[j])
-
-        if end_h < start_h:
-            end_h += 24
-
-        dur = end_h - start_h
-        if dur > 10:
-            dur = 4
-
-        shift_dur[j] = dur
+    shift_dur = Compute_Shift_Duration(dict_events)
 
     shift_start = {}
     shift_end = {}
 
     for j in events:
-        start_h = to_hours(start[j])
+        start_h = To_Hours(start[j])
         shift_start[j] = event_date[j] + pd.to_timedelta(start_h, unit="h")
         shift_end[j] = shift_start[j] + pd.to_timedelta(shift_dur[j], unit="h")
 
@@ -147,11 +121,6 @@ def Optimization_Staff_Scheduling2(
         for j in events:
             if event_date[j].date() in employee_days.get(i, set()):
                 model.addConstr(works[i,j] == 0)
-
-    for i in employees:
-        model.addConstr(
-            gp.quicksum(works[i,j] for j in events) >= availability[i] * 3
-        )
 
     for i in employees:
         for d in set(event_date[j].date() for j in events):
