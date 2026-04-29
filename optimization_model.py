@@ -6,7 +6,7 @@ from Optimization_Model.Load_JSON_History import Load_JSON_History
 from Optimization_Model.Export_Json import Export_Json
 from Optimization_Model.Print_Results import Print_Results
 from Optimization_Model.Employee_Diagnostics import Employee_Diagnostics
-from compute_shift_duration import compute_shift_duration
+from Optimization_Model.compute_shift_duration import compute_shift_duration
 from Optimization_Model.Total_Stats import Total_Stats
 
 # -------------------------
