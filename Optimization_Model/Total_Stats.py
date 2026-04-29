@@ -1,114 +1,115 @@
 import numpy as np
-from Optimization_Model.Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
+import pandas as pd
+
 
 def Total_Stats(
     employees,
     events,
+    works,
     dict_events,
     dict_employees,
     employee_days,
+    shift_dur,
     hist_shifts=None,
     hist_hours=None,
     hist_scores=None,
     hist_weekend=None,
-    requests=None,
-    NUM_RUNS=1
+    min_avail_floor=0.1
 ):
-
+    # -------------------------
+    # Defaults
+    # -------------------------
     hist_shifts = hist_shifts or {}
     hist_hours = hist_hours or {}
     hist_scores = hist_scores or {}
     hist_weekend = hist_weekend or {}
 
-    all_current = {"shifts": [], "hours": [], "weekend": [], "score": [], "normalized_hours": []}
-    all_total = {"shifts": [], "hours": [], "weekend": [], "score": [], "normalized_hours": []}
+    # -------------------------
+    # Availability (robust – only uses dict_events)
+    # -------------------------
+    total_days = len(
+        set(
+            pd.to_datetime(dict_events[j]["Date"], dayfirst=True).date()
+            for j in events
+        )
+    )
 
-    print("\nRunning multiple runs for stats...")
-
-    for run in range(NUM_RUNS):
-
-        model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Scheduling2(
-            dict_events,
-            dict_employees,
-            employee_days,
-            hist_shifts,
-            hist_hours,
-            hist_halls=None,
-            hist_weekend=hist_weekend,
-            requests=requests
+    availability = {}
+    for i in employees:
+        days_off = employee_days.get(i, set())
+        availability[i] = (
+            (total_days - len(days_off)) / total_days
+            if total_days > 0 else 1.0
         )
 
-        if model.SolCount == 0:
-            continue
-
-        # -------------------------
-        # Availability
-        # -------------------------
-        total_days = len(set(event_date[j].date() for j in events))
-        availability = {}
-
-        for i in employees:
-            days_off = employee_days.get(i, set())
-            availability[i] = (total_days - len(days_off)) / total_days if total_days > 0 else 1
-
-        # -------------------------
-        # Compute per run
-        # -------------------------
-        current = {"shifts": [], "hours": [], "weekend": [], "score": [], "normalized_hours": []}
-        total = {"shifts": [], "hours": [], "weekend": [], "score": [], "normalized_hours": []}
-
-        for i in employees:
-
-            shifts_i = sum(works[i,j].X for j in events)
-            hours_i = sum(works[i,j].X * shift_dur[j] for j in events)
-            weekend_i = sum(
-                works[i,j].X for j in events
-                if event_date[j].weekday() in [4,5,6]
-            )
-            score_i = sum(works[i,j].X * dict_events[j]["EventRanking"] for j in events)
-
-            avail = availability[i]
-
-            # CURRENT
-            current["shifts"].append(shifts_i)
-            current["hours"].append(hours_i)
-            current["weekend"].append(weekend_i)
-            current["score"].append(score_i)
-            current["normalized_hours"].append(hours_i / max(avail, 0.1))
-
-            # TOTAL
-            total_hours = hours_i + hist_hours.get(i, 0)
-            total_shifts = shifts_i + hist_shifts.get(i, 0)
-            total_weekend = weekend_i + hist_weekend.get(i, 0)
-            total_score = score_i + hist_scores.get(i, 0)
-
-            total["shifts"].append(total_shifts)
-            total["hours"].append(total_hours)
-            total["weekend"].append(total_weekend)
-            total["score"].append(total_score)
-            total["normalized_hours"].append(total_hours / max(avail, 0.1))
-
-        # -------------------------
-        # Save results
-        # -------------------------
-        for key in all_current:
-            all_current[key].extend(current[key])
-            all_total[key].extend(total[key])
+    # -------------------------
+    # Weekend lookup (robust)
+    # -------------------------
+    is_weekend = {}
+    for j in events:
+        d = pd.to_datetime(dict_events[j]["Date"], dayfirst=True)
+        is_weekend[j] = 1 if d.weekday() in [4, 5, 6] else 0
 
     # -------------------------
-    # PRINT
+    # Containers (NORMALIZED ONLY)
     # -------------------------
-    def print_stats(title, stats):
-        print(f"\n--- {title} ---")
+    norm_current = {
+        "shifts": [],
+        "hours": [],
+        "weekend": [],
+        "score": [],
+    }
 
-        for key, values in stats.items():
-            print(f"\n{key}:")
-            print("  Min:", round(np.min(values), 2))
-            print("  Max:", round(np.max(values), 2))
-            print("  Avg:", round(np.mean(values), 2))
-            print("  Std:", round(np.std(values), 2))
+    norm_total = {
+        "shifts": [],
+        "hours": [],
+        "weekend": [],
+        "score": [],
+    }
 
-    print_stats("Current Period (AVERAGED)", all_current)
-    print_stats("Total (History + Current) (AVERAGED)", all_total)
+    # -------------------------
+    # Compute normalized stats
+    # -------------------------
+    for i in employees:
+        denom = max(availability[i], min_avail_floor)
 
-    return all_current, all_total
+        shifts_i = sum(works[i, j].X for j in events)
+        hours_i = sum(works[i, j].X * shift_dur[j] for j in events)
+        weekend_i = sum(works[i, j].X * is_weekend[j] for j in events)
+        score_i = sum(
+            works[i, j].X * dict_events[j]["EventRanking"]
+            for j in events
+        )
+
+        # CURRENT (normalized)
+        norm_current["shifts"].append(shifts_i / denom)
+        norm_current["hours"].append(hours_i / denom)
+        norm_current["weekend"].append(weekend_i / denom)
+        norm_current["score"].append(score_i / denom)
+
+        # TOTAL = history + current (normalized)
+        norm_total["shifts"].append((shifts_i + hist_shifts.get(i, 0)) / denom)
+        norm_total["hours"].append((hours_i + hist_hours.get(i, 0)) / denom)
+        norm_total["weekend"].append((weekend_i + hist_weekend.get(i, 0)) / denom)
+        norm_total["score"].append((score_i + hist_scores.get(i, 0)) / denom)
+
+    # -------------------------
+    # PRINT NORMALIZED STATS
+    # -------------------------
+    print("\n--- Current Period (NORMALIZED) ---")
+    for key, values in norm_current.items():
+        v = np.array(values, dtype=float)
+        print(f"\n{key}:")
+        print("  Min:", round(v.min(), 2))
+        print("  Max:", round(v.max(), 2))
+        print("  Avg:", round(v.mean(), 2))
+        print("  Std:", round(v.std(), 2))
+
+    print("\n--- Total (History + Current) (NORMALIZED) ---")
+    for key, values in norm_total.items():
+        v = np.array(values, dtype=float)
+        print(f"\n{key}:")
+        print("  Min:", round(v.min(), 2))
+        print("  Max:", round(v.max(), 2))
+        print("  Avg:", round(v.mean(), 2))
+        print("  Std:", round(v.std(), 2))
