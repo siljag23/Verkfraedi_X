@@ -16,9 +16,11 @@ async def run(file: UploadFile = File(...)):
     filename = file.filename
     input_path = os.path.join(data_dir, filename)
 
+    # vista file á réttum stað
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    # senda bara filename áfram
     result = run_greedy(filename)
 
     return result
