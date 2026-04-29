@@ -67,11 +67,6 @@ def run_greedy(input_file, month="04_26"):
         return {"error": str(e)}
 
     # -------------------------
-    # Print (optional)
-    # -------------------------
-    Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
-
-    # -------------------------
     # Export JSON
     # -------------------------
     Export_Json(dict_employees, dict_events, rows, month)
