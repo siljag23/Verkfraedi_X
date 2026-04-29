@@ -19,7 +19,10 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     current_weekends = []
     prev_weekends = []
 
+    availability = []
+
     for emp_id, emp in dict_employees.items():
+        availability.append(emp.get("Availability_ratio", 1))
         names.append(emp.get("EmployeeName", f"Emp {emp_id}"))
 
         current_shifts.append(emp.get("Number_of_shifts", 0))
@@ -103,7 +106,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         if not values:
             print(f"{label}: No data\n")
             return
-
+        
         print(f"{label}:")
         print(f"  Avg: {np.mean(values):.2f}")
         print(f"  Min: {np.min(values):.2f}")
@@ -115,7 +118,19 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     total_scores = [p + c for p, c in zip(prev_scores, current_scores)]
     total_weekends = [p + c for p, c in zip(prev_weekends, current_weekends)]
 
+    total_shifts_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_shifts, current_shifts, availability)]
+    total_hours_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_hours, current_hours, availability)]
+    total_scores_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_scores, current_scores, availability)]
+    total_weekends_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_weekends, current_weekends, availability)]
+
+    print("NOT normalized")
     print_stats("Total Shifts", total_shifts)
     print_stats("Total Hours", total_hours)
     print_stats("Total Score", total_scores)
     print_stats("Weekend Shifts", total_weekends)
+
+    print("NORMALIZED")
+    print_stats("Total Shifts (norm)", total_shifts_norm)
+    print_stats("Total Hours (norm)", total_hours_norm)
+    print_stats("Total Score (norm)", total_scores_norm)
+    print_stats("Weekend Shifts (norm)", total_weekends_norm)
