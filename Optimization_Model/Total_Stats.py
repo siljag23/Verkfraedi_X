@@ -6,8 +6,8 @@ def Total_Stats(
     employees,
     events,
     works,
-    dict_events,
     dict_employees,
+    dict_events,
     employee_days,
     shift_dur,
     hist_shifts=None,
@@ -16,6 +16,15 @@ def Total_Stats(
     hist_weekend=None,
     min_avail_floor=0.1
 ):
+    
+    print(type(dict_events))
+    print(len(dict_events))
+    print(list(dict_events.items())[:1])
+
+    for j in dict_events:
+        if "Date" not in dict_events[j]:
+            print("Missing Date:", j, dict_events[j])
+
     # -------------------------
     # Defaults
     # -------------------------

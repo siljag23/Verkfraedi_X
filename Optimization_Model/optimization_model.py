@@ -1,3 +1,4 @@
+
 from Optimization_Model.open_excel_opti import open_excel_opti
 from Optimization_Model.Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
 from Optimization_Model.export_schedule_to_excel import export_schedule_to_excel
@@ -95,14 +96,15 @@ Print_Results(
 Total_Stats(
     employees,
     events,
-    dict_events,
+    works,              
     dict_employees,
+    dict_events,
     employee_days,
+    shift_dur,         
     hist_shifts,
     hist_hours,
     hist_scores,
-    hist_weekend,
-    requests
+    hist_weekend
 )
 
 Employee_Diagnostics(
