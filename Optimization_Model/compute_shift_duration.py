@@ -1,6 +1,6 @@
 import pandas as pd
 
-def to_hours(t):
+def To_Hours(t):
     # timedelta
     if hasattr(t, "total_seconds"):
         return t.total_seconds() / 3600
@@ -17,15 +17,15 @@ def to_hours(t):
         return 0
 
 
-def compute_shift_duration(dict_events):
+def Compute_Shift_Duration(dict_events):
     shift_dur = {}
 
     for j, event in dict_events.items():
         start = event["ShiftBegins"]
         end = event["ShiftEnds"]
 
-        start_h = to_hours(start)
-        end_h = to_hours(end)
+        start_h = To_Hours(start)
+        end_h = To_Hours(end)
 
         if end_h < start_h:
             end_h += 24
