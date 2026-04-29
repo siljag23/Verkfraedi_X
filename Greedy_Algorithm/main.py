@@ -8,10 +8,13 @@ app = FastAPI()
 @app.post("/run")
 async def run(file: UploadFile = File(...)):
 
-    os.makedirs("Data", exist_ok=True)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(BASE_DIR, "Data")
+
+    os.makedirs(data_dir, exist_ok=True)
 
     filename = file.filename
-    input_path = os.path.join("Data", filename)
+    input_path = os.path.join(data_dir, filename)
 
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
