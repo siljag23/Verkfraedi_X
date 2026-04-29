@@ -225,7 +225,7 @@ def Optimization_Staff_Scheduling2(
     )
 
     model.setParam('MIPGap', 0.03)
-    model.setParam('TimeLimit', 10)  
+    #model.setParam('TimeLimit', 10)  
 
     model.optimize()
 
