@@ -96,7 +96,6 @@ Total_Stats(
     employees,
     events,
     works,              
-    dict_employees,
     dict_events,
     employee_days,
     shift_dur,         

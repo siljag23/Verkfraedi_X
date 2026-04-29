@@ -31,12 +31,6 @@ def Compute_Shift_Duration(dict_events):
             end_h += 24
 
         dur = end_h - start_h
-
-        # sanity check
-        if dur > 10:
-            print("WARNING: weird shift", j, dur)
-            dur = 4
-
         shift_dur[j] = dur
 
     return shift_dur
