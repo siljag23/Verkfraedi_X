@@ -1,5 +1,5 @@
 import numpy as np
-from Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
+from Optimization_Model.Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
 
 def Total_Stats(
     employees,

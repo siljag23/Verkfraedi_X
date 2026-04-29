@@ -1,13 +1,13 @@
-from open_excel_opti import open_excel_opti
-from Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
-from export_schedule_to_excel import export_schedule_to_excel
-from Plot_Total_Stats import Plot_Total_Stats
-from Load_JSON_History import Load_JSON_History
-from Export_Json import Export_Json
-from Print_Results import Print_Results
-from Employee_Diagnostics import Employee_Diagnostics
-from compute_shift_duration import compute_shift_duration
-from Total_Stats import Total_Stats
+from Optimization_Model.open_excel_opti import open_excel_opti
+from Optimization_Model.Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
+from Optimization_Model.export_schedule_to_excel import export_schedule_to_excel
+from Optimization_Model.Plot_Total_Stats import Plot_Total_Stats
+from Optimization_Model.Load_JSON_History import Load_JSON_History
+from Optimization_Model.Export_Json import Export_Json
+from Optimization_Model.Print_Results import Print_Results
+from Optimization_Model.Employee_Diagnostics import Employee_Diagnostics
+from Optimization_Model.compute_shift_duration import compute_shift_duration
+from Optimization_Model.Total_Stats import Total_Stats
 
 # -------------------------
 # SETTINGS
