@@ -25,11 +25,11 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     score_keys = score_keys.dropna(how="all")
     skillset_scores_df = skillset_scores_df.dropna(how="all")
 
-    events = events.loc[:, ~events.columns.str.contains("^Unnamed")]
-    employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
-    days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
-    score_keys = score_keys.loc[:, ~score_keys.columns.str.contains("^Unnamed")]
-    skillset_scores_df = skillset_scores_df.loc[:, ~skillset_scores_df.columns.str.contains("^Unnamed")]
+    events = events.loc[:, ~events.columns.astype(str).str.contains("^Unnamed")]
+    employees = employees.loc[:, ~employees.columns.astype(str).str.contains("^Unnamed")]
+    days_off = days_off.loc[:, ~days_off.columns.astype(str).str.contains("^Unnamed")]
+    score_keys = score_keys.loc[:, ~score_keys.columns.astype(str).str.contains("^Unnamed")]
+    skillset_scores_df = skillset_scores_df.loc[:, ~skillset_scores_df.columns.astype(str).str.contains("^Unnamed")]
 
     events.columns = events.columns.str.strip()
     employees.columns = employees.columns.str.strip()

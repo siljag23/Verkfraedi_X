@@ -14,7 +14,7 @@ def Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee
     ):
         name = info.get("EmployeeName")
         total = hours_per_employee.get(emp_id, 0)
-        prev_scores = info.get("prev_score")
+        prev_scores = info.get("prev_score", 0)
         score = info.get("Score", 0)
         shifts = info.get("Number_of_shifts", 0)
         weekend_shifts = info.get("Shifts_on_weekends", 0)
