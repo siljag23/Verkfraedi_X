@@ -136,9 +136,6 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     period_end = first_event_date.replace(day=calendar.monthrange(year, month)[1])
     period_days = (period_end - period_start).days + 1
 
-    print("period start", period_start)
-    print("period end", period_end)
-
     for emp_id in dict_employees:
         days_off_count = len(employee_days.get(emp_id, set()))
         available_days = period_days - days_off_count
@@ -211,7 +208,6 @@ def open_previous_scores(json_path) -> dict[int, float]:
             emp_id = int(k)
         except ValueError:
             continue
-        print(emp_id, info.keys())
         previous_scores[emp_id] = info.get("Score", 0)
         previous_availability[emp_id] = info.get("Availability_ratio", 1)
     

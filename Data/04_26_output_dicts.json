@@ -1,19 +1,97 @@
 {
     "events": {
         "1": {
-            "Event": "JS",
+            "Event": "Múlinn",
+            "EventType": "Múlinn",
+            "EventCategory": "Solo",
+            "EventRanking": 90.0,
+            "Hall": "BL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-01",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "23:00:00"
+        },
+        "2": {
+            "Event": "RF",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-01",
+            "ShiftBegins": "16:30:00",
+            "ShiftEnds": "20:00:00"
+        },
+        "3": {
+            "Event": "VH",
             "EventType": "EB",
             "EventCategory": "Basic",
             "EventRanking": 70.0,
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 4,
-            "Employees": 10,
-            "Date": "2026-03-01",
-            "ShiftBegins": "17:00:00",
-            "ShiftEnds": "20:00:00"
+            "Employees": 14,
+            "Date": "2026-04-01",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:30:00"
         },
-        "2": {
+        "4": {
+            "Event": "RF",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-02",
+            "ShiftBegins": "18:00:00",
+            "ShiftEnds": "21:00:00"
+        },
+        "5": {
+            "Event": "VH",
+            "EventType": "EB",
+            "EventCategory": "Basic",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 14,
+            "Date": "2026-04-02",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "6": {
+            "Event": "VH",
+            "EventType": "EB",
+            "EventCategory": "Basic",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 8,
+            "Date": "2026-04-04",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "23:00:00"
+        },
+        "7": {
+            "Event": "Múlinn",
+            "EventType": "Múlinn",
+            "EventCategory": "Solo",
+            "EventRanking": 90.0,
+            "Hall": "BL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-08",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "8": {
             "Event": "Sinfó",
             "EventType": "Sinfó",
             "EventCategory": "Basic",
@@ -21,88 +99,10 @@
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 3,
-            "Employees": 12,
-            "Date": "2026-03-05",
-            "ShiftBegins": "18:30:00",
+            "Employees": 11,
+            "Date": "2026-04-09",
+            "ShiftBegins": "18:00:00",
             "ShiftEnds": "21:30:00"
-        },
-        "3": {
-            "Event": "Tón",
-            "EventType": "KL",
-            "EventCategory": "Basic",
-            "EventRanking": 40.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-03-05",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "4": {
-            "Event": "RMF",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 1,
-            "Skillset2": 0,
-            "Employees": 3,
-            "Date": "2026-03-06",
-            "ShiftBegins": "18:30:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "5": {
-            "Event": "HAM",
-            "EventType": "Partý EB",
-            "EventCategory": "Party",
-            "EventRanking": 50.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 6,
-            "Employees": 11,
-            "Date": "2026-03-06",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "23:00:00"
-        },
-        "6": {
-            "Event": "IS",
-            "EventType": "EB",
-            "EventCategory": "Basic",
-            "EventRanking": 70.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 4,
-            "Employees": 7,
-            "Date": "2026-03-07",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "23:00:00"
-        },
-        "7": {
-            "Event": "IS",
-            "EventType": "Fatahengi",
-            "EventCategory": "Fatahengi",
-            "EventRanking": 100.0,
-            "Hall": "Fatahengi",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 10,
-            "Date": "2026-03-07",
-            "ShiftBegins": "12:30:00",
-            "ShiftEnds": "18:00:00"
-        },
-        "8": {
-            "Event": "PD",
-            "EventType": "EB",
-            "EventCategory": "Basic",
-            "EventRanking": 70.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 4,
-            "Employees": 11,
-            "Date": "2026-03-09",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
         },
         "9": {
             "Event": "Sinfó",
@@ -113,8 +113,8 @@
             "Skillset1": 1,
             "Skillset2": 3,
             "Employees": 11,
-            "Date": "2026-03-12",
-            "ShiftBegins": "18:30:00",
+            "Date": "2026-04-10",
+            "ShiftBegins": "18:00:00",
             "ShiftEnds": "21:30:00"
         },
         "10": {
@@ -125,312 +125,26 @@
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 3,
-            "Employees": 7,
-            "Date": "2026-03-13",
-            "ShiftBegins": "17:00:00",
-            "ShiftEnds": "20:00:00"
+            "Employees": 12,
+            "Date": "2026-04-11",
+            "ShiftBegins": "13:00:00",
+            "ShiftEnds": "17:00:00"
         },
         "11": {
-            "Event": "SB",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
+            "Event": "PL",
+            "EventType": "Party NL",
+            "EventCategory": "Party",
+            "EventRanking": 60.0,
             "Hall": "NL",
             "Skillset1": 0,
-            "Skillset2": 0,
+            "Skillset2": 1,
             "Employees": 2,
-            "Date": "2026-03-13",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "22:00:00"
+            "Date": "2026-04-11",
+            "ShiftBegins": "20:00:00",
+            "ShiftEnds": "01:00:00"
         },
         "12": {
-            "Event": "GB",
-            "EventType": "Partý EB",
-            "EventCategory": "Party",
-            "EventRanking": 50.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 6,
-            "Employees": 12,
-            "Date": "2026-03-14",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "13": {
-            "Event": "ITV",
-            "EventType": "SB",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "SB",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 2,
-            "Date": "2026-03-18",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "14": {
-            "Event": "DS",
-            "EventType": "EB",
-            "EventCategory": "Basic",
-            "EventRanking": 70.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 4,
-            "Employees": 7,
-            "Date": "2026-03-19",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "15": {
-            "Event": "DS",
-            "EventType": "Partý EB",
-            "EventCategory": "Party",
-            "EventRanking": 50.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 6,
-            "Employees": 12,
-            "Date": "2026-03-20",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "23:00:00"
-        },
-        "16": {
-            "Event": "MT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-20",
-            "ShiftBegins": "18:30:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "17": {
-            "Event": "MT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-21",
-            "ShiftBegins": "18:30:00",
-            "ShiftEnds": "21:30:00"
-        },
-        "18": {
-            "Event": "MT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 2,
-            "Date": "2026-03-22",
-            "ShiftBegins": "18:30:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "19": {
-            "Event": "MT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-23",
-            "ShiftBegins": "18:30:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "20": {
-            "Event": "MT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 1,
-            "Skillset2": 0,
-            "Employees": 2,
-            "Date": "2026-03-28",
-            "ShiftBegins": "16:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "21": {
-            "Event": "PF",
-            "EventType": "Partý EB",
-            "EventCategory": "Party",
-            "EventRanking": 50.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 6,
-            "Employees": 12,
-            "Date": "2026-03-21",
-            "ShiftBegins": "20:00:00",
-            "ShiftEnds": "00:00:00"
-        },
-        "22": {
-            "Event": "RP",
-            "EventType": "Partý EB",
-            "EventCategory": "Party",
-            "EventRanking": 50.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 6,
-            "Employees": 12,
-            "Date": "2026-03-27",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "23": {
             "Event": "Fam",
-            "EventType": "EB",
-            "EventCategory": "Basic",
-            "EventRanking": 70.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 4,
-            "Employees": 7,
-            "Date": "2026-03-29",
-            "ShiftBegins": "14:00:00",
-            "ShiftEnds": "18:00:00"
-        },
-        "24": {
-            "Event": "HT",
-            "EventType": "How To",
-            "EventCategory": "Solo",
-            "EventRanking": 100.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-14",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "25": {
-            "Event": "HT",
-            "EventType": "How To",
-            "EventCategory": "Solo",
-            "EventRanking": 100.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-21",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "26": {
-            "Event": "HT",
-            "EventType": "How To",
-            "EventCategory": "Solo",
-            "EventRanking": 100.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-28",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "27": {
-            "Event": "EÁ",
-            "EventType": "Barna KL",
-            "EventCategory": "Barna",
-            "EventRanking": 80.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 2,
-            "Date": "2026-03-07",
-            "ShiftBegins": "12:00:00",
-            "ShiftEnds": "16:00:00"
-        },
-        "28": {
-            "Event": "EÁ",
-            "EventType": "Barna KL",
-            "EventCategory": "Barna",
-            "EventRanking": 80.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 2,
-            "Date": "2026-03-21",
-            "ShiftBegins": "12:00:00",
-            "ShiftEnds": "16:00:00"
-        },
-        "29": {
-            "Event": "EÁ",
-            "EventType": "Barna KL",
-            "EventCategory": "Barna",
-            "EventRanking": 80.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 2,
-            "Date": "2026-03-28",
-            "ShiftBegins": "12:00:00",
-            "ShiftEnds": "16:00:00"
-        },
-        "30": {
-            "Event": "Múlinn",
-            "EventType": "Múlinn",
-            "EventCategory": "Solo",
-            "EventRanking": 90.0,
-            "Hall": "BL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-04",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "31": {
-            "Event": "Múlinn",
-            "EventType": "Múlinn",
-            "EventCategory": "Solo",
-            "EventRanking": 90.0,
-            "Hall": "BL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-11",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "32": {
-            "Event": "Múlinn",
-            "EventType": "Múlinn",
-            "EventCategory": "Solo",
-            "EventRanking": 90.0,
-            "Hall": "BL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-18",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "33": {
-            "Event": "Múlinn",
-            "EventType": "Múlinn",
-            "EventCategory": "Solo",
-            "EventRanking": 90.0,
-            "Hall": "BL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-25",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "34": {
-            "Event": "UR",
             "EventType": "KL",
             "EventCategory": "Basic",
             "EventRanking": 40.0,
@@ -438,25 +152,12 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 1,
-            "Date": "2026-03-10",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
+            "Date": "2026-04-12",
+            "ShiftBegins": "13:00:00",
+            "ShiftEnds": "17:00:00"
         },
-        "35": {
-            "Event": "KD",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 2,
-            "Date": "2026-03-17",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "36": {
-            "Event": "JN",
+        "13": {
+            "Event": "Sinfó",
             "EventType": "NL",
             "EventCategory": "Basic",
             "EventRanking": 80.0,
@@ -464,11 +165,310 @@
             "Skillset1": 0,
             "Skillset2": 0,
             "Employees": 1,
-            "Date": "2026-03-16",
+            "Date": "2026-04-12",
+            "ShiftBegins": "15:00:00",
+            "ShiftEnds": "19:00:00"
+        },
+        "14": {
+            "Event": "Upprás",
+            "EventType": "KL",
+            "EventCategory": "Basic",
+            "EventRanking": 40.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 1,
+            "Employees": 1,
+            "Date": "2026-04-14",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "15": {
+            "Event": "Múlinn",
+            "EventType": "Múlinn",
+            "EventCategory": "Solo",
+            "EventRanking": 90.0,
+            "Hall": "BL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-15",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "16": {
+            "Event": "IA",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 1,
+            "Skillset2": 0,
+            "Employees": 3,
+            "Date": "2026-04-15",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "17": {
+            "Event": "Sinfó",
+            "EventType": "Sinfó",
+            "EventCategory": "Basic",
+            "EventRanking": 50.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 3,
+            "Employees": 11,
+            "Date": "2026-04-16",
+            "ShiftBegins": "18:30:00",
+            "ShiftEnds": "21:30:00"
+        },
+        "18": {
+            "Event": "MÍT",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-16",
+            "ShiftBegins": "16:30:00",
+            "ShiftEnds": "21:00:00"
+        },
+        "19": {
+            "Event": "MÍT",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-17",
+            "ShiftBegins": "16:00:00",
+            "ShiftEnds": "21:00:00"
+        },
+        "20": {
+            "Event": "MÍT",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-18",
+            "ShiftBegins": "10:00:00",
+            "ShiftEnds": "15:00:00"
+        },
+        "21": {
+            "Event": "MÍT",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-18",
+            "ShiftBegins": "15:00:00",
+            "ShiftEnds": "21:00:00"
+        },
+        "22": {
+            "Event": "MÍT",
+            "EventType": "KL",
+            "EventCategory": "Basic",
+            "EventRanking": 40.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 1,
+            "Employees": 1,
+            "Date": "2026-04-16",
+            "ShiftBegins": "16:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "23": {
+            "Event": "MÍT",
+            "EventType": "KL",
+            "EventCategory": "Basic",
+            "EventRanking": 40.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 1,
+            "Employees": 1,
+            "Date": "2026-04-17",
+            "ShiftBegins": "16:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "24": {
+            "Event": "MÍT",
+            "EventType": "KL",
+            "EventCategory": "Basic",
+            "EventRanking": 40.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 1,
+            "Employees": 1,
+            "Date": "2026-04-18",
+            "ShiftBegins": "10:00:00",
+            "ShiftEnds": "16:00:00"
+        },
+        "25": {
+            "Event": "MÍT",
+            "EventType": "KL",
+            "EventCategory": "Basic",
+            "EventRanking": 40.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 1,
+            "Employees": 1,
+            "Date": "2026-04-18",
+            "ShiftBegins": "16:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "26": {
+            "Event": "NB",
+            "EventType": "EB",
+            "EventCategory": "Basic",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 6,
+            "Date": "2026-04-17",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "00:00:00"
+        },
+        "27": {
+            "Event": "DWC",
+            "EventType": "EB",
+            "EventCategory": "Basic",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 10,
+            "Date": "2026-04-18",
+            "ShiftBegins": "11:30:00",
+            "ShiftEnds": "17:00:00"
+        },
+        "28": {
+            "Event": "SÍ",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 2,
+            "Date": "2026-04-19",
+            "ShiftBegins": "15:00:00",
+            "ShiftEnds": "19:00:00"
+        },
+        "29": {
+            "Event": "KP",
+            "EventType": "EB",
+            "EventCategory": "Basic",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 12,
+            "Date": "2026-04-19",
+            "ShiftBegins": "14:00:00",
+            "ShiftEnds": "18:00:00"
+        },
+        "30": {
+            "Event": "Barna dans",
+            "EventType": "Barna EB",
+            "EventCategory": "Barna",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 2,
+            "Employees": 5,
+            "Date": "2026-04-21",
+            "ShiftBegins": "16:30:00",
+            "ShiftEnds": "20:00:00"
+        },
+        "32": {
+            "Event": "UpT",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-22",
+            "ShiftBegins": "16:00:00",
+            "ShiftEnds": "20:00:00"
+        },
+        "33": {
+            "Event": "LR",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 2,
+            "Date": "2026-04-25",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "23:00:00"
+        },
+        "34": {
+            "Event": "FB",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 2,
+            "Date": "2026-04-29",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "35": {
+            "Event": "FB",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 2,
+            "Date": "2026-04-30",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "36": {
+            "Event": "SR",
+            "EventType": "KL",
+            "EventCategory": "Basic",
+            "EventRanking": 40.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 1,
+            "Employees": 1,
+            "Date": "2026-04-22",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
         "37": {
+            "Event": "HT",
+            "EventType": "How To",
+            "EventCategory": "Solo",
+            "EventRanking": 100.0,
+            "Hall": "KL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-25",
+            "ShiftBegins": "18:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "38": {
             "Event": "K&B",
             "EventType": "Barna KL",
             "EventCategory": "Barna",
@@ -477,38 +477,38 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 2,
-            "Date": "2026-03-22",
+            "Date": "2026-04-25",
             "ShiftBegins": "12:00:00",
             "ShiftEnds": "16:00:00"
         },
-        "38": {
-            "Event": "Svef",
-            "EventType": "SB",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "SB",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-03-26",
-            "ShiftBegins": "17:00:00",
-            "ShiftEnds": "20:00:00"
-        },
         "39": {
-            "Event": "Sígildir",
-            "EventType": "Sígildir",
+            "Event": "Múlinn",
+            "EventType": "Múlinn",
             "EventCategory": "Solo",
-            "EventRanking": 80.0,
-            "Hall": "NL",
+            "EventRanking": 90.0,
+            "Hall": "BL",
             "Skillset1": 0,
             "Skillset2": 0,
-            "Employees": 2,
-            "Date": "2026-03-22",
-            "ShiftBegins": "15:00:00",
-            "ShiftEnds": "19:00:00"
+            "Employees": 1,
+            "Date": "2026-04-22",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
         },
         "40": {
-            "Event": "tón",
+            "Event": "Múlinn",
+            "EventType": "Múlinn",
+            "EventCategory": "Solo",
+            "EventRanking": 90.0,
+            "Hall": "BL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 1,
+            "Date": "2026-04-29",
+            "ShiftBegins": "19:00:00",
+            "ShiftEnds": "22:00:00"
+        },
+        "41": {
+            "Event": "KV",
             "EventType": "KL",
             "EventCategory": "Basic",
             "EventRanking": 40.0,
@@ -516,35 +516,74 @@
             "Skillset1": 0,
             "Skillset2": 1,
             "Employees": 1,
-            "Date": "2026-03-06",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "41": {
-            "Event": "ÖL",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 2,
-            "Date": "2026-03-11",
-            "ShiftBegins": "19:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "42": {
-            "Event": "RF",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-03-31",
+            "Date": "2026-04-20",
             "ShiftBegins": "18:00:00",
             "ShiftEnds": "21:00:00"
+        },
+        "42": {
+            "Event": "Sinfó",
+            "EventType": "Sinfó",
+            "EventCategory": "Basic",
+            "EventRanking": 50.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 3,
+            "Employees": 7,
+            "Date": "2026-04-24",
+            "ShiftBegins": "18:30:00",
+            "ShiftEnds": "21:30:00"
+        },
+        "43": {
+            "Event": "DP",
+            "EventType": "Partý EB",
+            "EventCategory": "Party",
+            "EventRanking": 50.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 6,
+            "Employees": 12,
+            "Date": "2026-04-25",
+            "ShiftBegins": "20:00:00",
+            "ShiftEnds": "00:00:00"
+        },
+        "44": {
+            "Event": "VR",
+            "EventType": "EB",
+            "EventCategory": "Basic",
+            "EventRanking": 70.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 4,
+            "Employees": 8,
+            "Date": "2026-04-26",
+            "ShiftBegins": "16:00:00",
+            "ShiftEnds": "20:00:00"
+        },
+        "45": {
+            "Event": "Sinfó",
+            "EventType": "Sinfó",
+            "EventCategory": "Basic",
+            "EventRanking": 50.0,
+            "Hall": "EB",
+            "Skillset1": 1,
+            "Skillset2": 3,
+            "Employees": 11,
+            "Date": "2026-04-30",
+            "ShiftBegins": "18:30:00",
+            "ShiftEnds": "21:30:00"
+        },
+        "46": {
+            "Event": "SR",
+            "EventType": "NL",
+            "EventCategory": "Basic",
+            "EventRanking": 80.0,
+            "Hall": "NL",
+            "Skillset1": 0,
+            "Skillset2": 0,
+            "Employees": 4,
+            "Date": "2026-04-24",
+            "ShiftBegins": "18:00:00",
+            "ShiftEnds": "20:00:00"
         }
     },
     "employees": {
@@ -556,27 +595,27 @@
         },
         "2": {
             "EmployeeName": "Alda/ Miðó ",
-            "Score": 340.0,
+            "Score": 300.0,
             "Skillset": 2,
-            "Availability_ratio": 1.0
+            "Availability_ratio": 0.7666666666666667
         },
         "3": {
             "EmployeeName": "Anna Soffía ",
-            "Score": 330.0,
+            "Score": 380.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9032258064516129
+            "Availability_ratio": 0.9
         },
         "4": {
             "EmployeeName": "Arnar Ragn",
-            "Score": 330.0,
+            "Score": 420.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9032258064516129
+            "Availability_ratio": 1.0
         },
         "5": {
             "EmployeeName": "Auður ",
-            "Score": 330.0,
+            "Score": 270.0,
             "Skillset": 2,
-            "Availability_ratio": 1.0
+            "Availability_ratio": 0.7333333333333333
         },
         "6": {
             "EmployeeName": "Ágústa",
@@ -592,27 +631,27 @@
         },
         "8": {
             "EmployeeName": "Elísabet ",
-            "Score": 340.0,
+            "Score": 400.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "9": {
             "EmployeeName": "Elmar ",
-            "Score": 270.0,
+            "Score": 380.00000000000006,
             "Skillset": 2,
-            "Availability_ratio": 0.7096774193548387
+            "Availability_ratio": 0.9333333333333333
         },
         "10": {
             "EmployeeName": "Erna ",
-            "Score": 370.0,
+            "Score": 390.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "11": {
             "EmployeeName": "Gaukur ",
-            "Score": 320.0,
+            "Score": 270.0,
             "Skillset": 2,
-            "Availability_ratio": 1.0
+            "Availability_ratio": 0.5333333333333333
         },
         "12": {
             "EmployeeName": "Gréta",
@@ -622,39 +661,39 @@
         },
         "13": {
             "EmployeeName": "Guðný  ",
-            "Score": 330.0,
+            "Score": 400.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9354838709677419
+            "Availability_ratio": 1.0
         },
         "14": {
             "EmployeeName": "Hólmfríður ",
-            "Score": 340.0,
+            "Score": 240.0,
             "Skillset": 2,
-            "Availability_ratio": 0.967741935483871
+            "Availability_ratio": 0.6666666666666666
         },
         "15": {
             "EmployeeName": "Hrafnkell",
-            "Score": 340.0,
+            "Score": 370.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "16": {
             "EmployeeName": "Hrannar ",
-            "Score": 370.0,
+            "Score": 290.0,
             "Skillset": 2,
-            "Availability_ratio": 0.967741935483871
+            "Availability_ratio": 0.8
         },
         "17": {
             "EmployeeName": "Jórunn  ",
-            "Score": 370.0,
+            "Score": 360.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "18": {
             "EmployeeName": "Katrín Hel",
-            "Score": 230.0,
+            "Score": 200.00000000000006,
             "Skillset": 2,
-            "Availability_ratio": 0.5161290322580645
+            "Availability_ratio": 0.3333333333333333
         },
         "19": {
             "EmployeeName": "Katrín Sig ",
@@ -664,9 +703,9 @@
         },
         "20": {
             "EmployeeName": "Laufey ",
-            "Score": 370.0,
+            "Score": 410.0,
             "Skillset": 2,
-            "Availability_ratio": 1.0
+            "Availability_ratio": 0.9
         },
         "21": {
             "EmployeeName": "Magnea",
@@ -676,21 +715,21 @@
         },
         "22": {
             "EmployeeName": "Magnús  ",
-            "Score": 340.0,
+            "Score": 360.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9354838709677419
+            "Availability_ratio": 1.0
         },
         "23": {
             "EmployeeName": "Margrét Lára",
-            "Score": 0.0,
+            "Score": 400.00000000000006,
             "Skillset": 2,
-            "Availability_ratio": 0.0
+            "Availability_ratio": 1.0
         },
         "24": {
             "EmployeeName": "Orri",
-            "Score": 330.0,
+            "Score": 260.0,
             "Skillset": 2,
-            "Availability_ratio": 0.8387096774193549
+            "Availability_ratio": 0.6
         },
         "25": {
             "EmployeeName": "Palli",
@@ -706,25 +745,25 @@
         },
         "27": {
             "EmployeeName": "Sara B",
-            "Score": 370.0,
+            "Score": 290.0,
             "Skillset": 2,
-            "Availability_ratio": 0.967741935483871
+            "Availability_ratio": 0.8
         },
         "28": {
             "EmployeeName": "Sara Júlía ",
-            "Score": 330.0,
+            "Score": 260.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9354838709677419
+            "Availability_ratio": 0.8
         },
         "29": {
             "EmployeeName": "Selma ",
-            "Score": 360.0,
+            "Score": 300.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9032258064516129
+            "Availability_ratio": 0.7666666666666667
         },
         "30": {
             "EmployeeName": "Sigríður ",
-            "Score": 320.0,
+            "Score": 390.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
@@ -736,61 +775,61 @@
         },
         "32": {
             "EmployeeName": "Sæmundur ",
-            "Score": 280.0,
+            "Score": 380.00000000000006,
             "Skillset": 2,
-            "Availability_ratio": 0.6774193548387096
+            "Availability_ratio": 1.0
         },
         "33": {
             "EmployeeName": "Valdís ",
-            "Score": 350.0,
+            "Score": 390.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9032258064516129
+            "Availability_ratio": 1.0
         },
         "34": {
             "EmployeeName": "Vero",
-            "Score": 240.0,
+            "Score": 0.0,
             "Skillset": 2,
-            "Availability_ratio": 0.5806451612903226
+            "Availability_ratio": 0.0
         },
         "35": {
             "EmployeeName": "Védís ",
-            "Score": 330.0,
+            "Score": 400.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "36": {
             "EmployeeName": "Unnar ",
-            "Score": 360.0,
+            "Score": 410.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "37": {
             "EmployeeName": "Ömmi",
-            "Score": 320.0,
+            "Score": 350.0,
             "Skillset": 2,
-            "Availability_ratio": 0.9354838709677419
+            "Availability_ratio": 0.9666666666666667
         },
         "38": {
             "EmployeeName": "Arnar ",
-            "Score": 370.0,
+            "Score": 360.0,
             "Skillset": 1,
-            "Availability_ratio": 0.967741935483871
+            "Availability_ratio": 1.0
         },
         "39": {
             "EmployeeName": "Róbert ",
-            "Score": 330.0,
+            "Score": 370.0,
             "Skillset": 1,
-            "Availability_ratio": 0.967741935483871
+            "Availability_ratio": 1.0
         },
         "40": {
             "EmployeeName": "Jara ",
-            "Score": 260.0,
+            "Score": 290.0,
             "Skillset": 1,
-            "Availability_ratio": 0.8064516129032258
+            "Availability_ratio": 0.6666666666666666
         },
         "41": {
             "EmployeeName": "Þórey ",
-            "Score": 340.0,
+            "Score": 400.0,
             "Skillset": 1,
             "Availability_ratio": 1.0
         }

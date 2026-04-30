@@ -22,7 +22,10 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     availability = []
 
     for emp_id, emp in dict_employees.items():
-        availability.append(emp.get("Availability_ratio", 1))
+        a_current = emp.get("Availability_ratio", 1)
+        a_previous = emp.get("Previous_availability", 1)
+        a_combined = (a_current + a_previous) / 2  # Meðaltal yfir báða mánuði
+        availability.append(a_combined)
         names.append(emp.get("EmployeeName", f"Emp {emp_id}"))
 
         current_shifts.append(emp.get("Number_of_shifts", 0))
@@ -35,8 +38,13 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         prev_score = emp.get("prev_score", 0)
         current_score_added = total_score - prev_score
 
-        prev_scores.append(prev_score)
-        current_scores.append(current_score_added)
+        # Ef availability er 0 þennan mánuð - sýna 0 fyrir síðasta mánuð
+        if a_current <= 0:
+            prev_scores.append(0)
+            current_scores.append(0)
+        else:
+            prev_scores.append(prev_score)
+            current_scores.append(current_score_added)
 
         current_weekends.append(emp.get("Shifts_on_weekends", 0))
         prev_weekends.append(emp.get("prev_weekend_shifts", 0))
@@ -101,6 +109,46 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         "Number of Shifts on Weekends",
     )
 
+    # Búa til normalized gögn með nöfnum - sía þá með a > 0
+    filtered = [(n, (ps + cs) / a, (ph + ch) / a, (psc + csc) / a, (pw + cw) / a)
+                for n, ps, cs, ph, ch, psc, csc, pw, cw, a
+                in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
+                    prev_scores, current_scores, prev_weekends, current_weekends, availability)
+                if a > 0]
+
+    if filtered:
+        names_n, shifts_n, hours_n, scores_n, weekends_n = zip(*filtered)
+        names_n = list(names_n)
+        shifts_n = list(shifts_n)
+        hours_n = list(hours_n)
+        scores_n = list(scores_n)
+        weekends_n = list(weekends_n)
+
+        def plot_normalized(names, values, title, ylabel):
+            combined = list(zip(names, values))
+            try:
+                locale.setlocale(locale.LC_ALL, "is_IS.UTF-8")
+                combined = sorted(combined, key=lambda x: locale.strxfrm(x[0]))
+            except:
+                combined = sorted(combined, key=lambda x: x[0].lower())
+            
+            sorted_names = [x[0] for x in combined]
+            sorted_vals = [x[1] for x in combined]
+
+            plt.figure(figsize=(12, 6))
+            plt.bar(sorted_names, sorted_vals, color="#ff6e1b")
+            plt.title(title, fontweight="bold")
+            plt.ylabel(ylabel, fontweight="bold")
+            plt.xticks(rotation=90)
+            plt.tight_layout()
+            plt.show()
+
+        plot_normalized(names_n, shifts_n, "Total Shifts (Normalized)", "Shifts / Availability")
+        plot_normalized(names_n, hours_n, "Total Hours (Normalized)", "Hours / Availability")
+        plot_normalized(names_n, scores_n, "Total Score (Normalized)", "Score / Availability")
+        plot_normalized(names_n, weekends_n, "Total Weekends (Normalized)", "Weekends / Availability")
+        
+
     #-----Print stats-----
     def print_stats(label, values):
         if not values:
@@ -118,12 +166,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     total_hours = [p + c for p, c in zip(prev_hours, current_hours)]
     total_scores = [p + c for p, c in zip(prev_scores, current_scores)]
     total_weekends = [p + c for p, c in zip(prev_weekends, current_weekends)]
-
-    # Fyrir plottið - allir starfsmenn
-    total_shifts_plot = [p + c for p, c in zip(prev_shifts, current_shifts)]
-    total_hours_plot = [p + c for p, c in zip(prev_hours, current_hours)]
-    total_scores_plot = [p + c for p, c in zip(prev_scores, current_scores)]
-    total_weekends_plot = [p + c for p, c in zip(prev_weekends, current_weekends)]
 
     # Fyrir tölfræði - bara þeir með a > 0
     total_shifts_norm = [(p + c) / a for p, c, a in zip(prev_shifts, current_shifts, availability) if a > 0]
