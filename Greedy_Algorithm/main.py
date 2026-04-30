@@ -9,14 +9,6 @@ app = FastAPI()
 # =========================
 # ROOT → sýnir heimasíðu
 # =========================
-@app.get("/")
-def serve_frontend():
-    return FileResponse("index.html")
-
-
-# =========================
-# RUN → keyrir greedy
-# =========================
 @app.post("/run")
 async def run(file: UploadFile = File(...)):
 
@@ -29,13 +21,9 @@ async def run(file: UploadFile = File(...)):
     filename = file.filename
     input_path = os.path.join(data_dir, filename)
 
-    # vista excel
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    print("SAVED TO:", input_path)
-
-    # keyra greedy
     result = run_greedy(input_path)
 
     if result["status"] == "success":
@@ -49,9 +37,6 @@ async def run(file: UploadFile = File(...)):
     return result
 
 
-# =========================
-# DOWNLOAD
-# =========================
 @app.get("/download/{filename}")
 def download(filename: str):
 
@@ -65,6 +50,6 @@ def download(filename: str):
 
     return FileResponse(
         path,
-        media_type='application/octet-stream',
+        media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         filename=filename
     )
