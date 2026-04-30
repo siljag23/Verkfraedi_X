@@ -9,7 +9,7 @@ from open_excel import (
 )
 from pick_employees import assign_all_events
 from Export_Json_Greedy import Export_Json
-from export_schedule_to_excel_greedy import export_schedule_to_excel
+from export_schedule_to_excel_greedy import Export_Schedule_Render
 import traceback
 
 
@@ -17,12 +17,11 @@ def run_greedy(input_path):
 
     try:
         # =========================
-        # Extract month (MIKILVÆGT!)
+        # Extract month
         # =========================
         month = os.path.splitext(os.path.basename(input_path))[0]
-        filename = os.path.basename(input_path)  # bara "03_26.xlsx"
+        filename = os.path.basename(input_path)
 
-        # tryggja Data mappa
         os.makedirs("Data", exist_ok=True)
 
         print("DEBUG filename:", filename)
@@ -42,7 +41,7 @@ def run_greedy(input_path):
         base_min_shifts = 3
 
         # =========================
-        # Load Excel (FER Í Data sjálfkrafa)
+        # Load Excel
         # =========================
         dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
             filename,
@@ -90,23 +89,21 @@ def run_greedy(input_path):
         )
 
         # =========================
-        # Export JSON (PASSA month!)
+        # Export JSON
         # =========================
         Export_Json(dict_employees, dict_events, rows, month)
 
         # =========================
-        # Export Excel
+        # Export Excel 
         # =========================
         period_start = min(event["Date"] for event in dict_events.values())
         period_end = max(event["Date"] for event in dict_events.values())
 
-        output_file = os.path.join("Data", f"{month}_schedule_results.xlsx")
-
-        export_schedule_to_excel(
+        output_file = Export_Schedule_Render(
             rows,
             dict_events,
             dict_employees,
-            output_file,
+            input_path,   
             period_start=period_start,
             period_end=period_end
         )
