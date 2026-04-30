@@ -13,6 +13,7 @@ def Open_Excel_Opti(file_name, sheet_events, sheet_employees, sheet_daysoff, she
     # Remove unnamed columns
     events = events.loc[:, ~events.columns.str.contains("^Unnamed")]
     employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
+    days_off.columns = days_off.columns.astype(str)
     days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
 
     # Clean column names
