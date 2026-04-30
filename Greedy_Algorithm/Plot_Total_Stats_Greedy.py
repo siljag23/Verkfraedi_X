@@ -143,6 +143,3 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     print_stats("Total Score (norm)", total_scores_norm)
     print_stats("Weekend Shifts (norm)", total_weekends_norm)
 
-    print("Availability gildi:")
-    for emp_id, emp in dict_employees.items():
-        print(f"  {emp.get('EmployeeName')}: {emp.get('Availability_ratio')}")
