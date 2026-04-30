@@ -1,4 +1,5 @@
 import pandas as pd
+import calendar
 import json 
 import os
 from shift_length import shift_length
@@ -125,9 +126,18 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
             employee_days[emp_id] = set()
 
     # Reikna availability_ratio - EFTIR að frídagar eru lesnir
-    period_start = min(event["Date"] for event in dict_events.values())
-    period_end = max(event["Date"] for event in dict_events.values())
+    # Lesa mánuð og ár úr viðburðunum
+    first_event_date = min(event["Date"] for event in dict_events.values())
+    year = first_event_date.year
+    month = first_event_date.month
+
+    # Fyrsti og síðasti dagur mánaðarins
+    period_start = first_event_date.replace(day=1)
+    period_end = first_event_date.replace(day=calendar.monthrange(year, month)[1])
     period_days = (period_end - period_start).days + 1
+
+    print("period start", period_start)
+    print("period end", period_end)
 
     for emp_id in dict_employees:
         days_off_count = len(employee_days.get(emp_id, set()))
