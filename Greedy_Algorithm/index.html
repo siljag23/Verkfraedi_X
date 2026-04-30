@@ -47,7 +47,7 @@ button {
 }
 
 button:hover {
-    background: #ff6e1b;
+    background: #e65c10;
 }
 
 #download {
@@ -74,7 +74,7 @@ button:hover {
     <div id="status"></div>
 
     <a id="download" href="#" download>
-        <button>Sækja vaktaplan/button>
+        <button>Sækja vaktaplan</button>
     </a>
 </div>
 
@@ -139,7 +139,7 @@ async function upload() {
         download.style.display = "block";
 
     } else {
-        status.innerHTML = "Error ❌";
+        status.innerHTML = "Villa ❌";
         console.error(data);
     }
 }
