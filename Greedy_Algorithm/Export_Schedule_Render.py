@@ -13,13 +13,14 @@ def Export_Schedule_Render(
 ):
 
     # =========================
-    # PATH
+    # SAME BASE PATH ALLTAF
     # =========================
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    BASE_DIR = os.path.dirname(BASE_DIR)
+    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    DATA_DIR = os.path.join(BASE_DIR, "Data")
+    os.makedirs(DATA_DIR, exist_ok=True)
 
     base_name = os.path.splitext(os.path.basename(input_path))[0]
-    output_path = os.path.join(BASE_DIR, "Data", f"{base_name}_schedule.xlsx")
+    output_path = os.path.join(DATA_DIR, f"{base_name}_schedule.xlsx")
 
     print("EXPORT PATH:", output_path)
 
@@ -46,13 +47,9 @@ def Export_Schedule_Render(
         return output_path
 
     df["Date"] = pd.to_datetime(df["Date"]).dt.date
-
     df = df.sort_values(["Date", "Start"])
 
-
-    # =========================================================
-    # 1. EVENTS SHEET
-    # =========================================================
+    # ================= EVENTS =================
     grouped_events = df.groupby(
         ["EventID", "Event", "Date", "Start"]
     )["Employee"].apply(list).reset_index()
@@ -71,10 +68,7 @@ def Export_Schedule_Render(
 
     events_df = pd.DataFrame(event_table)
 
-
-    # =========================================================
-    # 2. EMPLOYEES SHEET
-    # =========================================================
+    # ================= EMPLOYEES =================
     grouped_emp = df.groupby("Employee")[["Event", "Date", "Start"]].apply(
         lambda x: list(zip(x["Event"], x["Date"], x["Start"]))
     )
@@ -84,18 +78,13 @@ def Export_Schedule_Render(
     emp_table = {}
 
     for emp, ev_list in grouped_emp.items():
-        formatted = [
-            f"{e} ({d} {s})" for e, d, s in ev_list
-        ]
+        formatted = [f"{e} ({d} {s})" for e, d, s in ev_list]
         formatted += [""] * (max_events - len(formatted))
         emp_table[emp] = formatted
 
     employees_df = pd.DataFrame(emp_table)
 
-
-    # =========================================================
-    # 3. CALENDAR SHEET
-    # =========================================================
+    # ================= CALENDAR =================
     if period_start is None:
         period_start = min(dict_events[e]["Date"] for e in dict_events)
     if period_end is None:
@@ -112,8 +101,6 @@ def Export_Schedule_Render(
     calendar_rows = []
 
     for week in weeks:
-
-        # Header row (dates)
         header = [d.strftime("%d.%m") for d in week]
         calendar_rows.append(header)
 
@@ -121,7 +108,7 @@ def Export_Schedule_Render(
         max_events_day = 0
 
         for d in week:
-            day_events = df[df["Date"] == d] 
+            day_events = df[df["Date"] == d]
 
             ev_list = [
                 f"{r['Event']} ({r['Start']})"
@@ -141,16 +128,12 @@ def Export_Schedule_Render(
 
     calendar_df = pd.DataFrame(calendar_rows)
 
-
-    # =========================================================
-    # EXPORT
-    # =========================================================
+    # ================= EXPORT =================
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
         events_df.to_excel(writer, sheet_name="Events", index=False)
         employees_df.to_excel(writer, sheet_name="Employees", index=False)
         calendar_df.to_excel(writer, sheet_name="Calendar", index=False)
 
-    print("FILE EXISTS AFTER EXPORT:", os.path.exists(output_path))
-    print("FILE SIZE:", os.path.getsize(output_path))
+    print("EXISTS AFTER EXPORT:", os.path.exists(output_path))
 
     return output_path
