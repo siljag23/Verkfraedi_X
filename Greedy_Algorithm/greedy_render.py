@@ -9,7 +9,7 @@ from open_excel import (
 )
 from pick_employees import assign_all_events
 from Export_Json_Greedy import Export_Json
-from export_schedule_to_excel_greedy import Export_Schedule_Render
+from Export_Schedule_Render import Export_Schedule_Render
 import traceback
 
 
