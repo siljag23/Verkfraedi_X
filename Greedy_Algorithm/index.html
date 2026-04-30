@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Vaktaplan Generator</title>
+<title>Vaktaplan Þjónustufulltrúa</title>
 
 <style>
 body {
@@ -47,7 +47,7 @@ button {
 }
 
 button:hover {
-    background: #ff6e1b;
+    background: #e65c10;
 }
 
 #download {
@@ -60,7 +60,7 @@ button:hover {
 <body>
 
 <div class="container">
-    <h1>Vaktaplan Generator</h1>
+    <h1>Vaktaplan Þjónustufulltrúa</h1>
 
     <div class="drop-zone" id="drop">
         Drag & drop Excel file here<br>
@@ -69,12 +69,12 @@ button:hover {
 
     <input type="file" id="fileInput" hidden>
 
-    <button onclick="upload()">Generate Schedule</button>
+    <button onclick="upload()">Búa til vaktaplan</button>
 
     <div id="status"></div>
 
     <a id="download" href="#" download>
-        <button>Download Excel</button>
+        <button>Sækja vaktaplan</button>
     </a>
 </div>
 
@@ -98,7 +98,7 @@ fileInput.onchange = () => {
 // drag
 drop.ondragover = (e) => {
     e.preventDefault();
-    drop.style.borderColor = "orange";
+    drop.style.borderColor = "#ff6e1b";
 };
 
 drop.ondragleave = () => {
@@ -119,7 +119,7 @@ async function upload() {
         return;
     }
 
-    status.innerHTML = "Running algorithm...";
+    status.innerHTML = "Býr til vaktaplan...";
     download.style.display = "none";
 
     const formData = new FormData();
@@ -133,13 +133,13 @@ async function upload() {
     const data = await res.json();
 
     if (data.status === "success") {
-        status.innerHTML = "Done ✅";
+        status.innerHTML = "Vaktaplan tilbúið ✅";
 
         download.href = data.download_url;
         download.style.display = "block";
 
     } else {
-        status.innerHTML = "Error ❌";
+        status.innerHTML = "Villa ❌";
         console.error(data);
     }
 }
