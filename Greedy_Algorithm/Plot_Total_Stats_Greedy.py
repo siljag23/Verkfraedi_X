@@ -18,6 +18,10 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     availability = []
 
     for emp_id, emp in dict_employees.items():
+        current_availability = emp.get("Availability_ratio", 1)
+        previous_availability = emp.get("Previous_availability", 1)
+        combined_availability = current_availability + previous_availability
+        availability.append(combined_availability)
         names.append(emp.get("EmployeeName", f"Emp {emp_id}"))
 
         current_shifts.append(emp.get("Number_of_shifts", 0))
@@ -26,16 +30,9 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         current_hours.append(hours_per_employee.get(emp_id, 0))
         prev_hours.append(emp.get("prev_hours_worked", 0))
 
-        total_score = emp.get("Score", 0)
+        # Fyrir plott - prev_score (0 ef í fríi)
         prev_score = emp.get("prev_score", 0)
-        current_score_added = total_score - prev_score
-        prev_scores.append(prev_score)
-        current_scores.append(current_score_added)
-
-        current_availability = emp.get("Availability_ratio", 1)
-        previous_availability = emp.get("Previous_availability", 1)
-        overall_availability = (current_availability + previous_availability)
-        availability.append(overall_availability)
+        score_added = emp.get("score_added_this_period", 0)
 
         # Ef availability er 0 þennan mánuð - sýna 0 stig fyrir síðasta mánuð
         if current_availability == 0:
@@ -43,7 +40,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
             current_scores.append(0)
         else:
             prev_scores.append(prev_score)
-            current_scores.append(current_score_added)
+            current_scores.append(score_added)
 
         current_weekends.append(emp.get("Shifts_on_weekends", 0))
         prev_weekends.append(emp.get("prev_weekend_shifts", 0))
@@ -131,10 +128,12 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     )
 
     # Búa til normalized gögn með nöfnum - sleppum þeim sem eru með availability = 0
-    filtered = [(n, (ps / current_availability) + (cs / current_availability) / a, (ph + ch) / a, (psc + csc) / a, (pw + cw) / a)
+    filtered = [(n, (ps + cs) / a, (ph + ch) / a, (psc + csc) / a, (pw + cw) / a)
                 for n, ps, cs, ph, ch, psc, csc, pw, cw, a
                 in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
-                    prev_scores, current_scores, prev_weekends, current_weekends, availability)
+                    [e.get("actual_prev_score", 0) for e in dict_employees.values()],
+                    [e.get("score_added_this_period", 0) for e in dict_employees.values()],
+                    prev_weekends, current_weekends, availability)
                 if a > 0]
 
     if filtered:
@@ -175,7 +174,9 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     # Fyrir tölfræði - bara þeir með availability > 0
     total_shifts_norm = [(p + c) / a for p, c, a in zip(prev_shifts, current_shifts, availability) if a > 0]
     total_hours_norm = [(p + c) / a for p, c, a in zip(prev_hours, current_hours, availability) if a > 0]
-    total_scores_norm = [(p + c) / a for p, c, a in zip(prev_scores, current_scores, availability) if a > 0]
+    total_scores_norm = [(p + c) / a for p, c, a in zip(
+            [e.get("actual_prev_score", 0) for e in dict_employees.values()],
+            [e.get("score_added_this_period", 0) for e in dict_employees.values()], availability) if a > 0]
     total_weekends_norm = [(p + c) / a for p, c, a in zip(prev_weekends, current_weekends, availability) if a > 0]
     
     # Prentum tölfræðilegar niðurstöður

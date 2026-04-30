@@ -100,6 +100,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         dict_employees[emp_id]["prev_hours_worked"] = 0
         dict_employees[emp_id]["prev_worked_days"] = []
         dict_employees[emp_id]["prev_shifts_per_hall"] = {}
+        dict_employees[emp_id]["score_added_this_period"] = 0
 
     # Lesa frídaga
     days_off = days_off.fillna(0)
@@ -322,14 +323,23 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
  
     for emp_id, info in employees.items(): 
         prev_availability = previous_availability.get(emp_id, None)
+        current_availability = info.get("Availability_ratio", 1.0)
 
+        actual_prev_score = previous_scores.get(emp_id, 0)
+
+        # Stig fyrir úthlutun - meðaltal ef availability < 0.75
         if emp_id not in previous_scores or prev_availability is None or prev_availability < 0.75:
-            prev_score = round(average_score, 1)
+            prev_score_for_algorithm = round(average_score, 1)
+        else: prev_score_for_algorithm = previous_scores[emp_id]
 
-        else: prev_score = previous_scores[emp_id]
+        # Fyrir plott - alltaf raunveruleg stig (0 ef í fríi)
+        if current_availability <= 0:
+            info["prev_score"] = prev_score_for_algorithm  # Þannig score_added = 0
+        else:
+            info["prev_score"] = actual_prev_score  # Raunveruleg stig
 
-        info["prev_score"] = prev_score
-        info["Score"] = prev_score
+        info["Score"] = prev_score_for_algorithm
+        info["actual_prev_score"] = actual_prev_score  # Alltaf raunveruleg stig
         info["Previous_availability"] = prev_availability if prev_availability is not None else 1
         info["Shifts_on_weekends"] = info.get("Shifts_on_weekends", 0)
         info["Number_of_shifts"] = info.get("Number_of_shifts", 0)

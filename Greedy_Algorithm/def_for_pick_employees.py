@@ -383,6 +383,7 @@ def assign_employee_to_role(emp_id: int, event_id: int, role_id: int, event_stat
     assigned_shifts[emp_id].append((shift_begins, shift_ends))
 
     dict_employees[emp_id]["Score"] += event_score
+    dict_employees[emp_id]["score_added_this_period"] += event_score
     
     dict_employees[emp_id]["Number_of_shifts"] += 1
 
