@@ -28,20 +28,20 @@ month = input("Mánuður vaktaplans á format mm_yy: ")
 
 # Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
 dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
-            "03_26.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
+            f"{month}.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
 
 # Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
 base_path = Path(__file__).resolve().parent
-"""
-previous_json_dict = base_path.parent / "Data" / "02_26_output_dicts.json"
-previous_json_list = base_path.parent / "Data" / "02_26_output_list.json"
+
+previous_json_dict = base_path.parent / "Data" / "03_26_output_dicts.json"
+previous_json_list = base_path.parent / "Data" / "03_26_output_list.json"
 previous_scores, previous_availability = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
 # Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores, previous_availability)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
-"""
+
 rows = []
 
 # Röðum starfsmönnum niður á viðburði
@@ -64,7 +64,7 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
-
+"""
 # Sýnir hvernig vaktir skiptast á vikur
 print("\nVaktir per starfsmaður per viku:")
 print("-" * 50)
@@ -125,7 +125,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
     row += f"{total:>10}"
     print(row)
 
-
+"""
 # Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 
@@ -136,10 +136,12 @@ period_start = min(event["Date"] for event in dict_events.values())
 period_end = max(event["Date"] for event in dict_events.values())
 
 # Prentum niðurstöðurnar í excel
+output_path = base_path.parent / "Data" / f"{month}_schedule_results.xlsx"
+
 export_schedule_to_excel(rows, 
                          dict_events, 
                          dict_employees, 
-                         f"{month}_schedule_results.xlsx", 
+                         output_path, 
                          period_start = period_start, 
                          period_end=period_end )
 
