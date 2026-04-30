@@ -154,5 +154,14 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             raise ValueError(
                 f"Ólöglegur lokahópur fyrir Event {event_id}. Valdir: {final_team}")
 
+
+    for emp_id, emp in dict_employees.items():
+        if emp.get("Availability_ratio", 1) == 0:
+            print(f"Starfsmaður {emp_id} ({emp.get('EmployeeName')})")
+            print(f"  Availability_ratio: {emp.get('Availability_ratio')}")
+            print(f"  Frídagar: {employee_days_off.get(emp_id)}")
+            print(f"  Number_of_shifts: {emp.get('Number_of_shifts')}")
+            
+
     return all_work_results, event_state
     

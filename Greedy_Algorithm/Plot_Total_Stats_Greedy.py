@@ -113,24 +113,36 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         print(f"  Max: {np.max(values):.2f}")
         print(f"  Std: {np.std(values):.2f}\n")
 
+    # Not normalizes
     total_shifts = [p + c for p, c in zip(prev_shifts, current_shifts)]
     total_hours = [p + c for p, c in zip(prev_hours, current_hours)]
     total_scores = [p + c for p, c in zip(prev_scores, current_scores)]
     total_weekends = [p + c for p, c in zip(prev_weekends, current_weekends)]
 
-    total_shifts_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_shifts, current_shifts, availability)]
-    total_hours_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_hours, current_hours, availability)]
-    total_scores_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_scores, current_scores, availability)]
-    total_weekends_norm = [(p + c) / a if a > 0 else 0 for p, c, a in zip(prev_weekends, current_weekends, availability)]
+    # Fyrir plottið - allir starfsmenn
+    total_shifts_plot = [p + c for p, c in zip(prev_shifts, current_shifts)]
+    total_hours_plot = [p + c for p, c in zip(prev_hours, current_hours)]
+    total_scores_plot = [p + c for p, c in zip(prev_scores, current_scores)]
+    total_weekends_plot = [p + c for p, c in zip(prev_weekends, current_weekends)]
 
+    # Fyrir tölfræði - bara þeir með a > 0
+    total_shifts_norm = [(p + c) / a for p, c, a in zip(prev_shifts, current_shifts, availability) if a > 0]
+    total_hours_norm = [(p + c) / a for p, c, a in zip(prev_hours, current_hours, availability) if a > 0]
+    total_scores_norm = [(p + c) / a for p, c, a in zip(prev_scores, current_scores, availability) if a > 0]
+    total_weekends_norm = [(p + c) / a for p, c, a in zip(prev_weekends, current_weekends, availability) if a > 0]
+    
     print("NOT normalized")
     print_stats("Total Shifts", total_shifts)
     print_stats("Total Hours", total_hours)
     print_stats("Total Score", total_scores)
     print_stats("Weekend Shifts", total_weekends)
-
+    
     print("NORMALIZED")
     print_stats("Total Shifts (norm)", total_shifts_norm)
     print_stats("Total Hours (norm)", total_hours_norm)
     print_stats("Total Score (norm)", total_scores_norm)
     print_stats("Weekend Shifts (norm)", total_weekends_norm)
+
+    print("Availability gildi:")
+    for emp_id, emp in dict_employees.items():
+        print(f"  {emp.get('EmployeeName')}: {emp.get('Availability_ratio')}")
