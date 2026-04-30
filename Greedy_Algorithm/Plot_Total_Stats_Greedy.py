@@ -34,8 +34,8 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
 
         current_availability = emp.get("Availability_ratio", 1)
         previous_availability = emp.get("Previous_availability", 1)
-        availability = (current_availability + previous_availability)
-        availability.append(availability)
+        overall_availability = (current_availability + previous_availability)
+        availability.append(overall_availability)
 
         # Ef availability er 0 þennan mánuð - sýna 0 stig fyrir síðasta mánuð
         if current_availability == 0:
