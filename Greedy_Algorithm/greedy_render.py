@@ -9,7 +9,7 @@ from open_excel import (
 )
 from pick_employees import assign_all_events
 from Export_Json_Greedy import Export_Json
-from export_schedule_to_excel_greedy import export_schedule_to_excel
+from Export_Schedule_Render import Export_Schedule_Render
 import traceback
 
 
@@ -97,13 +97,11 @@ def run_greedy(input_path):
         period_start = min(e["Date"] for e in dict_events.values())
         period_end = max(e["Date"] for e in dict_events.values())
 
-        output_file = os.path.join(DATA_DIR, f"{month}_schedule.xlsx")
-
-        export_schedule_to_excel(
+        output_file = Export_Schedule_Render(
             rows,
             dict_events,
             dict_employees,
-            output_file,
+            input_path,  
             period_start,
             period_end
         )
