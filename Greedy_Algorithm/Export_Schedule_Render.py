@@ -61,8 +61,8 @@ def Export_Schedule_Render(
     for _, row in grouped_events.iterrows():
         col_name = f"{row['Event']} ({row['Date']} {row['Start']})"
 
-        employees = row["Employee"]
-        employees += [""] * (max_staff - len(employees))
+        employees = list(row["Employee"]) 
+        employees = employees + [""] * (max_staff - len(employees))
 
         event_table[col_name] = employees
 

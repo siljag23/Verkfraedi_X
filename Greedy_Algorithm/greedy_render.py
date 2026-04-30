@@ -91,10 +91,13 @@ def run_greedy(input_path):
         # =========================
         # Export Excel
         # =========================
+        BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        DATA_DIR = os.path.join(BASE_DIR, "Data")
+
         period_start = min(e["Date"] for e in dict_events.values())
         period_end = max(e["Date"] for e in dict_events.values())
 
-        output_file = os.path.join("Data", f"{month}_schedule.xlsx")
+        output_file = os.path.join(DATA_DIR, f"{month}_schedule.xlsx")
 
         export_schedule_to_excel(
             rows,
