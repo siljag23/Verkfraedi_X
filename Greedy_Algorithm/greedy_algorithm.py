@@ -146,8 +146,9 @@ export_schedule_to_excel(rows,
 # Plottum niðurstöður
 """
 Plot_Results(dict_employees, hours_per_employee)
-"""
 Plot_Total_Stats(dict_employees, hours_per_employee)
+"""
+
 
 
 """
