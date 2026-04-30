@@ -1,7 +1,6 @@
 
 from Optimization_Model.Open_Excel_Opti import Open_Excel_Opti
-from Optimization_Model.Optimization_Staff_Scheduling2 import Optimization_Staff_Scheduling2
-from Optimization_Model.export_schedule_to_excel import export_schedule_to_excel
+from Optimization_Model.Optimization_Staff_Scheduling import Optimization_Staff_Scheduling2
 from Optimization_Model.Plot_Total_Stats import Plot_Total_Stats
 from Optimization_Model.Load_JSON_History import Load_JSON_History
 from Optimization_Model.Export_Json import Export_Json
@@ -13,10 +12,10 @@ from Optimization_Model.Total_Stats import Total_Stats
 # -------------------------
 # SETTINGS
 # -------------------------
-input_excel = "Data/Input.xlsx"
+input_excel = "Data/03_26.xlsx"
 
-previous_file = "Optimization_Model/04_24_optioutput"
-output_file = "Optimization_Model/05_24_optioutput"
+previous_file = None
+output_file = "Optimization_Model/03_26_optioutput"
 
 # -------------------------
 # Load data 
@@ -40,14 +39,16 @@ shift_dur = Compute_Shift_Duration(dict_events)
 # STEP 2 — LOAD HISTORY
 # -------------------------
 
-print("\nLoading history...")
-
-hist_shifts, hist_hours, hist_scores, hist_weekend = Load_JSON_History(
-    f"{previous_file}_list.json",
-    dict_events,
-    shift_dur,
-    shift_score
-)
+if previous_file is not None:
+    print("\nLoading history...")
+    hist_shifts, hist_hours, hist_scores, hist_weekend = Load_JSON_History(
+        f"{previous_file}_list.json",
+        dict_events,
+        shift_dur,
+        shift_score
+    )
+else:
+    hist_shifts = hist_hours = hist_scores = hist_weekend = {}
 
 #-------------------------
 # STEP 3 — RUN (WITH HISTORY + REQUESTS)
