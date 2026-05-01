@@ -21,10 +21,9 @@ def Export_Json(dict_employees, dict_events, rows, month):
             for k in keys_to_keep
             if k in info
         }
-        prev_score = info.get("prev_score", 0)
-        current_score = info.get("Score", 0)
-        filtered_employees[emp_id]["Score"] = current_score - prev_score
-
+    filtered_employees[emp_id]["Score"] = info.get("score_added_this_period", 0)
+    filtered_employees[emp_id]["Availability_ratio"] = info.get("Availability_ratio", 1)
+    
     # Aðlögum events og employees fyrir json skjal
     info_for_json = {
         "events": dict_events,
