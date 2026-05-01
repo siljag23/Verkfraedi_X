@@ -31,7 +31,7 @@ def Optimization_Staff_Scheduling2(
     # -------------------------
     W_SHIFTS = 5
     W_HOURS = 5
-    W_SCORE = 0.5
+    W_SCORE = 1
     W_WEEKEND = 1.5
     W_HALLS = 0.5
     W_WEEKLY_BALANCE = 0.5
@@ -169,7 +169,8 @@ def Optimization_Staff_Scheduling2(
     # -------------------------
     # AVERAGES
     # -------------------------
-    n = len(employees)
+    active_employees = [i for i in employees if availability[i] > 0]
+    n = len(active_employees)
 
     avg_shifts = gp.quicksum(shifts[i] for i in employees) / n
     avg_hours = gp.quicksum(hours[i] for i in employees) / n
@@ -189,7 +190,7 @@ def Optimization_Staff_Scheduling2(
     dev_hall = model.addVars(employees, halls)
     dev_weekly = model.addVars(employees, weeks)
 
-    for i in employees:
+    for i in active_employees:
 
         model.addConstr(dev_shifts[i] >= shifts[i] - availability[i]*avg_shifts)
         model.addConstr(dev_shifts[i] >= availability[i]*avg_shifts - shifts[i])
@@ -212,6 +213,25 @@ def Optimization_Staff_Scheduling2(
             model.addConstr(dev_weekly[i,w] >= availability[i]*avg_weekly[w] - weekly_shifts[i,w])
 
     # -------------------------
+    # REQUEST TERM
+    # -------------------------
+    request_term = gp.quicksum(
+        works[i, j]
+        for (i, j) in requests
+        if i in employees and j in events
+    )
+
+    # -------------------------
+    # HISTORY BALANCE
+    # -------------------------
+    avg_hist = sum(hist_shifts.get(i, 0) for i in employees) / len(employees)
+
+    history_balance = gp.quicksum(
+        (hist_shifts.get(i, 0) - avg_hist) * shifts[i]
+        for i in employees
+    )
+
+    # -------------------------
     # OBJECTIVE
     # -------------------------
     model.setObjective(
@@ -220,11 +240,14 @@ def Optimization_Staff_Scheduling2(
         - W_SCORE * gp.quicksum(dev_score[i] for i in employees)
         - W_WEEKEND * gp.quicksum(dev_weekend[i] for i in employees)
         - W_HALLS * gp.quicksum(dev_hall[i,h] for i in employees for h in halls)
-        - W_WEEKLY_BALANCE * gp.quicksum(dev_weekly[i,w] for i in employees for w in weeks),
+        - W_WEEKLY_BALANCE * gp.quicksum(dev_weekly[i,w] for i in employees for w in weeks)
+        + REWARD_REQUEST * request_term
+        - PENALTY_HISTORY * history_balance,
         GRB.MAXIMIZE
     )
 
     model.setParam('MIPGap', 0.01)
-    model.optimize()
+    model.setParam('TimeLimit', 10)  
+    model.optimize()    
 
     return model, works, shift_dur, weekend, weeks, event_date

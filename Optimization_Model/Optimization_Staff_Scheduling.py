@@ -35,9 +35,8 @@ def Optimization_Staff_Scheduling(
     W_HOURS = 5
     W_SCORE = 0.5
     W_WEEKEND = 1.5
-    W_HALLS = 0.5
     W_WEEKLY_BALANCE = 0.5
-
+    REWARD_HALLS = 0.5
     REWARD_REQUEST = 3
     PENALTY_HISTORY = 1.5
 
@@ -115,9 +114,6 @@ def Optimization_Staff_Scheduling(
     min_weekend = model.addVar()
     max_weekend = model.addVar()
 
-    min_halls = model.addVar()
-    max_halls = model.addVar()
-
     min_weekly = model.addVar()
     max_weekly = model.addVar()
 
@@ -169,15 +165,6 @@ def Optimization_Staff_Scheduling(
             model.addConstr(weekly_shifts <= max_weekly)
 
     for i in employees:
-        for j in events:
-            model.addConstr(works[i,j] <= works_hall[i, hall[j]])
-
-    for i in employees:
-        total_halls = gp.quicksum(works_hall[i,h] for h in halls) + sum(hist_halls.get(i, {}).values())
-        model.addConstr(total_halls >= min_halls)
-        model.addConstr(total_halls <= max_halls)
-
-    for i in employees:
 
         shifts_i = gp.quicksum(works[i,j] for j in events)
         hours_i = gp.quicksum(works[i,j]*shift_dur[j] for j in events)
@@ -196,20 +183,13 @@ def Optimization_Staff_Scheduling(
 
         model.addConstr(total_weekend_i >= min_weekend)
         model.addConstr(total_weekend_i <= max_weekend)
-        
-    min_hall = {h: model.addVar() for h in halls}
-    max_hall = {h: model.addVar() for h in halls}
 
-    for h in halls:
-        for i in employees:
-
-            y_i_h = gp.quicksum(
-                works[i,j] for j in events if hall[j] == h
+    for i in employees:
+        for h in halls:
+            model.addConstr(
+                gp.quicksum(works[i,j] for j in events if hall[j] == h)
+                >= works_hall[i,h]
             )
-            
-            model.addConstr(y_i_h >= min_hall[h] * scale[i])
-            model.addConstr(y_i_h <= max_hall[h] * scale[i])
-            
 
     request_term = gp.quicksum(
         works[i,j] for (i,j) in requests
@@ -224,21 +204,23 @@ def Optimization_Staff_Scheduling(
         for i in employees if scale[i] > 0
     )
 
+    hall_variety = gp.quicksum(
+        works_hall[i,h] for i in employees for h in halls) / (len(employees) * len(halls))
     
     model.setObjective(
         - W_SHIFTS * (max_shifts - min_shifts)
         - W_HOURS * (max_hours - min_hours)
         - W_SCORE * (max_score - min_score)
         - W_WEEKEND * (max_weekend - min_weekend)
-        - W_HALLS * gp.quicksum(max_hall[h] - min_hall[h] for h in halls)
         - W_WEEKLY_BALANCE * (max_weekly - min_weekly)
+        + REWARD_HALLS * hall_variety
         + REWARD_REQUEST * request_term
         - PENALTY_HISTORY * history_balance,
         GRB.MAXIMIZE
     )
 
     model.setParam('MIPGap', 0.01)
-    model.setParam('TimeLimit', 10)  
+    model.setParam('TimeLimit', 180)  
 
     model.optimize()
 
