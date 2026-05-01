@@ -10,24 +10,35 @@ def Employee_Diagnostics(
     employee_days
 ):
 
+    import calendar
+    import pandas as pd
+
     print("\n--- EMPLOYEE DIAGNOSTICS ---\n")
 
-    total_days = len(set(event_date[j].date() for j in events))
+    # -------------------------
+    # Use SAME month logic as model
+    # -------------------------
+    any_date = next(iter(event_date.values()))
+    year = any_date.year
+    month = any_date.month
+
+    total_days = calendar.monthrange(year, month)[1]
 
     for i in employees:
 
         name = dict_employees[i]["EmployeeName"]
 
         # -------------------------
-        # Availability / starfshlutfall
+        # Availability (FIXED)
         # -------------------------
-        days_off = employee_days.get(i, set())
-        available_days = total_days - len(days_off)
+        days_off = {
+            pd.to_datetime(d).date()
+            for d in employee_days.get(i, set())
+            if pd.to_datetime(d).month == month
+            and pd.to_datetime(d).year == year
+        }
 
-        if total_days > 0:
-            availability_ratio = available_days / total_days
-        else:
-            availability_ratio = 0
+        availability_ratio = max(0, (total_days - len(days_off)) / total_days)
 
         # -------------------------
         # Current workload
@@ -42,25 +53,25 @@ def Employee_Diagnostics(
         weekend_shifts = sum(
             works[i, j].X
             for j in events
-            if event_date[j].weekday() in [4,5,6]
+            if event_date[j].weekday() in [4, 5, 6]
         )
 
         # -------------------------
         # Requests
         # -------------------------
-        employee_requests = [(i2,j2) for (i2,j2) in requests if i2 == i]
+        employee_requests = [(i2, j2) for (i2, j2) in requests if i2 == i]
 
         total_requests = len(employee_requests)
 
         satisfied_requests = sum(
-            1 for (i2,j2) in employee_requests
+            1 for (i2, j2) in employee_requests
             if j2 in events and works[i, j2].X > 0.5
         )
 
-        if total_requests > 0:
-            request_ratio = satisfied_requests / total_requests
-        else:
-            request_ratio = 0
+        request_ratio = (
+            satisfied_requests / total_requests
+            if total_requests > 0 else 0
+        )
 
         # -------------------------
         # PRINT

@@ -92,8 +92,9 @@ def Optimization_Staff_Scheduling2(
 
     for i in employees:
         days_off = {
-            d for d in employee_days.get(i, set())
-            if d.month == month and d.year == year}
+            pd.to_datetime(d).date()
+            for d in employee_days.get(i, set())
+            if pd.to_datetime(d).month == month and pd.to_datetime(d).year == year}
         availability[i] = max(0, (total_days - len(days_off)) / total_days)
         scale[i] = availability[i]
 
