@@ -1,7 +1,9 @@
 import pandas as pd
 import gurobipy as gp
-from gurobipy import GRB
+import os
+import calendar
 import numpy as np
+from gurobipy import GRB
 from datetime import timedelta
 from Optimization_Model.Compute_Shift_Duration import To_Hours
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
@@ -77,15 +79,23 @@ def Optimization_Staff_Scheduling2(
 
             blocked_pairs.add((j1, j2))
 
-    total_days = len(set(event_date[j].date() for j in events))
+
+    any_date = next(iter(event_date.values()))
+
+    year = any_date.year
+    month = any_date.month
+
+    total_days = calendar.monthrange(year, month)[1]
 
     availability = {}
     scale = {}
 
     for i in employees:
-        days_off = employee_days.get(i, set())
-        availability[i] = (total_days - len(days_off)) / total_days if total_days > 0 else 1
-        scale[i] = max(availability[i], 0.1)
+        days_off = {
+            d for d in employee_days.get(i, set())
+            if d.month == month and d.year == year}
+        availability[i] = max(0, (total_days - len(days_off)) / total_days)
+        scale[i] = availability[i]
 
     model = gp.Model("Event_staffing")
 
@@ -209,7 +219,7 @@ def Optimization_Staff_Scheduling2(
     history_balance = gp.quicksum(
         ((hist_shifts.get(i,0) - avg_hist) / scale[i]) *
         gp.quicksum(works[i,j] for j in events)
-        for i in employees
+        for i in employees if scale[i] > 0
     )
 
     model.setObjective(
