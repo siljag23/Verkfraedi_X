@@ -36,7 +36,7 @@ def Optimization_Staff_Scheduling(
     W_WEEKLY_BALANCE = 0.5
     REWARD_HALLS = 0.5
     REWARD_REQUEST = 3
-    PENALTY_HISTORY = 1.5
+    PENALTY_HISTORY = 0.5
 
     emp_demand = {j: dict_events[j]["Employees"] for j in events}
     skill1_req = {j: dict_events[j]["Skillset1"] for j in events}
@@ -218,7 +218,7 @@ def Optimization_Staff_Scheduling(
     )
 
     model.setParam('MIPGap', 0.01)
-    model.setParam('TimeLimit', 180)  
+    model.setParam('TimeLimit', 10)  
 
     model.optimize()
 

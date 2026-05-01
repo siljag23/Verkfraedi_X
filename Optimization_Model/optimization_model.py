@@ -9,14 +9,16 @@ from Optimization_Model.Employee_Diagnostics import Employee_Diagnostics
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 from Optimization_Model.Total_Stats import Total_Stats
 from Optimization_Model.Total_Stats import Print_Stats
+from Optimization_Model.Compute_Employee_Stats import Compute_Employee_Stats
 
 # -------------------------
 # SETTINGS
 # -------------------------
-input_excel = "Data/04_26.xlsx"
+input_excel = "Data/03_26.xlsx"
 
-previous_file = "Optimization_Model/03_26_optioutput"
-output_file = "Optimization_Model/04_26_optioutput"
+#previous_file = "Optimization_Model/03_26_optioutput"
+previous_file = None
+output_file = "Optimization_Model/03_26_optioutput"
 
 # -------------------------
 # Load data 
@@ -42,14 +44,12 @@ shift_dur = Compute_Shift_Duration(dict_events)
 
 if previous_file is not None:
     print("\nLoading history...")
-    hist_shifts, hist_hours, hist_scores, hist_weekend = Load_JSON_History(
-        f"{previous_file}_list.json",
-        dict_events,
-        shift_dur,
-        shift_score
-    )
+    hist_shifts, hist_hours, hist_scores, hist_weekend, hist_availability = Load_JSON_History(
+    f"{previous_file}_list.json",
+    f"{previous_file}_dicts.json"
+)
 else:
-    hist_shifts = hist_hours = hist_scores = hist_weekend = {}
+    hist_shifts = hist_hours = hist_scores = hist_weekend = hist_availability = {}
 
 #-------------------------
 # STEP 3 — RUN (WITH HISTORY + REQUESTS)
@@ -104,7 +104,8 @@ raw_current, raw_total, norm_current, norm_total = Total_Stats(
     hist_shifts,
     hist_hours,
     hist_scores,
-    hist_weekend
+    hist_weekend,
+    hist_availability
 )
 
 # NORMALIZED
@@ -130,25 +131,16 @@ Employee_Diagnostics(
 # -------------------------
 # EXPORT
 # -------------------------
-for i in employees:
-
-    dict_employees[i]["Number_of_shifts"] = sum(
-        works[i,j].X for j in events
-    )
-
-    dict_employees[i]["Shifts_on_weekends"] = sum(
-        works[i,j].X * (1 if event_date[j].weekday() in [4,5,6] else 0)
-        for j in events
-    )
-
-    shifts_per_hall = {}
-
-    for j in events:
-        if works[i,j].X > 0.5:
-            h = dict_events[j]["Hall"]
-            shifts_per_hall[h] = shifts_per_hall.get(h, 0) + 1
-
-    dict_employees[i]["Shifts_per_hall"] = shifts_per_hall
+dict_employees = Compute_Employee_Stats(
+    dict_employees,
+    employees,
+    works,
+    events,
+    event_date,
+    dict_events,
+    employee_days,
+    shift_dur   
+)
     
 Export_Json(
     dict_events,

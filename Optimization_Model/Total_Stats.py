@@ -12,17 +12,17 @@ def Total_Stats(
     hist_hours=None,
     hist_scores=None,
     hist_weekend=None,
+    hist_availability=None   # 🔥 NEW
 ):
-
-    import pandas as pd
 
     hist_shifts = hist_shifts or {}
     hist_hours = hist_hours or {}
     hist_scores = hist_scores or {}
     hist_weekend = hist_weekend or {}
+    hist_availability = hist_availability or {}
 
     # -------------------------
-    # Total days
+    # Total days (current period)
     # -------------------------
     total_days = len(
         set(
@@ -32,7 +32,7 @@ def Total_Stats(
     )
 
     # -------------------------
-    # Availability
+    # Availability (current)
     # -------------------------
     availability = {}
     for i in employees:
@@ -53,7 +53,7 @@ def Total_Stats(
         is_weekend[j] = 1 if d.weekday() in [4, 5, 6] else 0
 
     # -------------------------
-    # OUTPUT DICTS (per employee!)
+    # OUTPUT DICTS
     # -------------------------
     raw_current = {}
     raw_total = {}
@@ -61,7 +61,7 @@ def Total_Stats(
     norm_total = {}
 
     # -------------------------
-    # RAW (ALL)
+    # RAW
     # -------------------------
     for i in employees:
 
@@ -88,36 +88,44 @@ def Total_Stats(
         }
 
     # -------------------------
-    # NORMALIZED (ONLY ACTIVE)
+    # NORMALIZED
     # -------------------------
     for i in active_employees:
 
-        denom = availability[i]
+        curr_avail = availability[i]
+        hist_avail = hist_availability.get(i, 1.0)
 
         shifts_i = raw_current[i]["shifts"]
         hours_i = raw_current[i]["hours"]
         weekend_i = raw_current[i]["weekend"]
         score_i = raw_current[i]["score"]
 
+        # -------------------------
+        # CURRENT NORMALIZED
+        # -------------------------
         norm_current[i] = {
-            "shifts": shifts_i / denom,
-            "hours": hours_i / denom,
-            "weekend": weekend_i / denom,
-            "score": score_i / denom,
+            "shifts": shifts_i / curr_avail,
+            "hours": hours_i / curr_avail,
+            "weekend": weekend_i / curr_avail,
+            "score": score_i / curr_avail,
         }
 
+        # -------------------------
+        # TOTAL NORMALIZED
+        # -------------------------
         norm_total[i] = {
-            "shifts": hist_shifts.get(i, 0) + shifts_i / denom,
-            "hours": hist_hours.get(i, 0) + hours_i / denom,
-            "weekend": hist_weekend.get(i, 0) + weekend_i / denom,
-            "score": hist_scores.get(i, 0) + score_i / denom,
+            "shifts": hist_shifts.get(i, 0) / hist_avail + shifts_i / curr_avail,
+            "hours": hist_hours.get(i, 0) / hist_avail + hours_i / curr_avail,
+            "weekend": hist_weekend.get(i, 0) / hist_avail + weekend_i / curr_avail,
+            "score": hist_scores.get(i, 0) / hist_avail + score_i / curr_avail,
         }
+
+        print(i, "shifts:", shifts_i, "avail:", curr_avail, "normalized:", shifts_i / curr_avail)
 
     return raw_current, raw_total, norm_current, norm_total
 
-def Print_Stats(title, data):
 
-    import numpy as np
+def Print_Stats(title, data):
 
     print(f"\n--- {title} ---")
 
@@ -125,7 +133,6 @@ def Print_Stats(title, data):
         print("No data")
         return
 
-    # breyta í lista per metric
     metrics = ["shifts", "hours", "weekend", "score"]
 
     for key in metrics:
@@ -147,3 +154,4 @@ def Print_Stats(title, data):
         print("  Max:", round(v.max(), 2))
         print("  Avg:", round(v.mean(), 2))
         print("  Std:", round(v.std(), 2))
+        
