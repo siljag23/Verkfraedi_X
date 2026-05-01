@@ -1,6 +1,14 @@
 import pandas as pd
 from datetime import datetime
 
+def safe_to_date(x):
+    import pandas as pd
+
+    try:
+        return pd.to_datetime(x, errors="coerce").date()
+    except:
+        return None
+
 def Open_Excel_Opti(file_name, sheet_events, sheet_employees, sheet_daysoff, sheet_requests=None):
 
     # -------------------------
@@ -13,8 +21,7 @@ def Open_Excel_Opti(file_name, sheet_events, sheet_employees, sheet_daysoff, she
     # Remove unnamed columns
     events = events.loc[:, ~events.columns.str.contains("^Unnamed")]
     employees = employees.loc[:, ~employees.columns.str.contains("^Unnamed")]
-    days_off.columns = days_off.columns.astype(str)
-    days_off = days_off.loc[:, ~days_off.columns.str.contains("^Unnamed")]
+    days_off = days_off.loc[:, [col for col in days_off.columns if not str(col).startswith("Unnamed")]]
 
     # Clean column names
     events.columns = events.columns.str.strip()
@@ -35,17 +42,23 @@ def Open_Excel_Opti(file_name, sheet_events, sheet_employees, sheet_daysoff, she
 
     employee_days = {}
 
+    any_event = next(iter(dict_events.values()))
+    any_date = safe_to_date(any_event["Date"])
+    year = any_date.year
+    month = any_date.month
+
     for _, row in days_off.iterrows():
         emp_id = int(row["EmployeeID"])
         employee_days[emp_id] = set()
 
         for col in days_off.columns[1:]:
+
             if row[col] == 1:
-                try:
-                    date = pd.to_datetime(col, dayfirst=True).date()
-                except:
-                    continue
-                employee_days[emp_id].add(date)
+
+                d = safe_to_date(col)
+
+                if d is not None and d.month == month and d.year == year:
+                    employee_days[emp_id].add(d)
 
     requests = set()
 

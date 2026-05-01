@@ -1,6 +1,6 @@
 
 from Optimization_Model.Open_Excel_Opti import Open_Excel_Opti
-from Optimization_Model.Optimization_Staff_Scheduling import Optimization_Staff_Scheduling2
+from Optimization_Model.Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
 from Optimization_Model.Plot_Total_Stats import Plot_Total_Stats
 from Optimization_Model.Load_JSON_History import Load_JSON_History
 from Optimization_Model.Export_Json import Export_Json
@@ -8,6 +8,7 @@ from Optimization_Model.Print_Results import Print_Results
 from Optimization_Model.Employee_Diagnostics import Employee_Diagnostics
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 from Optimization_Model.Total_Stats import Total_Stats
+from Optimization_Model.Total_Stats import Print_Stats
 
 # -------------------------
 # SETTINGS
@@ -55,7 +56,7 @@ else:
 # -------------------------
 print("\nRunning optimization (with history + requests)...")
 
-model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Scheduling2(
+model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Scheduling(
     dict_events,
     dict_employees,
     employee_days,
@@ -93,7 +94,7 @@ Print_Results(
     weekend
 )
 
-Total_Stats(
+raw_current, raw_total, norm_current, norm_total = Total_Stats(
     employees,
     events,
     works,              
@@ -105,6 +106,14 @@ Total_Stats(
     hist_scores,
     hist_weekend
 )
+
+# NORMALIZED
+Print_Stats("Current Period (NORMALIZED)", norm_current)
+Print_Stats("Total (History + Current) (NORMALIZED)", norm_total)
+
+# RAW
+Print_Stats("Current Period (RAW)", raw_current)
+Print_Stats("Total (History + Current) (RAW)", raw_total)
 
 Employee_Diagnostics(
     employees,
@@ -123,17 +132,15 @@ Employee_Diagnostics(
 # -------------------------
 for i in employees:
 
-    # total shifts
     dict_employees[i]["Number_of_shifts"] = sum(
         works[i,j].X for j in events
     )
 
-    # weekend shifts
     dict_employees[i]["Shifts_on_weekends"] = sum(
-        works[i,j].X * weekend[j] for j in events
+        works[i,j].X * (1 if event_date[j].weekday() in [4,5,6] else 0)
+        for j in events
     )
 
-    # shifts per hall
     shifts_per_hall = {}
 
     for j in events:
@@ -155,17 +162,10 @@ Export_Json(
 # -------------------------
 # PLOTS
 # -------------------------
-
 Plot_Total_Stats(
-    employees,
-    events,
-    works,
-    dict_employees,
-    shift_dur,
-    shift_score,
-    event_date, 
-    hist_shifts,
-    hist_hours,
-    hist_scores,
-    hist_weekend
+    raw_current,
+    raw_total,
+    norm_current,
+    norm_total,
+    dict_employees
 )

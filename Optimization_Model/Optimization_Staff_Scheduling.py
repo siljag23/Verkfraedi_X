@@ -8,7 +8,7 @@ from datetime import timedelta
 from Optimization_Model.Compute_Shift_Duration import To_Hours
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 
-def Optimization_Staff_Scheduling2(
+def Optimization_Staff_Scheduling(
     dict_events,
     dict_employees,
     employee_days,
@@ -31,15 +31,15 @@ def Optimization_Staff_Scheduling2(
     MAX_WORKHOURS_PER_WEEK = 48
     MAX_WORKDAYS_PER_WEEK = 6
 
-    W_SHIFTS = 1
+    W_SHIFTS = 5
     W_HOURS = 5
-    W_SCORE = 0.8
-    W_WEEKEND = 5
+    W_SCORE = 0.5
+    W_WEEKEND = 1.5
     W_HALLS = 0.5
-    W_WEEKLY_BALANCE = 0.7
+    W_WEEKLY_BALANCE = 0.5
 
-    REWARD_REQUEST = 10
-    PENALTY_HISTORY = 0.1
+    REWARD_REQUEST = 3
+    PENALTY_HISTORY = 1.5
 
     emp_demand = {j: dict_events[j]["Employees"] for j in events}
     skill1_req = {j: dict_events[j]["Skillset1"] for j in events}
@@ -164,7 +164,7 @@ def Optimization_Staff_Scheduling2(
 
             model.addConstr(weekly_shifts <= MAX_WORKDAYS_PER_WEEK)
             model.addConstr(weekly_hours <= MAX_WORKHOURS_PER_WEEK)
-
+            
             model.addConstr(weekly_shifts >= min_weekly)
             model.addConstr(weekly_shifts <= max_weekly)
 
@@ -184,7 +184,7 @@ def Optimization_Staff_Scheduling2(
         score_i = gp.quicksum(works[i,j]*shift_score[j] for j in events)
         weekend_i = gp.quicksum(works[i,j]*weekend[j] for j in events)
         total_weekend_i = hist_weekend.get(i, 0) + weekend_i
-
+        
         model.addConstr(shifts_i >= min_shifts * scale[i])
         model.addConstr(shifts_i <= max_shifts * scale[i])
 
@@ -196,7 +196,7 @@ def Optimization_Staff_Scheduling2(
 
         model.addConstr(total_weekend_i >= min_weekend)
         model.addConstr(total_weekend_i <= max_weekend)
-
+        
     min_hall = {h: model.addVar() for h in halls}
     max_hall = {h: model.addVar() for h in halls}
 
@@ -206,9 +206,10 @@ def Optimization_Staff_Scheduling2(
             y_i_h = gp.quicksum(
                 works[i,j] for j in events if hall[j] == h
             )
-
+            
             model.addConstr(y_i_h >= min_hall[h] * scale[i])
             model.addConstr(y_i_h <= max_hall[h] * scale[i])
+            
 
     request_term = gp.quicksum(
         works[i,j] for (i,j) in requests
@@ -223,6 +224,7 @@ def Optimization_Staff_Scheduling2(
         for i in employees if scale[i] > 0
     )
 
+    
     model.setObjective(
         - W_SHIFTS * (max_shifts - min_shifts)
         - W_HOURS * (max_hours - min_hours)
@@ -235,7 +237,7 @@ def Optimization_Staff_Scheduling2(
         GRB.MAXIMIZE
     )
 
-    model.setParam('MIPGap', 0.03)
+    model.setParam('MIPGap', 0.01)
     model.setParam('TimeLimit', 10)  
 
     model.optimize()

@@ -8,21 +8,19 @@ gap = []
 with open("Optimization_Model/Gurobi.log", "r", encoding="utf-8") as f:
     for line in f:
 
-        parts = line.split()
-        if len(parts) < 10:
+        if "s" not in line or "%" not in line:
             continue
 
+        parts = line.split()
         try:
             t = float(parts[-1].replace("s", ""))
             g = float(parts[-3].replace("%", ""))
             bd = float(parts[-4])
             inc = float(parts[-5])
-            if inc < 0:
-                continue
 
             times.append(t)
-            incumbent.append(inc)
-            bestbd.append(bd)
+            incumbent.append(-inc)
+            bestbd.append(-bd)
             gap.append(g)
 
         except:
@@ -64,7 +62,7 @@ ax2 = ax1.twinx()
 ax2.step(times, gap, where="post", linestyle=":", label="Gap")
 ax2.set_ylabel("Gap (%)")
 
-ax1.set_xlim(0, 300)
+ax1.set_xlim(0, max(times))
 
 lines1, labels1 = ax1.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()

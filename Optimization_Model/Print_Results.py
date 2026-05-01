@@ -21,25 +21,13 @@ def Print_Results(model, employees, events, works, dict_events, dict_employees,
 
             if workers:
 
-                print(f"{dict_events[j]['Date']} | {start[j]}-{end[j]} | {dict_events[j]['Event']}")
+                date_str = event_date[j].strftime('%d.%m.%Y')
+                start_str = str(start[j])[:5]
+                end_str = str(end[j])[:5]
+
+                print(f"{date_str} | {start_str}-{end_str} | {dict_events[j]['Event']}")
 
                 for w in workers:
                     print("   ", w)
 
                 print()
-
-    # Employee summary
-    print("\n--- EMPLOYEE SUMMARY ---\n")
-
-    for i in employees:
-
-        shifts = sum(works[i, j].X for j in events)
-        hours = sum(works[i, j].X * shift_dur[j] for j in events)
-        score = sum(works[i, j].X * shift_score[j] for j in events)
-        weekend_shifts = sum(works[i, j].X * weekend[j] for j in events)
-
-        name = dict_employees[i]["EmployeeName"]
-
-        print(
-            f"{name:10} | shifts: {shifts:2.0f} | hours: {hours:5.1f} | score: {score:4.0f} | weekend: {weekend_shifts:2.0f}"
-        )
