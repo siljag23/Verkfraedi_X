@@ -1,8 +1,6 @@
 import pandas as pd
 import gurobipy as gp
-import os
 import calendar
-import numpy as np
 from gurobipy import GRB
 from datetime import timedelta
 from Optimization_Model.Compute_Shift_Duration import To_Hours
