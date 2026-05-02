@@ -29,10 +29,8 @@ def Total_Stats(
         d = pd.to_datetime(dict_events[j]["Date"], dayfirst=True)
         is_weekend[j] = 1 if d.weekday() in [4, 5, 6] else 0
 
-    # -------------------------
-    # OUTPUT DICTS
-    # -------------------------
     raw_current = {}
+    raw_history = {}
     raw_total = {}
     norm_current = {}
     norm_history = {}
@@ -58,6 +56,13 @@ def Total_Stats(
             "score": score_i,
         }
 
+        raw_history[i] = {
+            "shifts": hist_shifts.get(i, 0),
+            "hours": hist_hours.get(i, 0),
+            "weekend": hist_weekend.get(i, 0),
+            "score": hist_scores.get(i, 0),
+        }
+
         raw_total[i] = {
             "shifts": hist_shifts.get(i, 0) + shifts_i,
             "hours": hist_hours.get(i, 0) + hours_i,
@@ -73,48 +78,47 @@ def Total_Stats(
         curr_avail = curr_availability.get(i,1.0)
         hist_avail = hist_availability.get(i, 1.0)
 
-        shifts_i = raw_current[i]["shifts"]
-        hours_i = raw_current[i]["hours"]
-        weekend_i = raw_current[i]["weekend"]
-        score_i = raw_current[i]["score"]
+        if curr_avail > 0:
+            norm_current[i] = {
+                "shifts": raw_current[i]["shifts"] / curr_avail,
+                "hours": raw_current[i]["hours"] / curr_avail,
+                "weekend": raw_current[i]["weekend"] / curr_avail,
+                "score": raw_current[i]["score"] / curr_avail,
+            }
 
-        # -------------------------
-        # CURRENT NORMALIZED
-        # -------------------------
-        norm_current[i] = {
-            "shifts": shifts_i / curr_avail if curr_avail > 0 else 0,
-            "hours": hours_i / curr_avail if curr_avail > 0 else 0,
-            "weekend": weekend_i / curr_avail if curr_avail > 0 else 0,
-            "score": score_i / curr_avail if curr_avail > 0 else 0,
-        }
+        if hist_avail > 0:
+            norm_history[i] = {
+                "shifts": hist_shifts.get(i, 0) / hist_avail,
+                "hours": hist_hours.get(i, 0) / hist_avail,
+                "weekend": hist_weekend.get(i, 0) / hist_avail,
+                "score": hist_scores.get(i, 0) / hist_avail,
+            }
 
-        norm_history[i] = {
-            "shifts": hist_shifts.get(i,0) / hist_avail if hist_avail > 0 else 0,
-            "hours": hist_hours.get(i,0) / hist_avail if hist_avail > 0 else 0,
-            "weekend": hist_weekend.get(i,0) / hist_avail if hist_avail > 0 else 0,
-            "score": hist_scores.get(i,0) / hist_avail if hist_avail > 0 else 0,
-        }
+        if curr_avail > 0 or hist_avail > 0:
 
-        # -------------------------
-        # TOTAL NORMALIZED
-        # -------------------------
-        norm_total[i] = {
-            "shifts": (hist_shifts.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (shifts_i / curr_avail if curr_avail > 0 else 0),
-            "hours": (hist_hours.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (hours_i / curr_avail if curr_avail > 0 else 0),
-            "weekend": (hist_weekend.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (weekend_i / curr_avail if curr_avail > 0 else 0),
-            "score": (hist_scores.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (score_i / curr_avail if curr_avail > 0 else 0),
-        }
+            curr_part = raw_current[i]["shifts"] / curr_avail if curr_avail > 0 else 0
+            hist_part = hist_shifts.get(i, 0) / hist_avail if hist_avail > 0 else 0
 
-    return raw_current, raw_total, norm_current, norm_total, norm_history
+            norm_total[i] = {"shifts": hist_part + curr_part,"hours": (
+                    (hist_hours.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                    (raw_current[i]["hours"] / curr_avail if curr_avail > 0 else 0)
+                ),
+                "weekend": (
+                    (hist_weekend.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                    (raw_current[i]["weekend"] / curr_avail if curr_avail > 0 else 0)
+                ),
+                "score": (
+                    (hist_scores.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                    (raw_current[i]["score"] / curr_avail if curr_avail > 0 else 0)
+                ),
+            }
+
+    return raw_current, raw_total, norm_current, norm_total, norm_history, raw_history
 
 
-def Print_Stats(title, data):
+def Print_Stats(title, data, filter_zero=False):
 
     print(f"\n--- {title} ---")
-
-    if len(data) == 0:
-        print("No data")
-        return
 
     metrics = ["shifts", "hours", "weekend", "score"]
 
@@ -123,7 +127,7 @@ def Print_Stats(title, data):
         values = [
             data[i][key]
             for i in data
-            if key in data[i]
+            if key in data[i] and (data[i]["shifts"] > 0 if filter_zero else True)
         ]
 
         if len(values) == 0:
@@ -137,4 +141,3 @@ def Print_Stats(title, data):
         print("  Max:", round(v.max(), 2))
         print("  Avg:", round(v.mean(), 2))
         print("  Std:", round(v.std(), 2))
-        

@@ -13,7 +13,12 @@ from Optimization_Model.Compute_Employee_Stats import Compute_Employee_Stats
 from Optimization_Model.Compute_Availability import Compute_Availability
 from Optimization_Model.Plot_Total_Stats_Normalized import Plot_Total_Stats_Normalized
 
-from Current_Solution.Compute_Manual_Stats import Compute_Manual_Stats
+from Current_Solution.Current_Solution_Stats import Compute_Manual_Stats
+from Current_Solution.Current_Solution_Stats import Print_Manual_Stats
+from Current_Solution.Current_Solution_Stats import Normalize_Manual_Stats
+from Current_Solution.Current_Solution_Stats import Combine_Stats
+from Current_Solution.Current_Solution_Stats import Print_Summary
+from Current_Solution.Current_Solution_Stats import Plot_Manual_Total
 
 # -------------------------
 # SETTINGS
@@ -51,6 +56,7 @@ if previous_file is not None:
 else:
     hist_shifts = hist_hours = hist_scores = hist_weekend = hist_availability = {}
 
+
 #-------------------------
 # STEP 3 — RUN (WITH HISTORY + REQUESTS)
 # -------------------------
@@ -78,7 +84,7 @@ else:
 # -------------------------
 # PRINT RESULTS
 # -------------------------
-"""
+
 Print_Results(
     model,
     employees,
@@ -93,7 +99,7 @@ Print_Results(
     shift_score,
     weekend
 )
-"""
+
 # -------------------------
 # PRINT STATS
 # -------------------------
@@ -103,7 +109,7 @@ curr_availability = Compute_Availability(
     event_date
 )
 
-raw_current, raw_total, norm_current, norm_total, norm_history = Total_Stats(
+raw_current, raw_total, norm_current, norm_total, norm_history, raw_history = Total_Stats(
     employees,
     events,
     works,              
@@ -129,10 +135,14 @@ Employee_Diagnostics(
     employee_days
 )
 
-Print_Stats("Current Period (NORMALIZED)", norm_current)
-Print_Stats("Total (History + Current) (NORMALIZED)", norm_total)
-Print_Stats("Current Period (RAW)", raw_current)
-Print_Stats("Total (History + Current) (RAW)", raw_total)
+Print_Stats("Last Period (RAW)", raw_history, filter_zero=False)
+Print_Stats("Last Period (NORMALIZED)", norm_history, filter_zero=True)
+
+Print_Stats("Current Period (RAW)", raw_current, filter_zero=False)
+Print_Stats("Current Period (NORMALIZED)", norm_current, filter_zero=True)
+
+Print_Stats("Total (History + Current) (RAW)", raw_total, filter_zero=False)
+Print_Stats("Total (History + Current) (NORMALIZED)", norm_total, filter_zero=True)
 
 # -------------------------
 # EXPORT
@@ -157,11 +167,29 @@ Export_Json(
     output_file
 )
 
+"""
 Plot_Total_Stats(raw_current, raw_total)
 Plot_Total_Stats_Normalized(norm_current, norm_history)
-
-
+"""
 
 # Current Solution
-manual_stats = Compute_Manual_Stats(
-    "Current_Solution/current_input.xlsx",dict_events,sheet_name="04_26")
+manual_stats_03 = Compute_Manual_Stats("Current_Solution/current_input.xlsx",dict_events,shift_dur,sheet_name="03_26", employees=employees)
+manual_stats_04 = Compute_Manual_Stats("Current_Solution/current_input.xlsx",dict_events,shift_dur,sheet_name="04_26", employees=employees)
+
+manual_norm_03 = Normalize_Manual_Stats(manual_stats_03,hist_availability)
+manual_norm_04 = Normalize_Manual_Stats(manual_stats_04,curr_availability)
+
+manual_total_raw = Combine_Stats(manual_stats_03, manual_stats_04)
+manual_total_norm = Combine_Stats(manual_norm_03, manual_norm_04)
+
+Print_Summary("Manual March (RAW)", manual_stats_03)
+Print_Summary("Manual March (Normalized)", manual_norm_03)
+
+Print_Summary("Manual April (RAW)", manual_stats_04)
+Print_Summary("Manual April (Normalized)", manual_norm_04)
+
+Print_Summary("Manual Total (RAW)", manual_total_raw)
+Print_Summary("Manual Total (Normalized)", manual_total_norm)
+
+Plot_Manual_Total(manual_stats_04, manual_stats_03, "RAW")
+Plot_Manual_Total(manual_norm_04, manual_norm_03, "Normalized")
