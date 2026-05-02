@@ -64,6 +64,8 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
+print(dict_employees)
+
 """
 # Sýnir hvernig vaktir skiptast á vikur
 print("\nVaktir per starfsmaður per viku:")

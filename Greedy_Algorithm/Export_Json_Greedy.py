@@ -12,7 +12,7 @@ def Export_Json(dict_employees, dict_events, rows, month):
     pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 
     # Aðlaga employee dicts fyrir json skjal
-    keys_to_keep = ["EmployeeID", "EmployeeName", "Score", "Skillset", "Availability_ratio"]
+    keys_to_keep = ["EmployeeID", "EmployeeName", "Skillset", "Availability_ratio"]
     filtered_employees = {}
 
     for emp_id, info in dict_employees.items():
@@ -21,8 +21,8 @@ def Export_Json(dict_employees, dict_events, rows, month):
             for k in keys_to_keep
             if k in info
         }
-    filtered_employees[emp_id]["Score"] = info.get("score_added_this_period", 0)
-    filtered_employees[emp_id]["Availability_ratio"] = info.get("Availability_ratio", 1)
+        filtered_employees[emp_id]["Score"] = info.get("score_added_this_period", 0)
+ 
     
     # Aðlögum events og employees fyrir json skjal
     info_for_json = {
