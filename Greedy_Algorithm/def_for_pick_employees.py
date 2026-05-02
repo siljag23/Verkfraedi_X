@@ -204,6 +204,9 @@ def employee_priority(emp_id: int, dict_employees, hours_per_employee, base_min_
     """Raðar starfsmönnum í forgangsröð, sá sem er lengst frá því að uppfylla lágmarksfjölda vakta er efst"""
     number_of_current_shifts = dict_employees[emp_id]["Number_of_shifts"]
     min_shifts = dict_employees[emp_id].get("min_shifts", base_min_shifts)
+    availability_ratio = dict_employees[emp_id].get("Availability_ratio", 1)
+    score = dict_employees[emp_id]["Score"]
+    normalized_score = score / availability_ratio if availability_ratio > 0 else float("inf")
     
     # Ef 0.0 = ekkert lokið, 1.0 = allt lokið
     if min_shifts > 0:
@@ -211,9 +214,8 @@ def employee_priority(emp_id: int, dict_employees, hours_per_employee, base_min_
     else:
         completion_ratio = 1.0
     return (
-        completion_ratio,                        
-        dict_employees[emp_id]["Score"],
-        number_of_current_shifts,
+        completion_ratio,
+        -availability_ratio,
         hours_per_employee[emp_id],
         emp_id
     )

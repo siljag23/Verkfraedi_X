@@ -86,10 +86,11 @@ export_schedule_to_excel(rows,
 # Plottum niðurstöður og prentum tölfræði
 """
 Plot_Results(dict_employees, hours_per_employee)
-Plot_Total_Stats(dict_employees, hours_per_employee)
 """
+Plot_Total_Stats(dict_employees, hours_per_employee)
 
 
+"""
 # ---------------
 # Auka prent
 # ---------------
@@ -160,8 +161,7 @@ for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("Emplo
     print(row)
 
 print("")
-
-
+"""
 """
 # -----------------------------------------
 # Reikna fjölda skipta sem par vinnur saman
