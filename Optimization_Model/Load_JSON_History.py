@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+from Optimization_Model.Compute_Shift_Duration import To_Hours
 
 def Load_JSON_History(list_file, dict_file):
 
@@ -24,7 +25,7 @@ def Load_JSON_History(list_file, dict_file):
     employees_dict = data["employees"]
 
     # -------------------------
-    # LOAD AVAILABILITY 🔥
+    # LOAD AVAILABILITY
     # -------------------------
     for i in employees_dict:
         hist_availability[int(i)] = employees_dict[i].get("Availability", 1.0)
@@ -33,7 +34,7 @@ def Load_JSON_History(list_file, dict_file):
     # LOOP ASSIGNMENTS
     # -------------------------
     for (j, i) in assignment_list:
-
+        i = int(i)
         j = str(j)
 
         if j not in events_dict:
@@ -45,10 +46,10 @@ def Load_JSON_History(list_file, dict_file):
         hist_shifts[i] = hist_shifts.get(i, 0) + 1
 
         # hours
-        start = pd.to_datetime(event["ShiftBegins"])
-        end = pd.to_datetime(event["ShiftEnds"])
+        start_h = To_Hours(event["ShiftBegins"])
+        end_h = To_Hours(event["ShiftEnds"])
 
-        duration = (end - start).total_seconds() / 3600
+        duration = end_h - start_h
         if duration < 0:
             duration += 24
 

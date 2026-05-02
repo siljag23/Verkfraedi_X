@@ -6,13 +6,13 @@ def Total_Stats(
     events,
     works,
     dict_events,
-    employee_days,
     shift_dur,
+    curr_availability,
     hist_shifts=None,
     hist_hours=None,
     hist_scores=None,
     hist_weekend=None,
-    hist_availability=None   # 🔥 NEW
+    hist_availability=None   
 ):
 
     hist_shifts = hist_shifts or {}
@@ -20,29 +20,6 @@ def Total_Stats(
     hist_scores = hist_scores or {}
     hist_weekend = hist_weekend or {}
     hist_availability = hist_availability or {}
-
-    # -------------------------
-    # Total days (current period)
-    # -------------------------
-    total_days = len(
-        set(
-            pd.to_datetime(dict_events[j]["Date"], dayfirst=True).date()
-            for j in events
-        )
-    )
-
-    # -------------------------
-    # Availability (current)
-    # -------------------------
-    availability = {}
-    for i in employees:
-        days_off = employee_days.get(i, set())
-        availability[i] = (
-            (total_days - len(days_off)) / total_days
-            if total_days > 0 else 1.0
-        )
-
-    active_employees = [i for i in employees if availability[i] > 0]
 
     # -------------------------
     # Weekend lookup
@@ -58,6 +35,7 @@ def Total_Stats(
     raw_current = {}
     raw_total = {}
     norm_current = {}
+    norm_history = {}
     norm_total = {}
 
     # -------------------------
@@ -90,9 +68,9 @@ def Total_Stats(
     # -------------------------
     # NORMALIZED
     # -------------------------
-    for i in active_employees:
+    for i in employees:
 
-        curr_avail = availability[i]
+        curr_avail = curr_availability.get(i,1.0)
         hist_avail = hist_availability.get(i, 1.0)
 
         shifts_i = raw_current[i]["shifts"]
@@ -104,25 +82,30 @@ def Total_Stats(
         # CURRENT NORMALIZED
         # -------------------------
         norm_current[i] = {
-            "shifts": shifts_i / curr_avail,
-            "hours": hours_i / curr_avail,
-            "weekend": weekend_i / curr_avail,
-            "score": score_i / curr_avail,
+            "shifts": shifts_i / curr_avail if curr_avail > 0 else 0,
+            "hours": hours_i / curr_avail if curr_avail > 0 else 0,
+            "weekend": weekend_i / curr_avail if curr_avail > 0 else 0,
+            "score": score_i / curr_avail if curr_avail > 0 else 0,
+        }
+
+        norm_history[i] = {
+            "shifts": hist_shifts.get(i,0) / hist_avail if hist_avail > 0 else 0,
+            "hours": hist_hours.get(i,0) / hist_avail if hist_avail > 0 else 0,
+            "weekend": hist_weekend.get(i,0) / hist_avail if hist_avail > 0 else 0,
+            "score": hist_scores.get(i,0) / hist_avail if hist_avail > 0 else 0,
         }
 
         # -------------------------
         # TOTAL NORMALIZED
         # -------------------------
         norm_total[i] = {
-            "shifts": hist_shifts.get(i, 0) / hist_avail + shifts_i / curr_avail,
-            "hours": hist_hours.get(i, 0) / hist_avail + hours_i / curr_avail,
-            "weekend": hist_weekend.get(i, 0) / hist_avail + weekend_i / curr_avail,
-            "score": hist_scores.get(i, 0) / hist_avail + score_i / curr_avail,
+            "shifts": (hist_shifts.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (shifts_i / curr_avail if curr_avail > 0 else 0),
+            "hours": (hist_hours.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (hours_i / curr_avail if curr_avail > 0 else 0),
+            "weekend": (hist_weekend.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (weekend_i / curr_avail if curr_avail > 0 else 0),
+            "score": (hist_scores.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (score_i / curr_avail if curr_avail > 0 else 0),
         }
 
-        print(i, "shifts:", shifts_i, "avail:", curr_avail, "normalized:", shifts_i / curr_avail)
-
-    return raw_current, raw_total, norm_current, norm_total
+    return raw_current, raw_total, norm_current, norm_total, norm_history
 
 
 def Print_Stats(title, data):

@@ -5,47 +5,25 @@ def Plot_Total_Stats(
     raw_total,
     norm_current,
     norm_total,
-    dict_employees
+    norm_history   # 🔥 nýtt input!
 ):
 
     COLOR_HIST = "black"
     COLOR_CURR = "#ff6e1b"
 
     # -------------------------
-    # Build stacked data (with rounding for normalized)
+    # Build stacked data (NO subtraction bug)
     # -------------------------
-    def build_stacked_metric(cur_data, tot_data, key, normalized=False):
+    def build_stacked_metric(cur_data, hist_data, key):
 
         data = []
-
-        for i in tot_data:
+        all_ids = set(cur_data.keys()) | set(hist_data.keys())
+        for i in all_ids:
 
             label = str(i)
 
-            total_val = tot_data[i][key]
-            current_val = cur_data[i][key]
-
-            # -------------------------
-            # ROUND ONLY FOR NORMALIZED PLOTS
-            # -------------------------
-            if normalized:
-                if key in ["shifts", "weekend"]:
-                    total_val = round(total_val)
-                    current_val = round(current_val)
-
-                elif key == "hours":
-                    total_val = round(total_val * 2) / 2
-                    current_val = round(current_val * 2) / 2
-
-                elif key == "score":
-                    total_val = round(total_val)
-                    current_val = round(current_val)
-
-            # -------------------------
-            # STACK
-            # -------------------------
-            hist = total_val - current_val
-            curr = current_val
+            hist = hist_data.get(i, {}).get(key, 0)
+            curr = cur_data.get(i, {}).get(key, 0)
 
             data.append({
                 "name": label,
@@ -83,55 +61,69 @@ def Plot_Total_Stats(
         plt.show()
 
     # -------------------------
-    # RAW plots
+    # RAW plots (OK að subtracta)
     # -------------------------
+    def build_raw(cur_data, tot_data, key):
+        data = []
+        for i in tot_data:
+            total_val = tot_data[i][key]
+            curr_val = cur_data[i][key]
+            hist_val = total_val - curr_val
+
+            data.append({
+                "name": str(i),
+                "hist": hist_val,
+                "curr": curr_val
+            })
+        return data
+
     plot_stacked(
-        sort_data(build_stacked_metric(raw_current, raw_total, "shifts")),
+        sort_data(build_raw(raw_current, raw_total, "shifts")),
         "Total Shifts",
         "Shifts"
     )
 
     plot_stacked(
-        sort_data(build_stacked_metric(raw_current, raw_total, "hours")),
+        sort_data(build_raw(raw_current, raw_total, "hours")),
         "Total Hours",
         "Hours"
     )
 
     plot_stacked(
-        sort_data(build_stacked_metric(raw_current, raw_total, "score")),
+        sort_data(build_raw(raw_current, raw_total, "score")),
         "Total Score",
         "Score"
     )
 
     plot_stacked(
-        sort_data(build_stacked_metric(raw_current, raw_total, "weekend")),
-        "Total Shifts on Weekends",
+        sort_data(build_raw(raw_current, raw_total, "weekend")),
+        "Total Weekend Shifts",
         "Shifts"
     )
 
     # -------------------------
-    # NORMALIZED plots (ROUNDED)
+    # NORMALIZED plots (🔥 FIXED)
     # -------------------------
     plot_stacked(
-        sort_data(build_stacked_metric(norm_current, norm_total, "shifts", normalized=True)),
+        sort_data(build_stacked_metric(norm_current, norm_history, "shifts")),
         "Total Shifts (Normalized)",
         "Shifts"
     )
 
     plot_stacked(
-        sort_data(build_stacked_metric(norm_current, norm_total, "hours", normalized=True)),
+        sort_data(build_stacked_metric(norm_current, norm_history, "hours")),
         "Total Hours (Normalized)",
         "Hours"
     )
 
     plot_stacked(
-        sort_data(build_stacked_metric(norm_current, norm_total, "score", normalized=True)),
+        sort_data(build_stacked_metric(norm_current, norm_history, "score")),
         "Total Score (Normalized)",
         "Score"
     )
 
     plot_stacked(
-        sort_data(build_stacked_metric(norm_current, norm_total, "weekend", normalized=True)),
-        "Total Shifts on Weekends (Normalized)",
+        sort_data(build_stacked_metric(norm_current, norm_history, "weekend")),
+        "Total Weekend Shifts (Normalized)",
         "Shifts"
     )

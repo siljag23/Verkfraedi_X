@@ -10,23 +10,21 @@ from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 from Optimization_Model.Total_Stats import Total_Stats
 from Optimization_Model.Total_Stats import Print_Stats
 from Optimization_Model.Compute_Employee_Stats import Compute_Employee_Stats
+from Optimization_Model.Compute_Availability import Compute_Availability
 
 # -------------------------
 # SETTINGS
 # -------------------------
-input_excel = "Data/03_26.xlsx"
+input_excel = "Data/04_26.xlsx"
 
-#previous_file = "Optimization_Model/03_26_optioutput"
-previous_file = None
-output_file = "Optimization_Model/03_26_optioutput"
+previous_file = "Optimization_Model/03_26_optioutput"
+#previous_file = None
+output_file = "Optimization_Model/04_26_optioutput"
 
 # -------------------------
 # Load data 
 # -------------------------
-dict_events, dict_employees, employee_days, requests = Open_Excel_Opti(
-    input_excel, "Events", "Employees", "DaysOff", "EventReq"
-)
-
+dict_events, dict_employees, employee_days, requests = Open_Excel_Opti(input_excel, "Events", "Employees", "DaysOff", "EventReq")
 employees = list(dict_employees.keys())
 events = list(dict_events.keys())
 
@@ -41,7 +39,6 @@ shift_dur = Compute_Shift_Duration(dict_events)
 # -------------------------
 # STEP 2 — LOAD HISTORY
 # -------------------------
-
 if previous_file is not None:
     print("\nLoading history...")
     hist_shifts, hist_hours, hist_scores, hist_weekend, hist_availability = Load_JSON_History(
@@ -78,7 +75,6 @@ else:
 # -------------------------
 # PRINT RESULTS
 # -------------------------
-
 Print_Results(
     model,
     employees,
@@ -94,27 +90,28 @@ Print_Results(
     weekend
 )
 
-raw_current, raw_total, norm_current, norm_total = Total_Stats(
+# -------------------------
+# PRINT STATS
+# -------------------------
+curr_availability = Compute_Availability(
+    employees,
+    employee_days,
+    event_date
+)
+
+raw_current, raw_total, norm_current, norm_total, norm_history = Total_Stats(
     employees,
     events,
     works,              
     dict_events,
-    employee_days,
-    shift_dur,         
+    shift_dur,
+    curr_availability,         
     hist_shifts,
     hist_hours,
     hist_scores,
     hist_weekend,
     hist_availability
 )
-
-# NORMALIZED
-Print_Stats("Current Period (NORMALIZED)", norm_current)
-Print_Stats("Total (History + Current) (NORMALIZED)", norm_total)
-
-# RAW
-Print_Stats("Current Period (RAW)", raw_current)
-Print_Stats("Total (History + Current) (RAW)", raw_total)
 
 Employee_Diagnostics(
     employees,
@@ -128,9 +125,15 @@ Employee_Diagnostics(
     employee_days
 )
 
+Print_Stats("Current Period (NORMALIZED)", norm_current)
+Print_Stats("Total (History + Current) (NORMALIZED)", norm_total)
+Print_Stats("Current Period (RAW)", raw_current)
+Print_Stats("Total (History + Current) (RAW)", raw_total)
+
 # -------------------------
 # EXPORT
 # -------------------------
+print('hvað er þetta')
 dict_employees = Compute_Employee_Stats(
     dict_employees,
     employees,
