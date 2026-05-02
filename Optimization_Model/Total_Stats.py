@@ -104,6 +104,27 @@ def Total_Stats(
             "weekend": (hist_weekend.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (weekend_i / curr_avail if curr_avail > 0 else 0),
             "score": (hist_scores.get(i, 0) / hist_avail if hist_avail > 0 else 0) + (score_i / curr_avail if curr_avail > 0 else 0),
         }
+    
+    print("\n--- DEBUG NORMALIZED ---")
+
+    for i in employees:
+
+        curr_avail = curr_availability.get(i, 0)
+        hist_avail = hist_availability.get(i, 0)
+
+        curr_shifts = raw_current.get(i, {}).get("shifts", 0)
+        hist_shifts_i = hist_shifts.get(i, 0)
+
+        norm_curr = norm_current.get(i, {}).get("shifts", 0)
+        norm_hist = norm_history.get(i, {}).get("shifts", 0)
+        norm_tot = norm_total.get(i, {}).get("shifts", 0)
+
+        print(
+            f"{i:2} | "
+            f"curr: {curr_shifts:2.0f} (avail {curr_avail:.2f}) → {norm_curr:5.2f} | "
+            f"hist: {hist_shifts_i:2.0f} (avail {hist_avail:.2f}) → {norm_hist:5.2f} | "
+            f"total: {norm_tot:5.2f}"
+        )
 
     return raw_current, raw_total, norm_current, norm_total, norm_history
 
