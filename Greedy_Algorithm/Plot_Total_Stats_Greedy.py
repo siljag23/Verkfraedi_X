@@ -154,7 +154,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plot_normalized(list(names_n), list(prev_hours_n), list(curr_hours_n), "Total Hours (Normalized)", "Hours / Availability")
         plot_normalized(list(names_n), list(prev_scores_n), list(curr_scores_n), "Total Score (Normalized)", "Score / Availability")
         plot_normalized(list(names_n), list(prev_weekends_n), list(curr_weekends_n), "Total Weekends (Normalized)", "Weekends / Availability")
-
+        
 
     #-----Print stats-----
     def print_stats(label, values):
