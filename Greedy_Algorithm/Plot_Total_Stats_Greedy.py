@@ -132,18 +132,19 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     """
 
     # Búa til normalized gögn með nöfnum - sleppum þeim sem eru með availability = 0
-    # Sía út þá með current availability = 0
+    # Sía út þá með current eða previous availability = 0
+    prev_avail_list = [e.get("Previous_availability", 1) for e in dict_employees.values()]    
     current_avail_list = [e.get("Availability_ratio", 1) for e in dict_employees.values()]
     actual_prev_scores = [e.get("actual_prev_score", 0) for e in dict_employees.values()]
     scores_added = [e.get("score_added_this_period", 0) for e in dict_employees.values()]
 
     filtered = [
-        (n, ps/a, cs/a, ph/a, ch/a, psc/a, csc/a, pw/a, cw/a)
-        for n, ps, cs, ph, ch, psc, csc, pw, cw, a, a_curr
+        (n, round(ps/a_prev), round(cs/a_curr), round(ph/a_prev*2)/2, round(ch/a_curr*2)/2, psc/a_prev, csc/a_curr, pw/a_prev, cw/a_curr)
+        for n, ps, cs, ph, ch, psc, csc, pw, cw, a_prev, a_curr
         in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
             actual_prev_scores, scores_added,
-            prev_weekends, current_weekends, availability, current_avail_list)
-        if a > 0 and a_curr > 0]
+            prev_weekends, current_weekends, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
 
     if filtered:
         names_n, prev_shifts_n, curr_shifts_n, prev_hours_n, curr_hours_n, \
@@ -178,24 +179,24 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
 
     # Fyrir tölfræði - bara þeir með availability > 0 og current availability > 0
     total_shifts_norm = [
-        (p + c) / a for p, c, a, a_curr
-        in zip(prev_shifts, current_shifts, availability, current_avail_list)
-        if a > 0 and a_curr > 0]
+        round(p/a_prev) + round(c/a_curr) for p, c, a_prev, a_curr
+        in zip(prev_shifts, current_shifts, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
 
     total_hours_norm = [
-        (p + c) / a for p, c, a, a_curr
-        in zip(prev_hours, current_hours, availability, current_avail_list)
-        if a > 0 and a_curr > 0]
+        round(p/a_prev*2)/2 + round(c/a_curr*2)/2 for p, c, a_prev, a_curr
+        in zip(prev_hours, current_hours, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
 
     total_scores_norm = [
-        (p + c) / a for p, c, a, a_curr
-        in zip(actual_prev_scores, scores_added, availability, current_avail_list)
-        if a > 0 and a_curr > 0]
+        p/a_prev + c/a_curr for p, c, a_prev, a_curr
+        in zip(actual_prev_scores, scores_added, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
 
     total_weekends_norm = [
-        (p + c) / a for p, c, a, a_curr
-        in zip(prev_weekends, current_weekends, availability, current_avail_list)
-        if a > 0 and a_curr > 0]
+        p/a_prev + c/a_curr for p, c, a_prev, a_curr
+        in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
 
 
     # Prentum tölfræðilegar niðurstöður
