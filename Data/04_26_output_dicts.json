@@ -34,7 +34,7 @@
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 4,
-            "Employees": 14,
+            "Employees": 13,
             "Date": "2026-04-01",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:30:00"
@@ -60,7 +60,7 @@
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 4,
-            "Employees": 14,
+            "Employees": 12,
             "Date": "2026-04-02",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
@@ -73,7 +73,7 @@
             "Hall": "EB",
             "Skillset1": 1,
             "Skillset2": 4,
-            "Employees": 8,
+            "Employees": 7,
             "Date": "2026-04-04",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "23:00:00"
@@ -203,7 +203,7 @@
             "Hall": "NL",
             "Skillset1": 1,
             "Skillset2": 0,
-            "Employees": 3,
+            "Employees": 2,
             "Date": "2026-04-15",
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
@@ -222,110 +222,6 @@
             "ShiftEnds": "21:30:00"
         },
         "18": {
-            "Event": "MÍT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-04-16",
-            "ShiftBegins": "16:30:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "19": {
-            "Event": "MÍT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-04-17",
-            "ShiftBegins": "16:00:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "20": {
-            "Event": "MÍT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-04-18",
-            "ShiftBegins": "10:00:00",
-            "ShiftEnds": "15:00:00"
-        },
-        "21": {
-            "Event": "MÍT",
-            "EventType": "NL",
-            "EventCategory": "Basic",
-            "EventRanking": 80.0,
-            "Hall": "NL",
-            "Skillset1": 0,
-            "Skillset2": 0,
-            "Employees": 1,
-            "Date": "2026-04-18",
-            "ShiftBegins": "15:00:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "22": {
-            "Event": "MÍT",
-            "EventType": "KL",
-            "EventCategory": "Basic",
-            "EventRanking": 40.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-04-16",
-            "ShiftBegins": "16:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "23": {
-            "Event": "MÍT",
-            "EventType": "KL",
-            "EventCategory": "Basic",
-            "EventRanking": 40.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-04-17",
-            "ShiftBegins": "16:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "24": {
-            "Event": "MÍT",
-            "EventType": "KL",
-            "EventCategory": "Basic",
-            "EventRanking": 40.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-04-18",
-            "ShiftBegins": "10:00:00",
-            "ShiftEnds": "16:00:00"
-        },
-        "25": {
-            "Event": "MÍT",
-            "EventType": "KL",
-            "EventCategory": "Basic",
-            "EventRanking": 40.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-04-18",
-            "ShiftBegins": "16:00:00",
-            "ShiftEnds": "22:00:00"
-        },
-        "26": {
             "Event": "NB",
             "EventType": "EB",
             "EventCategory": "Basic",
@@ -338,7 +234,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "00:00:00"
         },
-        "27": {
+        "19": {
             "Event": "DWC",
             "EventType": "EB",
             "EventCategory": "Basic",
@@ -351,7 +247,7 @@
             "ShiftBegins": "11:30:00",
             "ShiftEnds": "17:00:00"
         },
-        "28": {
+        "20": {
             "Event": "SÍ",
             "EventType": "NL",
             "EventCategory": "Basic",
@@ -364,7 +260,7 @@
             "ShiftBegins": "15:00:00",
             "ShiftEnds": "19:00:00"
         },
-        "29": {
+        "21": {
             "Event": "KP",
             "EventType": "EB",
             "EventCategory": "Basic",
@@ -377,20 +273,7 @@
             "ShiftBegins": "14:00:00",
             "ShiftEnds": "18:00:00"
         },
-        "30": {
-            "Event": "Barna dans",
-            "EventType": "Barna EB",
-            "EventCategory": "Barna",
-            "EventRanking": 70.0,
-            "Hall": "EB",
-            "Skillset1": 1,
-            "Skillset2": 2,
-            "Employees": 5,
-            "Date": "2026-04-21",
-            "ShiftBegins": "16:30:00",
-            "ShiftEnds": "20:00:00"
-        },
-        "32": {
+        "22": {
             "Event": "UpT",
             "EventType": "NL",
             "EventCategory": "Basic",
@@ -403,7 +286,7 @@
             "ShiftBegins": "16:00:00",
             "ShiftEnds": "20:00:00"
         },
-        "33": {
+        "23": {
             "Event": "LR",
             "EventType": "NL",
             "EventCategory": "Basic",
@@ -416,7 +299,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "23:00:00"
         },
-        "34": {
+        "24": {
             "Event": "FB",
             "EventType": "NL",
             "EventCategory": "Basic",
@@ -429,7 +312,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
-        "35": {
+        "25": {
             "Event": "FB",
             "EventType": "NL",
             "EventCategory": "Basic",
@@ -442,7 +325,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
-        "36": {
+        "26": {
             "Event": "SR",
             "EventType": "KL",
             "EventCategory": "Basic",
@@ -455,7 +338,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
-        "37": {
+        "27": {
             "Event": "HT",
             "EventType": "How To",
             "EventCategory": "Solo",
@@ -468,7 +351,7 @@
             "ShiftBegins": "18:00:00",
             "ShiftEnds": "22:00:00"
         },
-        "38": {
+        "28": {
             "Event": "K&B",
             "EventType": "Barna KL",
             "EventCategory": "Barna",
@@ -481,7 +364,7 @@
             "ShiftBegins": "12:00:00",
             "ShiftEnds": "16:00:00"
         },
-        "39": {
+        "29": {
             "Event": "Múlinn",
             "EventType": "Múlinn",
             "EventCategory": "Solo",
@@ -494,7 +377,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
-        "40": {
+        "30": {
             "Event": "Múlinn",
             "EventType": "Múlinn",
             "EventCategory": "Solo",
@@ -507,20 +390,7 @@
             "ShiftBegins": "19:00:00",
             "ShiftEnds": "22:00:00"
         },
-        "41": {
-            "Event": "KV",
-            "EventType": "KL",
-            "EventCategory": "Basic",
-            "EventRanking": 40.0,
-            "Hall": "KL",
-            "Skillset1": 0,
-            "Skillset2": 1,
-            "Employees": 1,
-            "Date": "2026-04-20",
-            "ShiftBegins": "18:00:00",
-            "ShiftEnds": "21:00:00"
-        },
-        "42": {
+        "31": {
             "Event": "Sinfó",
             "EventType": "Sinfó",
             "EventCategory": "Basic",
@@ -533,7 +403,7 @@
             "ShiftBegins": "18:30:00",
             "ShiftEnds": "21:30:00"
         },
-        "43": {
+        "32": {
             "Event": "DP",
             "EventType": "Partý EB",
             "EventCategory": "Party",
@@ -546,7 +416,7 @@
             "ShiftBegins": "20:00:00",
             "ShiftEnds": "00:00:00"
         },
-        "44": {
+        "33": {
             "Event": "VR",
             "EventType": "EB",
             "EventCategory": "Basic",
@@ -559,7 +429,7 @@
             "ShiftBegins": "16:00:00",
             "ShiftEnds": "20:00:00"
         },
-        "45": {
+        "34": {
             "Event": "Sinfó",
             "EventType": "Sinfó",
             "EventCategory": "Basic",
@@ -572,7 +442,7 @@
             "ShiftBegins": "18:30:00",
             "ShiftEnds": "21:30:00"
         },
-        "46": {
+        "35": {
             "Event": "SR",
             "EventType": "NL",
             "EventCategory": "Basic",
@@ -583,19 +453,19 @@
             "Employees": 4,
             "Date": "2026-04-24",
             "ShiftBegins": "18:00:00",
-            "ShiftEnds": "20:00:00"
+            "ShiftEnds": "21:00:00"
         }
     },
     "employees": {
         "1": {
             "EmployeeName": "Agnes Anna",
-            "Score": 345.2,
+            "Score": 342.3,
             "Skillset": 2,
             "Availability_ratio": 0.0
         },
         "2": {
             "EmployeeName": "Alda/ Miðó ",
-            "Score": 660.0,
+            "Score": 570.0,
             "Skillset": 2,
             "Availability_ratio": 0.7666666666666667
         },
@@ -607,151 +477,151 @@
         },
         "4": {
             "EmployeeName": "Arnar Ragn",
-            "Score": 740.0,
+            "Score": 660.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "5": {
             "EmployeeName": "Auður ",
-            "Score": 610.0,
+            "Score": 570.0,
             "Skillset": 2,
             "Availability_ratio": 0.7333333333333333
         },
         "6": {
             "EmployeeName": "Ágústa",
-            "Score": 345.2,
+            "Score": 342.3,
             "Skillset": 2,
             "Availability_ratio": 0.0
         },
         "7": {
             "EmployeeName": "Daníel",
-            "Score": 345.2,
+            "Score": 342.3,
             "Skillset": 2,
             "Availability_ratio": 0.0
         },
         "8": {
             "EmployeeName": "Elísabet ",
-            "Score": 750.0,
+            "Score": 710.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "9": {
             "EmployeeName": "Elmar ",
-            "Score": 725.2,
+            "Score": 662.3,
             "Skillset": 2,
             "Availability_ratio": 0.9333333333333333
         },
         "10": {
             "EmployeeName": "Erna ",
-            "Score": 760.0,
+            "Score": 680.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "11": {
             "EmployeeName": "Gaukur ",
-            "Score": 590.0,
+            "Score": 650.0,
             "Skillset": 2,
             "Availability_ratio": 0.5333333333333333
         },
         "12": {
             "EmployeeName": "Gréta",
-            "Score": 720.0,
+            "Score": 700.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "13": {
             "EmployeeName": "Guðný  ",
-            "Score": 740.0,
+            "Score": 700.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "14": {
             "EmployeeName": "Hólmfríður ",
-            "Score": 580.0,
+            "Score": 530.0,
             "Skillset": 2,
             "Availability_ratio": 0.6666666666666666
         },
         "15": {
             "EmployeeName": "Hrafnkell",
-            "Score": 740.0,
+            "Score": 700.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "16": {
             "EmployeeName": "Hrannar ",
-            "Score": 680.0,
+            "Score": 630.0,
             "Skillset": 2,
             "Availability_ratio": 0.8
         },
         "17": {
             "EmployeeName": "Jórunn  ",
-            "Score": 690.0,
+            "Score": 710.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "18": {
             "EmployeeName": "Katrín Hel",
-            "Score": 545.2,
+            "Score": 492.3,
             "Skillset": 2,
             "Availability_ratio": 0.3333333333333333
         },
         "19": {
             "EmployeeName": "Katrín Sig ",
-            "Score": 710.0,
+            "Score": 690.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "20": {
             "EmployeeName": "Laufey ",
-            "Score": 740.0,
+            "Score": 680.0,
             "Skillset": 2,
             "Availability_ratio": 0.9
         },
         "21": {
             "EmployeeName": "Magnea",
-            "Score": 345.2,
+            "Score": 342.3,
             "Skillset": 2,
             "Availability_ratio": 0.0
         },
         "22": {
             "EmployeeName": "Magnús  ",
-            "Score": 740.0,
+            "Score": 690.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "23": {
             "EmployeeName": "Margrét Lára",
-            "Score": 745.2,
+            "Score": 682.3,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "24": {
             "EmployeeName": "Orri",
-            "Score": 610.0,
+            "Score": 630.0,
             "Skillset": 2,
             "Availability_ratio": 0.6
         },
         "25": {
             "EmployeeName": "Palli",
-            "Score": 345.2,
+            "Score": 342.3,
             "Skillset": 2,
             "Availability_ratio": 0.0
         },
         "26": {
             "EmployeeName": "Rut ",
-            "Score": 760.0,
+            "Score": 690.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "27": {
             "EmployeeName": "Sara B",
-            "Score": 680.0,
+            "Score": 590.0,
             "Skillset": 2,
             "Availability_ratio": 0.8
         },
         "28": {
             "EmployeeName": "Sara Júlía ",
-            "Score": 610.0,
+            "Score": 590.0,
             "Skillset": 2,
             "Availability_ratio": 0.8
         },
@@ -763,61 +633,61 @@
         },
         "30": {
             "EmployeeName": "Sigríður ",
-            "Score": 740.0,
+            "Score": 700.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "31": {
             "EmployeeName": "Sveinn",
-            "Score": 700.0,
+            "Score": 680.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "32": {
             "EmployeeName": "Sæmundur ",
-            "Score": 725.2,
+            "Score": 662.3,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "33": {
             "EmployeeName": "Valdís ",
-            "Score": 720.0,
+            "Score": 670.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "34": {
             "EmployeeName": "Vero",
-            "Score": 345.2,
+            "Score": 342.3,
             "Skillset": 2,
             "Availability_ratio": 0.0
         },
         "35": {
             "EmployeeName": "Védís ",
-            "Score": 750.0,
+            "Score": 680.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "36": {
             "EmployeeName": "Unnar ",
-            "Score": 750.0,
+            "Score": 680.0,
             "Skillset": 2,
             "Availability_ratio": 1.0
         },
         "37": {
             "EmployeeName": "Ömmi",
-            "Score": 670.0,
+            "Score": 700.0,
             "Skillset": 2,
             "Availability_ratio": 0.9666666666666667
         },
         "38": {
             "EmployeeName": "Arnar ",
-            "Score": 710.0,
+            "Score": 660.0,
             "Skillset": 1,
             "Availability_ratio": 1.0
         },
         "39": {
             "EmployeeName": "Róbert ",
-            "Score": 710.0,
+            "Score": 660.0,
             "Skillset": 1,
             "Availability_ratio": 1.0
         },
@@ -829,7 +699,7 @@
         },
         "41": {
             "EmployeeName": "Þórey ",
-            "Score": 400.0,
+            "Score": 370.0,
             "Skillset": 1,
             "Availability_ratio": 1.0
         }

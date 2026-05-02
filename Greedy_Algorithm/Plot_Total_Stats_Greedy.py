@@ -75,9 +75,9 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plt.tight_layout()
         plt.show()
 
-    def plot_normalized(names, values, title, ylabel):
+    def plot_normalized(names, prev_vals, current_vals, title, ylabel):
         """Plottum normalized niðurstöður frá síðasta og núverandi tímabili"""
-        combined = list(zip(names, values))
+        combined = list(zip(names, prev_vals, current_vals))
         try:
             locale.setlocale(locale.LC_ALL, "is_IS.UTF-8")
             combined = sorted(combined, key=lambda x: locale.strxfrm(x[0]))
@@ -85,16 +85,20 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
             combined = sorted(combined, key=lambda x: x[0].lower())
         
         sorted_names = [x[0] for x in combined]
-        sorted_vals = [x[1] for x in combined]
+        sorted_prev = [x[1] for x in combined]
+        sorted_current = [x[2] for x in combined]
 
         plt.figure(figsize=(12, 6))
-        plt.bar(sorted_names, sorted_vals, color="#ff6e1b")
+        plt.bar(sorted_names, sorted_prev, color="black", label="Last period")
+        plt.bar(sorted_names, sorted_current, bottom=sorted_prev, color="#ff6e1b", label="Current period")
         plt.title(title, fontweight="bold")
         plt.ylabel(ylabel, fontweight="bold")
         plt.xticks(rotation=90)
+        plt.legend(loc="upper right")
         plt.tight_layout()
         plt.show()
 
+    """
     plot_stacked(
         names,
         prev_shifts,
@@ -119,38 +123,38 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         "Score",
     )
 
-    plot_stacked(
-        names,
+    plot_stacked(names,
         prev_weekends,
         current_weekends,
         "Total Shifts on Weekends",
         "Number of Shifts on Weekends",
     )
+    """
 
     # Búa til normalized gögn með nöfnum - sleppum þeim sem eru með availability = 0
-    filtered = [(n, (ps + cs) / a, (ph + ch) / a, (psc + csc) / a, (pw + cw) / a)
-                for n, ps, cs, ph, ch, psc, csc, pw, cw, a
-                in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
-                    [e.get("actual_prev_score", 0) for e in dict_employees.values()],
-                    [e.get("score_added_this_period", 0) for e in dict_employees.values()],
-                    prev_weekends, current_weekends, availability)
-                if a > 0]
+    # Sía út þá með current eða previous availability = 0
+    prev_avail_list = [e.get("Previous_availability", 1) for e in dict_employees.values()]    
+    current_avail_list = [e.get("Availability_ratio", 1) for e in dict_employees.values()]
+    actual_prev_scores = [e.get("actual_prev_score", 0) for e in dict_employees.values()]
+    scores_added = [e.get("score_added_this_period", 0) for e in dict_employees.values()]
+
+    filtered = [
+        (n, round(ps/a_prev), round(cs/a_curr), round(ph/a_prev*2)/2, round(ch/a_curr*2)/2, psc/a_prev, csc/a_curr, pw/a_prev, cw/a_curr)
+        for n, ps, cs, ph, ch, psc, csc, pw, cw, a_prev, a_curr
+        in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
+            actual_prev_scores, scores_added,
+            prev_weekends, current_weekends, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
 
     if filtered:
-        names_n, shifts_n, hours_n, scores_n, weekends_n = zip(*filtered)
-        names_n = list(names_n)
-        shifts_n = list(shifts_n)
-        hours_n = list(hours_n)
-        scores_n = list(scores_n)
-        weekends_n = list(weekends_n)
+        names_n, prev_shifts_n, curr_shifts_n, prev_hours_n, curr_hours_n, \
+        prev_scores_n, curr_scores_n, prev_weekends_n, curr_weekends_n = zip(*filtered)
 
+        plot_normalized(list(names_n), list(prev_shifts_n), list(curr_shifts_n), "Total Shifts (Normalized)", "Shifts / Availability")
+        plot_normalized(list(names_n), list(prev_hours_n), list(curr_hours_n), "Total Hours (Normalized)", "Hours / Availability")
+        plot_normalized(list(names_n), list(prev_scores_n), list(curr_scores_n), "Total Score (Normalized)", "Score / Availability")
+        plot_normalized(list(names_n), list(prev_weekends_n), list(curr_weekends_n), "Total Weekends (Normalized)", "Weekends / Availability")
 
-
-        plot_normalized(names_n, shifts_n, "Total Shifts (Normalized)", "Shifts / Availability")
-        plot_normalized(names_n, hours_n, "Total Hours (Normalized)", "Hours / Availability")
-        plot_normalized(names_n, scores_n, "Total Score (Normalized)", "Score / Availability")
-        plot_normalized(names_n, weekends_n, "Total Weekends (Normalized)", "Weekends / Availability")
-        
 
     #-----Print stats-----
     def print_stats(label, values):
@@ -165,20 +169,36 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         print(f"  Max: {np.max(values):.2f}")
         print(f"  Std: {np.std(values):.2f}\n")
 
+    
     # Not normalized
     total_shifts = [p + c for p, c in zip(prev_shifts, current_shifts)]
     total_hours = [p + c for p, c in zip(prev_hours, current_hours)]
     total_scores = [p + c for p, c in zip(prev_scores, current_scores)]
     total_weekends = [p + c for p, c in zip(prev_weekends, current_weekends)]
-
-    # Fyrir tölfræði - bara þeir með availability > 0
-    total_shifts_norm = [(p + c) / a for p, c, a in zip(prev_shifts, current_shifts, availability) if a > 0]
-    total_hours_norm = [(p + c) / a for p, c, a in zip(prev_hours, current_hours, availability) if a > 0]
-    total_scores_norm = [(p + c) / a for p, c, a in zip(
-            [e.get("actual_prev_score", 0) for e in dict_employees.values()],
-            [e.get("score_added_this_period", 0) for e in dict_employees.values()], availability) if a > 0]
-    total_weekends_norm = [(p + c) / a for p, c, a in zip(prev_weekends, current_weekends, availability) if a > 0]
     
+
+    # Fyrir tölfræði - bara þeir með availability > 0 og current availability > 0
+    total_shifts_norm = [
+        round(p/a_prev) + round(c/a_curr) for p, c, a_prev, a_curr
+        in zip(prev_shifts, current_shifts, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
+
+    total_hours_norm = [
+        round(p/a_prev*2)/2 + round(c/a_curr*2)/2 for p, c, a_prev, a_curr
+        in zip(prev_hours, current_hours, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
+
+    total_scores_norm = [
+        p/a_prev + c/a_curr for p, c, a_prev, a_curr
+        in zip(actual_prev_scores, scores_added, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
+
+    total_weekends_norm = [
+        p/a_prev + c/a_curr for p, c, a_prev, a_curr
+        in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
+        if a_prev > 0 and a_curr > 0]
+
+
     # Prentum tölfræðilegar niðurstöður
     print("NOT normalized")
     print_stats("Total Shifts", total_shifts)
