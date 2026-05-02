@@ -13,6 +13,8 @@ from Optimization_Model.Compute_Employee_Stats import Compute_Employee_Stats
 from Optimization_Model.Compute_Availability import Compute_Availability
 from Optimization_Model.Plot_Total_Stats_Normalized import Plot_Total_Stats_Normalized
 
+from Current_Solution.Compute_Manual_Stats import Compute_Manual_Stats
+
 # -------------------------
 # SETTINGS
 # -------------------------
@@ -157,3 +159,9 @@ Export_Json(
 
 Plot_Total_Stats(raw_current, raw_total)
 Plot_Total_Stats_Normalized(norm_current, norm_history)
+
+
+
+# Current Solution
+manual_stats = Compute_Manual_Stats(
+    "Current_Solution/current_input.xlsx",dict_events,sheet_name="04_26")
