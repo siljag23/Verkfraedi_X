@@ -6,19 +6,20 @@ def Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee
     for emp_id, info in sorted(
         dict_employees.items(),
         key=lambda x: (
-            x[1].get("Score", 0) - x[1].get("prev_score", 0),
-            shifts_per_employee.get(x[0], 0),
+            x[1].get("score_added_this_period", 0),
+            x[1].get("Number_of_shifts", 0),
             hours_per_employee.get(x[0], 0),
             x[0]
         )
     ):
+
         name = info.get("EmployeeName")
         total = hours_per_employee.get(emp_id, 0)
-        prev_scores = info.get("prev_score", 0)
+        prev_scores = info.get("actual_prev_score", 0)
         score = info.get("Score", 0)
         shifts = info.get("Number_of_shifts", 0)
         weekend_shifts = info.get("Shifts_on_weekends", 0)
-        scores_now = score - prev_scores
+        scores_now = info.get("score_added_this_period")
 
         print(
             f"{emp_id}: {name} | "
