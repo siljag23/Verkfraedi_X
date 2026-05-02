@@ -11,6 +11,7 @@ from Optimization_Model.Total_Stats import Total_Stats
 from Optimization_Model.Total_Stats import Print_Stats
 from Optimization_Model.Compute_Employee_Stats import Compute_Employee_Stats
 from Optimization_Model.Compute_Availability import Compute_Availability
+from Optimization_Model.Plot_Total_Stats_Normalized import Plot_Total_Stats_Normalized
 
 # -------------------------
 # SETTINGS
@@ -75,6 +76,7 @@ else:
 # -------------------------
 # PRINT RESULTS
 # -------------------------
+"""
 Print_Results(
     model,
     employees,
@@ -89,7 +91,7 @@ Print_Results(
     shift_score,
     weekend
 )
-
+"""
 # -------------------------
 # PRINT STATS
 # -------------------------
@@ -133,7 +135,6 @@ Print_Stats("Total (History + Current) (RAW)", raw_total)
 # -------------------------
 # EXPORT
 # -------------------------
-print('hvað er þetta')
 dict_employees = Compute_Employee_Stats(
     dict_employees,
     employees,
@@ -154,13 +155,5 @@ Export_Json(
     output_file
 )
 
-# -------------------------
-# PLOTS
-# -------------------------
-Plot_Total_Stats(
-    raw_current,
-    raw_total,
-    norm_current,
-    norm_total,
-    dict_employees
-)
+Plot_Total_Stats(raw_current, raw_total)
+Plot_Total_Stats_Normalized(norm_current, norm_history)
