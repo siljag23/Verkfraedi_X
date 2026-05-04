@@ -22,7 +22,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         previous_availability = emp.get("Previous_availability", 1)
         combined_availability = current_availability + previous_availability
         availability.append(combined_availability)
-        names.append(emp.get("EmployeeName", f"Emp {emp_id}"))
+        names.append(str(emp_id))
 
         current_shifts.append(emp.get("Number_of_shifts", 0))
         prev_shifts.append(emp.get("prev_number_of_shifts", 0))
@@ -46,19 +46,11 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         prev_weekends.append(emp.get("prev_weekend_shifts", 0))
 
     def sort_combined(names, prev_vals, current_vals):
-        """Röðum starfsmönnum í stafrófsröð fyrir gröfin"""
         combined = list(zip(names, prev_vals, current_vals))
-
-        try:
-            locale.setlocale(locale.LC_ALL, "is_IS.UTF-8")
-            combined = sorted(combined, key=lambda x: locale.strxfrm(x[0]))
-        except:
-            combined = sorted(combined, key=lambda x: x[0].lower())
-
+        combined = sorted(combined, key=lambda x: int(x[0]))
         sorted_names = [x[0] for x in combined]
         sorted_prev = [x[1] for x in combined]
         sorted_current = [x[2] for x in combined]
-
         return sorted_names, sorted_prev, sorted_current
     
     def plot_stacked(names, prev_vals, current_vals, title, ylabel):
@@ -76,14 +68,8 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plt.show()
 
     def plot_normalized(names, prev_vals, current_vals, title, ylabel):
-        """Plottum normalized niðurstöður frá síðasta og núverandi tímabili"""
         combined = list(zip(names, prev_vals, current_vals))
-        try:
-            locale.setlocale(locale.LC_ALL, "is_IS.UTF-8")
-            combined = sorted(combined, key=lambda x: locale.strxfrm(x[0]))
-        except:
-            combined = sorted(combined, key=lambda x: x[0].lower())
-        
+        combined = sorted(combined, key=lambda x: int(x[0]))
         sorted_names = [x[0] for x in combined]
         sorted_prev = [x[1] for x in combined]
         sorted_current = [x[2] for x in combined]
@@ -139,7 +125,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     scores_added = [e.get("score_added_this_period", 0) for e in dict_employees.values()]
 
     filtered = [
-        (n, round(ps/a_prev), round(cs/a_curr), round(ph/a_prev*2)/2, round(ch/a_curr*2)/2, psc/a_prev, csc/a_curr, pw/a_prev, cw/a_curr)
+        (n, round(ps/a_prev), round(cs/a_curr), round(ph/a_prev*2)/2, round(ch/a_curr*2)/2, psc/a_prev, csc/a_curr, round(pw/a_prev), round(cw/a_curr))
         for n, ps, cs, ph, ch, psc, csc, pw, cw, a_prev, a_curr
         in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
             actual_prev_scores, scores_added,
