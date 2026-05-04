@@ -197,7 +197,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         p/a_prev + c/a_curr for p, c, a_prev, a_curr
         in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
-
+    
 
     # Prentum tölfræðilegar niðurstöður
     print("NOT normalized")
