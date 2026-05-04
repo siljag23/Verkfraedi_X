@@ -138,14 +138,16 @@ def Print_Summary(title, stats):
         print("  Std:", round(v.std(), 2))
 
 
-def Plot_Manual_Total(manual_current, manual_history, title_suffix="RAW"):
+def Plot_Manual_Total(manual_current, manual_history, period_name, normalized=False):
 
     ids = sorted(set(manual_current.keys()) | set(manual_history.keys()))
 
     color_hist = "black"
     color_curr = "#ff6e1b"
 
-    def plot_metric(key, ylabel):
+    suffix = " (Normalized)" if normalized else ""
+
+    def plot_metric(key, ylabel, pretty_name):
 
         hist_vals = [
             round(manual_history.get(i, {}).get("hours", 0)*2)/2 if key=="hours"
@@ -158,22 +160,23 @@ def Plot_Manual_Total(manual_current, manual_history, title_suffix="RAW"):
             else manual_current.get(i, {}).get(key, 0)
             for i in ids
         ]
-    
+
         plt.figure(figsize=(12,6))
 
-        plt.bar(ids, hist_vals, color=color_hist, label="Last Period")
-        plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="Current Period")
+        plt.bar(ids, hist_vals, color=color_hist, label="Last period")
+        plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="Current period")
 
-        plt.title(f"Total {key.capitalize()} ({title_suffix})", fontweight="bold")
-        plt.xlabel("Employee ID")
-        plt.ylabel(ylabel)
+        plt.title(f"Total {pretty_name} in {period_name}{suffix}", fontsize=14, fontweight="bold")
+
+        plt.xlabel("Employee ID", fontweight="bold")
+        plt.ylabel(ylabel, fontweight="bold")
 
         plt.xticks(ids)
         plt.legend()
         plt.tight_layout()
         plt.show()
 
-    plot_metric("shifts", "Shifts")
-    plot_metric("hours", "Hours")
-    plot_metric("weekend", "Shifts")
-    plot_metric("score", "Score")
+    plot_metric("shifts", "Shifts", "Shifts")
+    plot_metric("hours", "Hours", "Work Hours")
+    plot_metric("weekend", "Shifts", "Weekend Shifts")
+    plot_metric("score", "Score", "Scores")

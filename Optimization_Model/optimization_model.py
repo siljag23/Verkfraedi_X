@@ -138,14 +138,15 @@ Employee_Diagnostics(
     employee_days
 )
 
-Print_Stats("Last Period (RAW)", raw_history, filter_zero=False)
-Print_Stats("Last Period (NORMALIZED)", norm_history, filter_zero=True)
+Print_Stats("March", raw_history, filter_zero=False)
+Print_Stats("March (Normalized)", norm_history, filter_zero=True)
 
-Print_Stats("Current Period (RAW)", raw_current, filter_zero=False)
-Print_Stats("Current Period (NORMALIZED)", norm_current, filter_zero=True)
+Print_Stats("April", raw_current, filter_zero=False)
+Print_Stats("March (Normalized)", norm_current, filter_zero=True)
 
-Print_Stats("Total (History + Current) (RAW)", raw_total, filter_zero=False)
-Print_Stats("Total (History + Current) (NORMALIZED)", norm_total, filter_zero=True)
+Print_Stats("Total", raw_total, filter_zero=False)
+Print_Stats("Total (Normalized)", norm_total, filter_zero=True)
+
 
 # -------------------------
 # EXPORT
@@ -194,8 +195,14 @@ Print_Summary("Manual April (Normalized)", manual_norm_04)
 Print_Summary("Manual Total (RAW)", manual_total_raw)
 Print_Summary("Manual Total (Normalized)", manual_total_norm)
 
-Plot_Manual_Total(manual_stats_04, manual_stats_03, "RAW")
-Plot_Manual_Total(manual_norm_04, manual_norm_03, "Normalized")
+Plot_Manual_Total(raw_current, raw_history, "March", normalized=False)
+Plot_Manual_Total(norm_current, norm_history, "March", normalized=True)
+
+Plot_Manual_Total(raw_current, raw_history, "April", normalized=False)
+Plot_Manual_Total(norm_current, norm_history, "April", normalized=True)
+
+Plot_Manual_Total(raw_total, {}, "Total", normalized=False)
+Plot_Manual_Total(norm_total, {}, "Total", normalized=True)
 
 works_manual = Build_Manual_Works(
     "Current_Solution/current_input.xlsx",

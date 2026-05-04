@@ -256,15 +256,4 @@ def Optimization_Staff_Scheduling(
 
     model.optimize()
 
-    print("\n--- Opti Stats (REAL VALUES) ---")
-
-    print("Shifts diff:", max_shifts.X - min_shifts.X)
-    print("Hours diff:", max_hours.X - min_hours.X)
-    print("Score diff:", max_score.X - min_score.X)
-    print("Weekend diff:", max_weekend.X - min_weekend.X)
-    print("Weekly diff:", max_weekly.X - min_weekly.X)
-    print("History balance:", history_balance.getValue())
-    print("Hall variety:", hall_variety.getValue())
-    print("Requests:", request_term.getValue())
-
     return model, works, shift_dur, weekend, weeks, event_date, hall, scale

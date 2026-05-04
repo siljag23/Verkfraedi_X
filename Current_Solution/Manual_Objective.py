@@ -162,13 +162,4 @@ def Manual_Objective(
         - PENALTY_HISTORY * history_balance
     )
 
-    print("Shifts diff:", max_shifts - min_shifts)
-    print("Hours diff:", max_hours - min_hours)
-    print("Score diff:", max_score - min_score)
-    print("Weekend diff:", max_weekend - min_weekend)
-    print("Weekly diff:", max_weekly - min_weekly)
-    print("History balance:", history_balance)
-    print("Hall variety:", hall_variety)
-    print("Requests:", request_term)
-
     return obj
