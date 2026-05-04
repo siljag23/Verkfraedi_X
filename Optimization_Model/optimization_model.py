@@ -22,6 +22,8 @@ from Current_Solution.Current_Solution_Stats import Print_Summary
 from Current_Solution.Current_Solution_Stats import Plot_Manual_Total
 from Current_Solution.Manual_Objective import Manual_Objective
 from Current_Solution.Manual_Objective import Build_Manual_Works
+from Current_Solution. Current_Solution_Stats import Print_Per_Employee
+from Current_Solution.Current_Solution_Stats import Plot_Manual_One
 
 # -------------------------
 # SETTINGS
@@ -185,7 +187,7 @@ manual_norm_04 = Normalize_Manual_Stats(manual_stats_04,curr_availability)
 
 manual_total_raw = Combine_Stats(manual_stats_03, manual_stats_04)
 manual_total_norm = Combine_Stats(manual_norm_03, manual_norm_04)
-
+"""
 Print_Summary("Manual March (RAW)", manual_stats_03)
 Print_Summary("Manual March (Normalized)", manual_norm_03)
 
@@ -196,14 +198,26 @@ Print_Summary("Manual Total (RAW)", manual_total_raw)
 Print_Summary("Manual Total (Normalized)", manual_total_norm)
 
 Plot_Manual_Total(raw_current, raw_history, "March", normalized=False)
-Plot_Manual_Total(norm_current, norm_history, "March", normalized=True)
+#Plot_Manual_Total(norm_current, norm_history, "March", normalized=True)
 
 Plot_Manual_Total(raw_current, raw_history, "April", normalized=False)
-Plot_Manual_Total(norm_current, norm_history, "April", normalized=True)
+#Plot_Manual_Total(norm_current, norm_history, "April", normalized=True)
 
-Plot_Manual_Total(raw_total, {}, "Total", normalized=False)
-Plot_Manual_Total(norm_total, {}, "Total", normalized=True)
+#Plot_Manual_Total(raw_total, {}, "Total", normalized=False)
+#Plot_Manual_Total(norm_total, {}, "Total", normalized=True)
 
+Plot_Manual_Total(raw_current, raw_history, "Total")
+Plot_Manual_Total(norm_current, norm_history, "Total", normalized=True)
+"""
+Print_Per_Employee(manual_norm_03, "March (Manual)")
+Print_Per_Employee(manual_norm_04, "April (Manual)")
+
+#Plot_Manual_One(manual_stats_03, "March")
+#Plot_Manual_One(manual_stats_04, "April")
+Plot_Manual_One(manual_norm_03, "March", normalized=True)
+Plot_Manual_One(manual_norm_04, "March", normalized=True)
+
+"""
 works_manual = Build_Manual_Works(
     "Current_Solution/current_input.xlsx",
     "04_26",
@@ -290,3 +304,5 @@ print("\n--- APRIL COMPARISON ---")
 print(f"Manual:     {obj_manual:.2f}")
 print(f"Greedy:     {obj_greedy:.2f}")
 print(f"Optimized:  {model.ObjVal:.2f}")
+
+"""
