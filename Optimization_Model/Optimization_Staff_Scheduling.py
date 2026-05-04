@@ -91,9 +91,12 @@ def Optimization_Staff_Scheduling(
         days_off = {
             pd.to_datetime(d).date()
             for d in employee_days.get(i, set())
-            if pd.to_datetime(d).month == month and pd.to_datetime(d).year == year}
+            if pd.to_datetime(d).month == month and pd.to_datetime(d).year == year
+        }
         availability[i] = max(0, (total_days - len(days_off)) / total_days)
         scale[i] = availability[i]
+
+    active_employees = [i for i in employees if scale[i] > 0]
 
     model = gp.Model("Event_staffing")
 
@@ -115,6 +118,9 @@ def Optimization_Staff_Scheduling(
     min_weekly = model.addVar()
     max_weekly = model.addVar()
 
+    # -------------------------
+    # Demand + skill constraints (unchanged)
+    # -------------------------
     for j in events:
         model.addConstr(gp.quicksum(works[i,j] for i in employees) == emp_demand[j])
 
@@ -122,11 +128,17 @@ def Optimization_Staff_Scheduling(
         model.addConstr(gp.quicksum(works[i,j] for i in employees if skill[i] == 1) >= skill1_req[j])
         model.addConstr(gp.quicksum(works[i,j] for i in employees if skill[i] in [1,2]) >= skill2_req[j])
 
+    # -------------------------
+    # Availability (unchanged)
+    # -------------------------
     for i in employees:
         for j in events:
             if event_date[j].date() in employee_days.get(i, set()):
                 model.addConstr(works[i,j] == 0)
 
+    # -------------------------
+    # One shift per day
+    # -------------------------
     for i in employees:
         for d in set(event_date[j].date() for j in events):
             model.addConstr(
@@ -137,13 +149,19 @@ def Optimization_Staff_Scheduling(
                 ) <= 1
             )
 
+    # -------------------------
+    # Rest time
+    # -------------------------
     model.addConstrs(
         (works[i,j1] + works[i,j2] <= 1
         for i in employees
         for (j1,j2) in blocked_pairs)
     )
 
-    for i in employees:
+    # -------------------------
+    # WEEKLY (FIXED)
+    # -------------------------
+    for i in active_employees:
         for week in weeks:
 
             weekly_shifts = gp.quicksum(
@@ -158,11 +176,14 @@ def Optimization_Staff_Scheduling(
 
             model.addConstr(weekly_shifts <= MAX_WORKDAYS_PER_WEEK)
             model.addConstr(weekly_hours <= MAX_WORKHOURS_PER_WEEK)
-            
+
             model.addConstr(weekly_shifts >= min_weekly)
             model.addConstr(weekly_shifts <= max_weekly)
 
-    for i in employees:
+    # -------------------------
+    # FAIRNESS (FIXED)
+    # -------------------------
+    for i in active_employees:
 
         shifts_i = gp.quicksum(works[i,j] for j in events)
         hours_i = gp.quicksum(works[i,j]*shift_dur[j] for j in events)
@@ -182,6 +203,9 @@ def Optimization_Staff_Scheduling(
         model.addConstr(total_weekend_i >= min_weekend)
         model.addConstr(total_weekend_i <= max_weekend)
 
+    # -------------------------
+    # Hall variety (unchanged)
+    # -------------------------
     for i in employees:
         for h in halls:
             model.addConstr(
@@ -189,21 +213,31 @@ def Optimization_Staff_Scheduling(
                 >= works_hall[i,h]
             )
 
+    # -------------------------
+    # Requests
+    # -------------------------
     request_term = gp.quicksum(
         works[i,j] for (i,j) in requests
         if i in employees and j in events
     )
 
-    avg_hist = sum(hist_shifts.get(i,0) for i in employees) / len(employees)
+    # -------------------------
+    # HISTORY BALANCE (FIXED)
+    # -------------------------
+    avg_hist = sum(hist_shifts.get(i,0) for i in active_employees) / len(active_employees)
 
     history_balance = gp.quicksum(
         ((hist_shifts.get(i,0) - avg_hist) / scale[i]) *
         gp.quicksum(works[i,j] for j in events)
-        for i in employees if scale[i] > 0
+        for i in active_employees
     )
 
+    # -------------------------
+    # Objective
+    # -------------------------
     hall_variety = gp.quicksum(
-        works_hall[i,h] for i in employees for h in halls) / (len(employees) * len(halls))
+        works_hall[i,h] for i in employees for h in halls
+    ) / (len(employees) * len(halls))
     
     model.setObjective(
         - W_SHIFTS * (max_shifts - min_shifts)
@@ -218,8 +252,19 @@ def Optimization_Staff_Scheduling(
     )
 
     model.setParam('MIPGap', 0.01)
-    model.setParam('TimeLimit', 10)  
+    model.setParam('TimeLimit', 10)
 
     model.optimize()
+
+    print("\n--- Opti Stats (REAL VALUES) ---")
+
+    print("Shifts diff:", max_shifts.X - min_shifts.X)
+    print("Hours diff:", max_hours.X - min_hours.X)
+    print("Score diff:", max_score.X - min_score.X)
+    print("Weekend diff:", max_weekend.X - min_weekend.X)
+    print("Weekly diff:", max_weekly.X - min_weekly.X)
+    print("History balance:", history_balance.getValue())
+    print("Hall variety:", hall_variety.getValue())
+    print("Requests:", request_term.getValue())
 
     return model, works, shift_dur, weekend, weeks, event_date, hall, scale
