@@ -29,8 +29,8 @@ def Optimization_Staff_Scheduling(
     MAX_WORKHOURS_PER_WEEK = 48
     MAX_WORKDAYS_PER_WEEK = 6
 
-    W_SHIFTS = 5
-    W_HOURS = 5
+    W_SHIFTS = 4
+    W_HOURS = 6
     W_SCORE = 0.5
     W_WEEKEND = 1.5
     W_WEEKLY_BALANCE = 0.5
@@ -222,4 +222,4 @@ def Optimization_Staff_Scheduling(
 
     model.optimize()
 
-    return model, works, shift_dur, weekend, weeks, event_date
+    return model, works, shift_dur, weekend, weeks, event_date, hall, scale

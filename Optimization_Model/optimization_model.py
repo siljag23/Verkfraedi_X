@@ -1,3 +1,4 @@
+import json
 
 from Optimization_Model.Open_Excel_Opti import Open_Excel_Opti
 from Optimization_Model.Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
@@ -19,6 +20,8 @@ from Current_Solution.Current_Solution_Stats import Normalize_Manual_Stats
 from Current_Solution.Current_Solution_Stats import Combine_Stats
 from Current_Solution.Current_Solution_Stats import Print_Summary
 from Current_Solution.Current_Solution_Stats import Plot_Manual_Total
+from Current_Solution.Manual_Objective import Manual_Objective
+from Current_Solution.Manual_Objective import Build_Manual_Works
 
 # -------------------------
 # SETTINGS
@@ -62,7 +65,7 @@ else:
 # -------------------------
 print("\nRunning optimization (with history + requests)...")
 
-model, works, shift_dur, weekend, weeks, event_date = Optimization_Staff_Scheduling(
+model, works, shift_dur, weekend, weeks, event_date, hall, scale = Optimization_Staff_Scheduling(
     dict_events,
     dict_employees,
     employee_days,
@@ -172,7 +175,7 @@ Plot_Total_Stats(raw_current, raw_total)
 Plot_Total_Stats_Normalized(norm_current, norm_history)
 """
 
-# Current Solution
+# Manual Solution
 manual_stats_03 = Compute_Manual_Stats("Current_Solution/current_input.xlsx",dict_events,shift_dur,sheet_name="03_26", employees=employees)
 manual_stats_04 = Compute_Manual_Stats("Current_Solution/current_input.xlsx",dict_events,shift_dur,sheet_name="04_26", employees=employees)
 
@@ -193,3 +196,90 @@ Print_Summary("Manual Total (Normalized)", manual_total_norm)
 
 Plot_Manual_Total(manual_stats_04, manual_stats_03, "RAW")
 Plot_Manual_Total(manual_norm_04, manual_norm_03, "Normalized")
+
+works_manual = Build_Manual_Works(
+    "Current_Solution/current_input.xlsx",
+    "04_26",
+    dict_events
+)
+
+obj_manual = Manual_Objective(
+    employees=employees,
+    events=events,
+    works_manual=works_manual,
+    shift_dur=shift_dur,
+    shift_score=shift_score,
+    weekend=weekend,
+    hall=hall,
+    halls=list(set(hall.values())),
+    hist_shifts=hist_shifts,
+    hist_weekend=hist_weekend,
+    scale=scale,
+    weeks=weeks,
+    event_date=event_date,
+    requests=requests
+)
+
+works_manual = {
+    (i, j): int(works[i, j].X)
+    for i in employees
+    for j in events
+}
+
+obj_test = Manual_Objective(
+    employees=employees,
+    events=events,
+    works_manual=works_manual,
+    shift_dur=shift_dur,
+    shift_score=shift_score,
+    weekend=weekend,
+    hall=hall,
+    halls=list(set(hall.values())),
+    hist_shifts=hist_shifts,
+    hist_weekend=hist_weekend,
+    scale=scale,
+    weeks=weeks,
+    event_date=event_date,
+    requests=requests
+)
+
+print("\n--- SANITY CHECK ---")
+print("Model objective: ", model.ObjVal)
+print("Manual objective (same solution): ", obj_test)
+
+with open("Data/04_26_output_list.json") as f:
+    greedy_list = json.load(f)
+
+print("Greedy loaded:", len(greedy_list))
+
+works_greedy = {}
+
+for j, i in greedy_list:
+    works_greedy[(int(i), int(j))] = 1
+
+for i in employees:
+    for j in events:
+        if (i, j) not in works_greedy:
+            works_greedy[(i, j)] = 0
+
+obj_greedy = Manual_Objective(
+    employees=employees,
+    events=events,
+    works_manual=works_greedy,
+    shift_dur=shift_dur,
+    shift_score=shift_score,
+    weekend=weekend,
+    hall=hall,
+    halls=list(set(hall.values())),
+    hist_shifts=hist_shifts,
+    hist_weekend=hist_weekend,
+    scale=scale,
+    weeks=weeks,
+    event_date=event_date,
+    requests=requests
+)
+
+print("\n--- APRIL COMPARISON ---")
+print(f"Manual:     {obj_manual:.2f}")
+print(f"Greedy:     {obj_greedy:.2f}")
+print(f"Optimized:  {model.ObjVal:.2f}")
