@@ -8,4 +8,4 @@ The greedy algorithm consist of one main code and several functions, including a
 
 To run the algorithm:
 
-To run the optimization model:
+To run the optimization model: python -m Optimization_Model.Optimization_Model
