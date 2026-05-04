@@ -198,13 +198,14 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
     
-
+    """
     # Prentum tölfræðilegar niðurstöður
     print("NOT normalized")
     print_stats("Total Shifts", total_shifts)
     print_stats("Total Hours", total_hours)
     print_stats("Total Score", total_scores)
     print_stats("Weekend Shifts", total_weekends)
+    """
     
     print("NORMALIZED")
     print_stats("Total Shifts (norm)", total_shifts_norm)
