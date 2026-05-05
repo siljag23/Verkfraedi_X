@@ -1,11 +1,7 @@
-A greedy algorithm that makes a staff schedule for irregular shifts - the output is an excel file containing the schedule
-An optimization model was used to create a schedule with the greedy algorithm as close to the optimal solution as possible
+This repository contains both a greedy algorithm and optimization model that make staff schedules for irregular shifts. The inputs of the models are stored in the Data folder, as well as the output files. 
 
-The input and output data is in the Data folder
+The greedy algorithm consist of one main code and several functions, including assign_emploees which is the main function. For the optimization model, the main function is optimization_staff_scheduling, but the model uses the optimization solver Gurobi. The models are stored in the Greedy_Algorithm folder and the Optimization_Model folder.  
 
-The greedy algorithm consist of one main code and several functions, including assign_emploees which is the main function
-
-
-To run the algorithm:
+To run the greedy algorithm: python -m Greedy_Algorithm.greedy_algorithm
 
 To run the optimization model: python -m Optimization_Model.Optimization_Model
