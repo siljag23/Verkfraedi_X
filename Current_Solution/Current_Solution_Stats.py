@@ -81,7 +81,6 @@ def Normalize_Manual_Stats(manual_stats, availability):
 def Combine_Stats(stats_1, stats_2):
 
     total = {}
-
     all_ids = set(stats_1.keys()) | set(stats_2.keys())
 
     for i in all_ids:
@@ -169,9 +168,9 @@ def Plot_Manual_Total(manual_current, manual_history, title, normalized=False):
         plt.bar(ids, hist_vals, color=color_hist, label="Last period")
         plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="Current period")
 
-        plt.title(f"{metric_name} {suffix}", fontweight="bold")
-        plt.xlabel("Employee ID")
-        plt.ylabel(ylabel, fontweight="bold")
+        plt.title(f"{metric_name} {suffix}", fontweight="bold", fontsize = 20)
+        plt.xlabel("Employee ID", fontweight="bold", fontsize = 15)
+        plt.ylabel(ylabel, fontweight="bold", fontsize = 15)
 
         plt.xticks(ids)
         plt.legend()
@@ -183,19 +182,6 @@ def Plot_Manual_Total(manual_current, manual_history, title, normalized=False):
     plot_metric("score", "Score", "Total Score")
     plot_metric("weekend", "Weekend Shifts", "Total Weekend Shifts")
 
-def Print_Per_Employee(stats, title):
-
-    print(f"\n--- {title} ---\n")
-
-    for i in sorted(stats):
-        s = stats[i]
-
-        print(
-            f"Emp {i:2} | "
-            f"Shifts: {s['shifts']:2} | "
-            f"Hours: {s['hours']:5.1f} | "
-            f"Score: {s['score']:5.0f}"
-        )
 
 # Plot Manual Solution Seperate
 def Plot_Manual_One(stats, title, normalized=False):
@@ -214,9 +200,9 @@ def Plot_Manual_One(stats, title, normalized=False):
 
         plt.bar(x, values, color="#ff6e1b")
 
-        plt.title(f"{metric_name} in {title}{suffix}", fontweight="bold")
-        plt.xlabel("Employee ID", fontweight="bold")
-        plt.ylabel(ylabel, fontweight="bold")
+        plt.title(f"{metric_name} in {title}{suffix}", fontweight="bold", fontsize = 20)
+        plt.xlabel("Employee ID", fontweight="bold", fontsize = 15)
+        plt.ylabel(ylabel, fontweight="bold", fontsize = 15)
 
         plt.xticks(x, ids)
         plt.tight_layout()

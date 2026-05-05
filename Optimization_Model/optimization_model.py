@@ -1,18 +1,21 @@
 import json
 
 from Optimization_Model.Open_Excel_Opti import Open_Excel_Opti
-from Optimization_Model.Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
-from Optimization_Model.Plot_Total_Stats import Plot_Total_Stats
 from Optimization_Model.Load_JSON_History import Load_JSON_History
+from Optimization_Model.Optimization_Staff_Scheduling import Optimization_Staff_Scheduling
 from Optimization_Model.Export_Json import Export_Json
-from Optimization_Model.Print_Results import Print_Results
+
 from Optimization_Model.Employee_Diagnostics import Employee_Diagnostics
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
-from Optimization_Model.Total_Stats import Total_Stats
-from Optimization_Model.Total_Stats import Print_Stats
 from Optimization_Model.Compute_Employee_Stats import Compute_Employee_Stats
 from Optimization_Model.Compute_Availability import Compute_Availability
+
+from Optimization_Model.Print_Results import Print_Results
+from Optimization_Model.Total_Stats import Print_Stats
+from Optimization_Model.Total_Stats import Total_Stats
+from Optimization_Model.Plot_Total_Stats import Plot_Total_Stats
 from Optimization_Model.Plot_Total_Stats_Normalized import Plot_Total_Stats_Normalized
+
 from Current_Solution.Manual_Analysis import Run_Manual_Analysis
 
 # -------------------------
@@ -25,14 +28,14 @@ previous_file = "Optimization_Model/03_26_optioutput"
 output_file = "Optimization_Model/04_26_optioutput"
 
 # -------------------------
-# Load data 
+# LOAD DATA
 # -------------------------
 dict_events, dict_employees, employee_days, requests = Open_Excel_Opti(input_excel, "Events", "Employees", "DaysOff", "EventReq")
 employees = list(dict_employees.keys())
 events = list(dict_events.keys())
 
 # -------------------------
-# Prepare data
+# PREPARE DATA
 # -------------------------
 start = {j: dict_events[j]["ShiftBegins"] for j in events}
 end = {j: dict_events[j]["ShiftEnds"] for j in events}
@@ -40,7 +43,7 @@ shift_score = {j: dict_events[j]["EventRanking"] for j in events}
 shift_dur = Compute_Shift_Duration(dict_events)
 
 # -------------------------
-# STEP 2 — LOAD HISTORY
+# LOAD HISTORY
 # -------------------------
 if previous_file is not None:
     print("\nLoading history...")
@@ -51,9 +54,8 @@ if previous_file is not None:
 else:
     hist_shifts = hist_hours = hist_scores = hist_weekend = hist_availability = {}
 
-
 #-------------------------
-# STEP 3 — RUN (WITH HISTORY + REQUESTS)
+# RUN MODEL 
 # -------------------------
 print("\nRunning optimization (with history + requests)...")
 
@@ -68,13 +70,36 @@ model, works, shift_dur, weekend, weeks, event_date, hall, scale = Optimization_
 )
 
 # -------------------------
-# STATUS CHECK
+# CHECK
 # -------------------------
 if model.SolCount > 0:
     print(f"\nSolution found! Status: {model.Status}")
 else:
     print("No feasible solution found")
     exit()
+
+# -------------------------
+# EXPORT
+# -------------------------
+dict_employees = Compute_Employee_Stats(
+    dict_employees,
+    employees,
+    works,
+    events,
+    event_date,
+    dict_events,
+    employee_days,
+    shift_dur   
+)
+    
+Export_Json(
+    dict_events,
+    dict_employees,
+    works,
+    employees,
+    events,
+    output_file
+)
 
 # -------------------------
 # PRINT RESULTS
@@ -140,40 +165,18 @@ Print_Stats("March", raw_history, filter_zero=False)
 Print_Stats("March (Normalized)", norm_history, filter_zero=True)
 
 Print_Stats("April", raw_current, filter_zero=False)
-Print_Stats("March (Normalized)", norm_current, filter_zero=True)
+Print_Stats("April (Normalized)", norm_current, filter_zero=True)
 
 Print_Stats("Total", raw_total, filter_zero=False)
 Print_Stats("Total (Normalized)", norm_total, filter_zero=True)
 
 # -------------------------
-# EXPORT
-# -------------------------
-dict_employees = Compute_Employee_Stats(
-    dict_employees,
-    employees,
-    works,
-    events,
-    event_date,
-    dict_events,
-    employee_days,
-    shift_dur   
-)
-    
-Export_Json(
-    dict_events,
-    dict_employees,
-    works,
-    employees,
-    events,
-    output_file
-)
-# -------------------------
 # PLOT
 # -------------------------
-#Plot_Total_Stats(raw_current, raw_total)
-#Plot_Total_Stats_Normalized(norm_current, norm_history)
+Plot_Total_Stats(raw_current, raw_total)
+Plot_Total_Stats_Normalized(norm_current, norm_history)
 
 # -------------------------
 # MANUAL
 # -------------------------
-Run_Manual_Analysis(employees, hist_availability, curr_availability)
+#Run_Manual_Analysis(employees, hist_availability, curr_availability)

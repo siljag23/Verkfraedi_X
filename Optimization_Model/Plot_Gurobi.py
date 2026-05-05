@@ -45,7 +45,7 @@ lines1, labels1 = ax1.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
 ax1.legend(lines1 + lines2, labels1 + labels2)
 
-plt.title("Gurobi Progress")
+plt.title("Gurobi Progress", fontsize = 20)
 plt.show()
 
 # -------------------------
@@ -68,5 +68,5 @@ lines1, labels1 = ax1.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
 ax1.legend(lines1 + lines2, labels1 + labels2)
 
-plt.title("Gurobi Progress (Zoomed)")
+plt.title("Gurobi Progress (Zoomed)", fontsize = 20)
 plt.show()

@@ -3,14 +3,11 @@ import json
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 from Optimization_Model.Total_Stats import Print_Stats
 from Current_Solution.Current_Solution_Stats import Plot_Manual_Total
-from Current_Solution.Current_Solution_Stats import Check_Normalized_Per_Employee
-
 
 from Current_Solution.Current_Solution_Stats import (
     Compute_Manual_Stats,
     Normalize_Manual_Stats,
     Combine_Stats,
-    Print_Per_Employee,
     Plot_Manual_One
 )
 
@@ -68,15 +65,6 @@ def Run_Manual_Analysis(employees, hist_availability, curr_availability):
         for i in employees}
 
     manual_total_norm = Normalize_Manual_Stats(manual_total_raw, total_availability)
-
-    # -------------------------
-    # PRINT 
-    # -------------------------
-    Print_Per_Employee(manual_stats_03, "March")
-    Print_Per_Employee(manual_stats_04, "April")
-
-    Print_Per_Employee(manual_norm_03, "March (Normalized)")
-    Print_Per_Employee(manual_norm_04, "April (Normalized)")
 
     # -------------------------
     # STATS 

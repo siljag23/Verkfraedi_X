@@ -19,9 +19,9 @@ def Plot_Total_Stats_Normalized(norm_current, norm_history):
     plt.bar(ids, hist_shifts, color=color_hist, label=label_hist)
     plt.bar(ids, curr_shifts, bottom=hist_shifts, color=color_curr, label=label_curr)
 
-    plt.title("Total Shifts (Normalized)", fontweight="bold")
-    plt.xlabel("Employee ID", fontweight="bold")
-    plt.ylabel("Shifts", fontweight="bold")
+    plt.title("Total Shifts (Normalized)", fontweight="bold", fontsize = 20)
+    plt.xlabel("Employee ID", fontweight="bold", fontsize = 15)
+    plt.ylabel("Shifts", fontweight="bold", fontsize = 15)
     plt.legend()
     
     plt.xticks(ids)
@@ -38,9 +38,9 @@ def Plot_Total_Stats_Normalized(norm_current, norm_history):
     plt.bar(ids, hist_hours, color=color_hist, label=label_hist)
     plt.bar(ids, curr_hours, bottom=hist_hours, color=color_curr, label=label_curr)
 
-    plt.title("Total Hours (Normalized)", fontweight="bold")
-    plt.xlabel("Employee ID", fontweight="bold")
-    plt.ylabel("Hours", fontweight="bold")
+    plt.title("Total Hours (Normalized)", fontweight="bold", fontsize = 20)
+    plt.xlabel("Employee ID", fontweight="bold", fontsize = 15)
+    plt.ylabel("Hours", fontweight="bold", fontsize = 15)
 
     plt.xticks(ids)
     plt.legend()
@@ -58,9 +58,9 @@ def Plot_Total_Stats_Normalized(norm_current, norm_history):
     plt.bar(ids, hist_weekend, color=color_hist, label=label_hist)
     plt.bar(ids, curr_weekend, bottom=hist_weekend, color=color_curr, label=label_curr)
 
-    plt.title("Total Weekend Shifts (Normalized)", fontweight="bold")
-    plt.xlabel("Employee ID", fontweight="bold")
-    plt.ylabel("Weekend Shifts", fontweight="bold")
+    plt.title("Total Weekend Shifts (Normalized)", fontweight="bold", fontsize = 20)
+    plt.xlabel("Employee ID", fontweight="bold", fontsize = 15)
+    plt.ylabel("Weekend Shifts", fontweight="bold", fontsize = 15)
 
     plt.xticks(ids)
     plt.legend()
@@ -78,9 +78,9 @@ def Plot_Total_Stats_Normalized(norm_current, norm_history):
     plt.bar(ids, hist_score, color=color_hist, label=label_hist)
     plt.bar(ids, curr_score, bottom=hist_score, color=color_curr, label=label_curr)
 
-    plt.title("Total Score (Normalized)", fontweight="bold")
-    plt.xlabel("Employee ID", fontweight="bold")
-    plt.ylabel("Score", fontweight="bold")
+    plt.title("Total Score (Normalized)", fontweight="bold", fontsize = 20)
+    plt.xlabel("Employee ID", fontweight="bold", fontsize = 15)
+    plt.ylabel("Score", fontweight="bold", fontsize = 15)
 
     plt.xticks(ids)
     plt.legend()
