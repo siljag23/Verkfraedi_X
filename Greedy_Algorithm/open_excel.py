@@ -318,8 +318,6 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
     average_score = (
         sum(eligible_scores) / len(eligible_scores)
         if eligible_scores else 0)
-    
-    print("average score:", average_score)
  
     for emp_id, info in employees.items(): 
         prev_availability = previous_availability.get(emp_id, None)
