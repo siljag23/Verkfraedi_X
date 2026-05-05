@@ -166,22 +166,22 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
 
     # Fyrir tölfræði - bara þeir með availability > 0 og current availability > 0
     total_shifts_norm = [
-        round(p/a_prev) + round(c/a_curr) for p, c, a_prev, a_curr
+        round((p + c)/(a_prev + a_curr)) for p, c, a_prev, a_curr
         in zip(prev_shifts, current_shifts, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
 
     total_hours_norm = [
-        round(p/a_prev*2)/2 + round(c/a_curr*2)/2 for p, c, a_prev, a_curr
+        round(((p + c)/(a_prev + a_curr)*2)/2) for p, c, a_prev, a_curr
         in zip(prev_hours, current_hours, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
 
     total_scores_norm = [
-        p/a_prev + c/a_curr for p, c, a_prev, a_curr
+        ((p + c)/(a_prev + a_curr)) for p, c, a_prev, a_curr
         in zip(actual_prev_scores, scores_added, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
 
     total_weekends_norm = [
-        p/a_prev + c/a_curr for p, c, a_prev, a_curr
+        ((p + c)/(a_prev + a_curr)) for p, c, a_prev, a_curr
         in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
     
