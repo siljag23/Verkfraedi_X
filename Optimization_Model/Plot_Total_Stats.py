@@ -24,8 +24,8 @@ def Plot_Total_Stats(raw_current, raw_total):
         plt.bar(ids, curr, bottom=hist, color="#ff6e1b", label="Current period")
 
         plt.title(title, fontweight="bold")
-        plt.xlabel("Employee ID")
-        plt.ylabel(ylabel)
+        plt.xlabel("Employee ID", fontweight="bold")
+        plt.ylabel(ylabel, fontweight="bold")
 
         plt.xticks(ids)
         plt.legend()

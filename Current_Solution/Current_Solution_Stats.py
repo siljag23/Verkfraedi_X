@@ -5,36 +5,21 @@ import matplotlib.pyplot as plt
 def Compute_Manual_Stats(excel_path, dict_events, shift_dur, sheet_name, employees):
 
     df = pd.read_excel(excel_path, sheet_name=sheet_name)
-    print(df.head())
-
     stats = {}
-
-    missing = 0
 
     for _, row in df.iterrows():
 
         event_id = int(float(row.iloc[0]))
-        # passa type
+        
         if isinstance(event_id, float):
             event_id = int(event_id)
 
-        # DEBUG
         if event_id not in dict_events:
-            print(f"MISSING EVENT: {event_id} | TYPE: {type(event_id)}")
-            print("DICT SAMPLE KEYS:", list(dict_events.keys())[:5])
-            continue
-
-        if event_id not in dict_events:
-            print("MISSING EVENT:", event_id)
-            missing += 1
             continue
 
         event = dict_events[event_id]
-
         duration = shift_dur[event_id]
-
         score = event["EventRanking"]
-
         date = pd.to_datetime(event["Date"])
         is_weekend = date.weekday() in [4,5,6]
 
@@ -75,12 +60,9 @@ def Normalize_Manual_Stats(manual_stats, availability):
 
     norm_stats = {}
 
-    for i in sorted(availability):
-        print(i, availability[i])
-
     for i in manual_stats:
 
-        avail = availability.get(i, 1.0)
+        avail = availability.get(i, 0)
 
         if avail == 0:
             continue  
@@ -88,10 +70,10 @@ def Normalize_Manual_Stats(manual_stats, availability):
         s = manual_stats[i]
 
         norm_stats[i] = {
-            "shifts": round(s["shifts"] / avail),
-            "hours": round((s["hours"] / avail)*2)/2,
-            "weekend": round(s["weekend"] / avail),
-            "score": round(s["score"] / avail),
+            "shifts": s["shifts"] / avail,
+            "hours": s["hours"] / avail,
+            "weekend": s["weekend"] / avail,
+            "score": s["score"] / avail,
         }
 
     return norm_stats
@@ -154,6 +136,19 @@ def Print_Summary(title, stats):
         print("  Avg:", round(v.mean(), 2))
         print("  Std:", round(v.std(), 2))
 
+def Round_Stats(stats):
+
+    rounded = {}
+
+    for i, s in stats.items():
+        rounded[i] = {
+            "shifts": round(s["shifts"]),
+            "hours": round(s["hours"] * 2) / 2,
+            "weekend": round(s["weekend"]),
+            "score": round(s["score"]),
+        }
+
+    return rounded
 
 def Plot_Manual_Total(manual_current, manual_history, title, normalized=False):
 
@@ -171,10 +166,10 @@ def Plot_Manual_Total(manual_current, manual_history, title, normalized=False):
 
         plt.figure(figsize=(12,6))
 
-        plt.bar(ids, hist_vals, color=color_hist, label="March")
-        plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="April")
+        plt.bar(ids, hist_vals, color=color_hist, label="Last period")
+        plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="Current period")
 
-        plt.title(f"{metric_name} in {title}{suffix}", fontweight="bold")
+        plt.title(f"{metric_name} {suffix}", fontweight="bold")
         plt.xlabel("Employee ID")
         plt.ylabel(ylabel, fontweight="bold")
 
@@ -205,6 +200,7 @@ def Print_Per_Employee(stats, title):
 # Plot Manual Solution Seperate
 def Plot_Manual_One(stats, title, normalized=False):
 
+    stats = Round_Stats(stats)
     ids = sorted(stats.keys())
     x = np.arange(len(ids))
 
@@ -230,3 +226,4 @@ def Plot_Manual_One(stats, title, normalized=False):
     plot_metric("hours", "Work Hours", "Total Work Hours")
     plot_metric("score", "Score", "Total Score")
     plot_metric("weekend", "Weekend Shifts", "Total Weekend Shifts")
+
