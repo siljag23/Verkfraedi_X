@@ -67,7 +67,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plt.tight_layout()
         plt.show()
 
-    def plot_normalized(names, prev_vals, current_vals, title, ylabel):
+    def plot_normalized(names, prev_vals, current_vals, title, xlabel, ylabel):
         combined = list(zip(names, prev_vals, current_vals))
         combined = sorted(combined, key=lambda x: int(x[0]))
         sorted_names = [x[0] for x in combined]
@@ -78,6 +78,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plt.bar(sorted_names, sorted_prev, color="black", label="Last period")
         plt.bar(sorted_names, sorted_current, bottom=sorted_prev, color="#ff6e1b", label="Current period")
         plt.title(title, fontweight="bold")
+        plt.xlabel(xlabel, fontweight="bold")
         plt.ylabel(ylabel, fontweight="bold")
         plt.xticks(rotation=90)
         plt.legend(loc="upper right")
@@ -136,10 +137,10 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         names_n, prev_shifts_n, curr_shifts_n, prev_hours_n, curr_hours_n, \
         prev_scores_n, curr_scores_n, prev_weekends_n, curr_weekends_n = zip(*filtered)
 
-        plot_normalized(list(names_n), list(prev_shifts_n), list(curr_shifts_n), "Total Shifts (Normalized)", "Shifts / Availability")
-        plot_normalized(list(names_n), list(prev_hours_n), list(curr_hours_n), "Total Hours (Normalized)", "Hours / Availability")
-        plot_normalized(list(names_n), list(prev_scores_n), list(curr_scores_n), "Total Score (Normalized)", "Score / Availability")
-        plot_normalized(list(names_n), list(prev_weekends_n), list(curr_weekends_n), "Total Weekends (Normalized)", "Weekends / Availability")
+        plot_normalized(list(names_n), list(prev_shifts_n), list(curr_shifts_n), "Total Shifts (Normalized)", "Employee ID", "Shifts")
+        plot_normalized(list(names_n), list(prev_hours_n), list(curr_hours_n), "Total Hours (Normalized)", "Employee ID", "Hours")
+        plot_normalized(list(names_n), list(prev_scores_n), list(curr_scores_n), "Total Score (Normalized)", "Employee ID", "Score")
+        plot_normalized(list(names_n), list(prev_weekends_n), list(curr_weekends_n), "Total Shifts on Weekends (Normalized)", "Employee ID", "Weekend Shifts")
         
 
     #-----Print stats-----
