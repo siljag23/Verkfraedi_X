@@ -129,6 +129,13 @@ Employee_Diagnostics(
     employee_days
 )
 
+"""
+# Prenta Mars stats
+Print_Stats("March ", raw_current, filter_zero=False)
+Print_Stats("March (Normalized)", norm_current, filter_zero=True)
+"""
+
+# Prenta Mars, Apríl og Total stats
 Print_Stats("March", raw_history, filter_zero=False)
 Print_Stats("March (Normalized)", norm_history, filter_zero=True)
 
@@ -160,12 +167,13 @@ Export_Json(
     events,
     output_file
 )
-
+# -------------------------
+# PLOT
+# -------------------------
 #Plot_Total_Stats(raw_current, raw_total)
 #Plot_Total_Stats_Normalized(norm_current, norm_history)
 
-Run_Manual_Analysis(
-    employees,
-    hist_availability,
-    curr_availability
-)
+# -------------------------
+# MANUAL
+# -------------------------
+Run_Manual_Analysis(employees, hist_availability, curr_availability)

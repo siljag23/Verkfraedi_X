@@ -75,8 +75,8 @@ def Total_Stats(
     # -------------------------
     for i in employees:
 
-        curr_avail = curr_availability.get(i,1.0)
-        hist_avail = hist_availability.get(i, 1.0)
+        curr_avail = curr_availability.get(i,0)
+        hist_avail = hist_availability.get(i,0)
 
         if curr_avail > 0:
             norm_current[i] = {
@@ -95,23 +95,39 @@ def Total_Stats(
             }
 
         if curr_avail > 0 or hist_avail > 0:
+            """
 
-            curr_part = raw_current[i]["shifts"] / curr_avail if curr_avail > 0 else 0
-            hist_part = hist_shifts.get(i, 0) / hist_avail if hist_avail > 0 else 0
+            total_avail = curr_avail + hist_avail
 
-            norm_total[i] = {"shifts": hist_part + curr_part,"hours": (
-                    (hist_hours.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
-                    (raw_current[i]["hours"] / curr_avail if curr_avail > 0 else 0)
-                ),
-                "weekend": (
-                    (hist_weekend.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
-                    (raw_current[i]["weekend"] / curr_avail if curr_avail > 0 else 0)
-                ),
-                "score": (
-                    (hist_scores.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
-                    (raw_current[i]["score"] / curr_avail if curr_avail > 0 else 0)
-                ),
-            }
+            if total_avail > 0:
+                norm_total[i] = {
+                    "shifts": raw_total[i]["shifts"] / total_avail,
+                    "hours": raw_total[i]["hours"] / total_avail,
+                    "weekend": raw_total[i]["weekend"] / total_avail,
+                    "score": raw_total[i]["score"] / total_avail,
+                }
+            """
+
+            if curr_avail > 0 or hist_avail > 0:
+                norm_total[i] = {
+                    "shifts": (
+                        (hist_shifts.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                        (raw_current[i]["shifts"] / curr_avail if curr_avail > 0 else 0)
+                    ),
+                    "hours": (
+                        (hist_hours.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                        (raw_current[i]["hours"] / curr_avail if curr_avail > 0 else 0)
+                    ),
+                    "weekend": (
+                        (hist_weekend.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                        (raw_current[i]["weekend"] / curr_avail if curr_avail > 0 else 0)
+                    ),
+                    "score": (
+                        (hist_scores.get(i, 0) / hist_avail if hist_avail > 0 else 0) +
+                        (raw_current[i]["score"] / curr_avail if curr_avail > 0 else 0)
+                    ),
+                }
+            
 
     return raw_current, raw_total, norm_current, norm_total, norm_history, raw_history
 
