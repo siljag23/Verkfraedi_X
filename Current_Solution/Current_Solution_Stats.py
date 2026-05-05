@@ -5,14 +5,28 @@ import matplotlib.pyplot as plt
 def Compute_Manual_Stats(excel_path, dict_events, shift_dur, sheet_name, employees):
 
     df = pd.read_excel(excel_path, sheet_name=sheet_name)
+    print(df.head())
 
     stats = {}
 
+    missing = 0
+
     for _, row in df.iterrows():
 
-        event_id = int(row.iloc[0])
+        event_id = int(float(row.iloc[0]))
+        # passa type
+        if isinstance(event_id, float):
+            event_id = int(event_id)
+
+        # DEBUG
+        if event_id not in dict_events:
+            print(f"MISSING EVENT: {event_id} | TYPE: {type(event_id)}")
+            print("DICT SAMPLE KEYS:", list(dict_events.keys())[:5])
+            continue
 
         if event_id not in dict_events:
+            print("MISSING EVENT:", event_id)
+            missing += 1
             continue
 
         event = dict_events[event_id]
@@ -29,7 +43,7 @@ def Compute_Manual_Stats(excel_path, dict_events, shift_dur, sheet_name, employe
             if pd.isna(emp):
                 continue
 
-            emp = int(emp)
+            emp = int(float(emp))
 
             if emp not in stats:
                 stats[emp] = {
@@ -60,6 +74,9 @@ def Compute_Manual_Stats(excel_path, dict_events, shift_dur, sheet_name, employe
 def Normalize_Manual_Stats(manual_stats, availability):
 
     norm_stats = {}
+
+    for i in sorted(availability):
+        print(i, availability[i])
 
     for i in manual_stats:
 
@@ -138,42 +155,78 @@ def Print_Summary(title, stats):
         print("  Std:", round(v.std(), 2))
 
 
-def Plot_Manual_Total(manual_current, manual_history, title_suffix="RAW"):
+def Plot_Manual_Total(manual_current, manual_history, title, normalized=False):
 
     ids = sorted(set(manual_current.keys()) | set(manual_history.keys()))
 
     color_hist = "black"
     color_curr = "#ff6e1b"
 
-    def plot_metric(key, ylabel):
+    suffix = " (Normalized)" if normalized else ""
 
-        hist_vals = [
-            round(manual_history.get(i, {}).get("hours", 0)*2)/2 if key=="hours"
-            else manual_history.get(i, {}).get(key, 0)
-            for i in ids
-        ]
+    def plot_metric(key, ylabel, metric_name):
 
-        curr_vals = [
-            round(manual_current.get(i, {}).get("hours", 0)*2)/2 if key=="hours"
-            else manual_current.get(i, {}).get(key, 0)
-            for i in ids
-        ]
-    
+        hist_vals = [manual_history.get(i, {}).get(key, 0) for i in ids]
+        curr_vals = [manual_current.get(i, {}).get(key, 0) for i in ids]
+
         plt.figure(figsize=(12,6))
 
-        plt.bar(ids, hist_vals, color=color_hist, label="Last Period")
-        plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="Current Period")
+        plt.bar(ids, hist_vals, color=color_hist, label="March")
+        plt.bar(ids, curr_vals, bottom=hist_vals, color=color_curr, label="April")
 
-        plt.title(f"Total {key.capitalize()} ({title_suffix})", fontweight="bold")
+        plt.title(f"{metric_name} in {title}{suffix}", fontweight="bold")
         plt.xlabel("Employee ID")
-        plt.ylabel(ylabel)
+        plt.ylabel(ylabel, fontweight="bold")
 
         plt.xticks(ids)
         plt.legend()
         plt.tight_layout()
         plt.show()
 
-    plot_metric("shifts", "Shifts")
-    plot_metric("hours", "Hours")
-    plot_metric("weekend", "Shifts")
-    plot_metric("score", "Score")
+    plot_metric("shifts", "Shifts", "Total Shifts")
+    plot_metric("hours", "Work Hours", "Total Work Hours")
+    plot_metric("score", "Score", "Total Score")
+    plot_metric("weekend", "Weekend Shifts", "Total Weekend Shifts")
+
+def Print_Per_Employee(stats, title):
+
+    print(f"\n--- {title} ---\n")
+
+    for i in sorted(stats):
+        s = stats[i]
+
+        print(
+            f"Emp {i:2} | "
+            f"Shifts: {s['shifts']:2} | "
+            f"Hours: {s['hours']:5.1f} | "
+            f"Score: {s['score']:5.0f}"
+        )
+
+# Plot Manual Solution Seperate
+def Plot_Manual_One(stats, title, normalized=False):
+
+    ids = sorted(stats.keys())
+    x = np.arange(len(ids))
+
+    suffix = " (Normalized)" if normalized else ""
+
+    def plot_metric(key, ylabel, metric_name):
+
+        values = [stats[i].get(key, 0) for i in ids]
+
+        plt.figure(figsize=(12,6))
+
+        plt.bar(x, values, color="#ff6e1b")
+
+        plt.title(f"{metric_name} in {title}{suffix}", fontweight="bold")
+        plt.xlabel("Employee ID", fontweight="bold")
+        plt.ylabel(ylabel, fontweight="bold")
+
+        plt.xticks(x, ids)
+        plt.tight_layout()
+        plt.show()
+
+    plot_metric("shifts", "Shifts", "Total Shifts")
+    plot_metric("hours", "Work Hours", "Total Work Hours")
+    plot_metric("score", "Score", "Total Score")
+    plot_metric("weekend", "Weekend Shifts", "Total Weekend Shifts")

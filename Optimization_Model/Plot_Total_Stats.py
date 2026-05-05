@@ -45,4 +45,4 @@ def Plot_Total_Stats(raw_current, raw_total):
     plot_metric(hist, curr, "Total Score", "Score")
 
     hist, curr = get_vals("weekend")
-    plot_metric(hist, curr, "Total Weekend Shifts", "Shifts")
+    plot_metric(hist, curr, "Total Weekend Shifts", "Weekend Shifts")
