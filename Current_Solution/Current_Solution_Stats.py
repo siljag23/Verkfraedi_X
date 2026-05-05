@@ -9,11 +9,24 @@ def Compute_Manual_Stats(excel_path, dict_events, shift_dur, sheet_name, employe
 
     stats = {}
 
+    missing = 0
+
     for _, row in df.iterrows():
 
-        event_id = int(row.iloc[0])
+        event_id = int(float(row.iloc[0]))
+        # passa type
+        if isinstance(event_id, float):
+            event_id = int(event_id)
+
+        # DEBUG
+        if event_id not in dict_events:
+            print(f"MISSING EVENT: {event_id} | TYPE: {type(event_id)}")
+            print("DICT SAMPLE KEYS:", list(dict_events.keys())[:5])
+            continue
 
         if event_id not in dict_events:
+            print("MISSING EVENT:", event_id)
+            missing += 1
             continue
 
         event = dict_events[event_id]
