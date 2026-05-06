@@ -6,7 +6,7 @@ This repository contains two different approaches for generating staff schedules
 - An **Optimization Model**
 
 Both models use the same input data and generate scheduling output files.
-The greedy algorithm consist of one main code and several functions, including assign_emploees which is the main function. For the optimization model, the main function is optimization_staff_scheduling, but the model uses the optimization solver Gurobi. The models are stored in the Greedy_Algorithm folder and the Optimization_Model folder.  
+The greedy algorithm consist of one main code and several functions, including assign_emploees which is the main function. For the optimization model, the main function is optimization_staff_scheduling, but the model uses the optimization solver Gurobi.
 
 ## Repository Structure
 
@@ -19,6 +19,9 @@ Contains:
 ### `Greedy_Algorithm/`
 Contains the greedy scheduling implementation.
 
+### `Optimization_Model/`
+Contains the Optimization Model.
+
 Main script:
 ```bash
-python -m Greedy_Algorithm.greedy_algorithm
+python Greedy_Algorithm/greedy_algorithm.py
