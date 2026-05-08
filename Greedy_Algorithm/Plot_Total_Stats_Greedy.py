@@ -67,24 +67,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plt.tight_layout()
         plt.show()
 
-    def plot_normalized(names, prev_vals, current_vals, title, xlabel, ylabel):
-        combined = list(zip(names, prev_vals, current_vals))
-        combined = sorted(combined, key=lambda x: int(x[0]))
-        sorted_names = [x[0] for x in combined]
-        sorted_prev = [x[1] for x in combined]
-        sorted_current = [x[2] for x in combined]
-
-        plt.figure(figsize=(12, 6))
-        plt.bar(sorted_names, sorted_prev, color="black", label="Last period")
-        plt.bar(sorted_names, sorted_current, bottom=sorted_prev, color="#ff6e1b", label="Current period")
-        plt.title(title, fontweight="bold", fontsize = 20)
-        plt.xlabel(xlabel, fontweight="bold", fontsize = 15)
-        plt.ylabel(ylabel, fontweight="bold", fontsize = 15)
-        plt.xticks(rotation=90)
-        plt.legend(loc="upper right")
-        plt.tight_layout()
-        plt.show()
-
     """
     plot_stacked(
         names,
@@ -118,6 +100,25 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     )
     """
 
+    def plot_normalized(names, prev_vals, current_vals, title, xlabel, ylabel):
+        combined = list(zip(names, prev_vals, current_vals))
+        combined = sorted(combined, key=lambda x: int(x[0]))
+        sorted_names = [x[0] for x in combined]
+        sorted_prev = [x[1] for x in combined]
+        sorted_current = [x[2] for x in combined]
+
+        plt.figure(figsize=(12, 6))
+        plt.bar(sorted_names, sorted_prev, color="black", label="Last period")
+        plt.bar(sorted_names, sorted_current, bottom=sorted_prev, color="#ff6e1b", label="Current period")
+        plt.title(title, fontweight="bold", fontsize = 20)
+        plt.xlabel(xlabel, fontweight="bold", fontsize = 15)
+        plt.ylabel(ylabel, fontweight="bold", fontsize = 15)
+        plt.xticks(rotation=90)
+        plt.legend(loc="upper right")
+        plt.tight_layout()
+        plt.show()
+
+
     # Búa til normalized gögn með nöfnum - sleppum þeim sem eru með availability = 0
     # Sía út þá með current eða previous availability = 0
     prev_avail_list = [e.get("Previous_availability", 1) for e in dict_employees.values()]    
@@ -126,12 +127,19 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
     scores_added = [e.get("score_added_this_period", 0) for e in dict_employees.values()]
 
     filtered = [
-        (n, round(ps/a_prev), round(cs/a_curr), round(ph/a_prev*2)/2, round(ch/a_curr*2)/2, psc/a_prev, csc/a_curr, round(pw/a_prev), round(cw/a_curr))
+        (n, 
+        round(ps/a_prev) if a_prev > 0 else 0,
+        round(cs/a_curr) if a_curr > 0 else 0, 
+        round(ph/a_prev*2)/2 if a_prev > 0 else 0, 
+        round(ch/a_curr*2)/2 if a_curr > 0 else 0, 
+        psc/a_prev if a_prev > 0 else 0, 
+        csc/a_curr if a_curr > 0 else 0, 
+        round(pw/a_prev) if a_prev > 0 else 0, 
+        round(cw/a_curr) if a_curr > 0 else 0)
         for n, ps, cs, ph, ch, psc, csc, pw, cw, a_prev, a_curr
         in zip(names, prev_shifts, current_shifts, prev_hours, current_hours,
             actual_prev_scores, scores_added,
-            prev_weekends, current_weekends, prev_avail_list, current_avail_list)
-        if a_prev > 0 and a_curr > 0]
+            prev_weekends, current_weekends, prev_avail_list, current_avail_list)]
 
     if filtered:
         names_n, prev_shifts_n, curr_shifts_n, prev_hours_n, curr_hours_n, \
