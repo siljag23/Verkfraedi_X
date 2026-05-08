@@ -27,6 +27,7 @@ def Employee_Diagnostics(
     for i in employees:
 
         name = dict_employees[i]["EmployeeName"]
+        availability = {}
 
         # -------------------------
         # Availability (FIXED)
@@ -39,6 +40,7 @@ def Employee_Diagnostics(
         }
 
         availability_ratio = max(0, (total_days - len(days_off)) / total_days)
+        availability[i] = availability_ratio
 
         # -------------------------
         # Current workload
@@ -84,3 +86,4 @@ def Employee_Diagnostics(
             f"Weekend: {weekend_shifts:2.0f} | "
             f"Req: {satisfied_requests}/{total_requests} ({request_ratio:4.2f})"
         )
+    return availability

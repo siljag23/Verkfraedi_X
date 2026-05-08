@@ -204,7 +204,7 @@ def Optimization_Staff_Scheduling(
         model.addConstr(total_weekend_i <= max_weekend)
 
     # -------------------------
-    # Hall variety (unchanged)
+    # Hall variety 
     # -------------------------
     for i in employees:
         for h in halls:
@@ -229,7 +229,7 @@ def Optimization_Staff_Scheduling(
     history_balance = gp.quicksum(
         ((hist_shifts.get(i,0) - avg_hist) / scale[i]) *
         gp.quicksum(works[i,j] for j in events)
-        for i in active_employees
+        for i in active_employees 
     )
 
     # -------------------------
