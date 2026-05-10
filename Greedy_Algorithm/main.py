@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
 import shutil
 import os
+import pandas as pd
 
 from Greedy_Algorithm.greedy_render import run_greedy
 from Greedy_Algorithm.validator import validate_excel
@@ -34,7 +35,16 @@ async def validate(file: UploadFile = File(...)):
 
     print("VALIDATING:", input_path)
 
-    errors = validate_excel(input_path)
+    # LOAD EVENTS SHEET
+    try:
+        df = pd.read_excel(input_path, sheet_name="Events")
+    except Exception:
+        return {
+            "status": "error",
+            "errors": ["Vantar 'Events' sheet eða ekki hægt að lesa skrá"]
+        }
+
+    errors = validate_excel(df)
 
     if errors:
         return {
@@ -60,8 +70,16 @@ async def run(file: UploadFile = File(...)):
 
     print("SAVED:", input_path)
 
-    # 🔍 VALIDATION AGAIN (safety)
-    errors = validate_excel(input_path)
+    # VALIDATION AGAIN (safety)
+    try:
+        df = pd.read_excel(input_path, sheet_name="Events")
+    except Exception:
+        return {
+            "status": "error",
+            "errors": ["Vantar 'Events' sheet eða ekki hægt að lesa skrá"]
+        }
+
+    errors = validate_excel(df)
 
     if errors:
         return {
