@@ -5,18 +5,20 @@ from def_for_pick_employees import build_event_roles, is_valid_final_team, emplo
 def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee, max_daily_hours, max_weekly_hours, 
                       assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores, event_requests, base_min_shifts):
     """
-    Aðalfall:
-    - velur starfsmann fyrst út frá forgangi
-    - finnur bestu lausu vakt / hlutverk fyrir hann
-    - úthlutar honum því
-    - endurtekur þar til allar vaktir eru fullmannaðar eða ekkert gengur lengur
+    Main function:
 
-    Skilar:
-    - all_work_results: listi með öllum úthlutunum
-    - event_state: staða allra viðburða eftir úthlutun
+    selects an employee based on priority
+    finds the best available shift/role for that employee
+    assigns the shift
+    repeats until all shifts are filled or no further assignments can be made
+
+    Returns:
+
+    all_work_results: list of all assignments
+    event_state: status of all events after assignment
     """
 
-    # Reiknum tímabil fyrir 48 klst/viku meðaltalsreglu
+    # Calculate the period for the 48-hour weekly average rule
     all_event_dates = [ev["Date"] for ev in dict_events.values()]
     period_start = min(all_event_dates)
     period_end = max(all_event_dates)
@@ -26,12 +28,12 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
     if period_weeks <= 0:
         period_weeks = 1
 
-    # Reikna lágmarksvaktir m.v. frí - starfsmaður í engu fríi á að fá a.m.k. 3 vaktir
+    # Calculate minimum shifts based on availability - employees with no days off should get at least 3 shifts
     for emp_id in dict_employees:
         ratio = dict_employees[emp_id].get("Availability_ratio", 1.0)
         dict_employees[emp_id]["min_shifts"] = round(base_min_shifts * ratio)
 
-    # Upphafsstilla event_state
+    # Initialize event_state
     event_state = {}
     for event_id in dict_events:
         event_state[event_id] = {
@@ -39,11 +41,11 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
     all_work_results = []
 
-    # Aðallykkja:
-    # 1. finna starfsmann efst í forgangi
-    # 2. finna bestu vakt/hlutverk fyrir hann
-    # 3. úthluta
-    # 4. endurtaka
+    # Main loop:
+    # 1. find employee with highest priority
+    # 2. find best available shift/role for them
+    # 3. assign the shift
+    # 4. repeat
     while not all(all(r["filled_by"] is not None for r in state["roles"]) for state in event_state.values()):
         progress = False
 
@@ -79,7 +81,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             raise ValueError(
                 f"Ekki tókst að manna öll hlutverk. Ófyllt staða: {unfilled}")
 
-    # Lokatékk á fullmönnuðum hópum
+    # Final check for fully staffed teams and valid employee assignments
     for event_id in event_state:
         final_team = [
             role["filled_by"]

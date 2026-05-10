@@ -12,14 +12,14 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     base_path = Path(__file__).resolve().parent
     file_path = base_path.parent/"Data"/file_name
 
-    # Lesa inn sheets
+    # Load sheets
     events = pd.read_excel(file_path, sheet_name=sheet_1_name)
     employees = pd.read_excel(file_path, sheet_name=sheet_2_name)
     days_off = pd.read_excel(file_path, sheet_name=sheet_3_name)
     score_keys = pd.read_excel(file_path, sheet_name=sheet_4_name)
     skillset_scores_df = pd.read_excel(file_path, sheet_name=sheet_5_name)
 
-    # Hreinsa
+    # Clean data 
     events = events.dropna(how="all")
     employees = employees.dropna(how="all")
     days_off = days_off.dropna(how="all")
@@ -38,16 +38,16 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     skillset_scores_df.columns = skillset_scores_df.columns.str.strip()
     days_off.columns = [str(col).strip() if not hasattr(col, "date") else col for col in days_off.columns]
 
-    # Búum til dicts
+    # Create dictionaries
     dict_events = events.set_index("EventID").to_dict(orient="index")
     dict_employees = employees.set_index("EmployeeID").to_dict(orient="index")
 
-    # Umbreyta gildum í dict_employees
+    # Transform values in dict_employees
     for emp_id, info in dict_employees.items():
         info["Skillset"] = int(info.get("Skillset", 0) or 0)
         info["Score"] = float(info.get("Score", 0) or 0)
 
-    # Umbreyta gildum í dict_events
+    # Transform values in dict_events
     for event_id, event in dict_events.items():
         event["Employees"] = int(event.get("Employees", 0) or 0)
         event["Skillset1"] = int(event.get("Skillset1", 0) or 0)
@@ -86,7 +86,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
                     except ValueError:
                         pass
 
-    # Núllstillum breytur
+    # Reset variables
     for emp_id in dict_employees:
         dict_employees[emp_id]["Shifts_on_weekends"] = 0
         dict_employees[emp_id]["Number_of_shifts"] = 0
@@ -102,7 +102,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         dict_employees[emp_id]["prev_shifts_per_hall"] = {}
         dict_employees[emp_id]["score_added_this_period"] = 0
 
-    # Lesa frídaga
+    # Load days off data
     days_off = days_off.fillna(0)
     days_off["EmployeeID"] = days_off["EmployeeID"].astype(int)
     employees["EmployeeID"] = employees["EmployeeID"].astype(int)
@@ -121,18 +121,18 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
                     date = pd.to_datetime(str(col), dayfirst=True).date()
                 employee_days[emp_id].add(date)
 
-    # Tryggja að allir starfsmenn séu í employee_days
+    # Ensure all employees are included in employee_days
     for emp_id in dict_employees:
         if emp_id not in employee_days:
             employee_days[emp_id] = set()
 
-    # Reikna availability_ratio - EFTIR að frídagar eru lesnir
-    # Lesa mánuð og ár úr viðburðunum
+    # Calculate availability_ratio – AFTER days off have been loaded
+    # Extract month and year from events
     first_event_date = min(event["Date"] for event in dict_events.values())
     year = first_event_date.year
     month = first_event_date.month
 
-    # Fyrsti og síðasti dagur mánaðarins
+    # First and last day of the month
     period_start = first_event_date.replace(day=1)
     period_end = first_event_date.replace(day=calendar.monthrange(year, month)[1])
     period_days = (period_end - period_start).days + 1
@@ -142,7 +142,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
         available_days = period_days - days_off_count
         dict_employees[emp_id]["Availability_ratio"] = available_days / period_days
 
-    # Lesa score_rules
+    # Load score_rules
     score_rules = {}
     for _, row in score_keys.iterrows():
         rule_type = str(row["RuleType"]).strip()
@@ -152,7 +152,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
             score_rules[rule_type] = {}
         score_rules[rule_type][key] = score
 
-    # Lesa skillset_scores
+    # Load skillset_scores
     skillset_scores = {}
     for _, row in skillset_scores_df.iterrows():
         req_skill = int(row["ReqSkillset"])
@@ -162,7 +162,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
             skillset_scores[req_skill] = {}
         skillset_scores[req_skill][emp_skill] = score
 
-    # Lesa óskir um vaktir
+    # Load requests for shifts
     requests = set()
     if sheet_requests is not None:
         try:
@@ -190,7 +190,7 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     return dict_events, dict_employees, employee_days, score_rules, skillset_scores, requests
 
 def open_previous_scores(json_path) -> dict[int, float]:
-    """Les json skjal síðasta mánaðar (ef til) og skilar {EmployeeID: Score}"""
+    """Load previous scores from a JSON file (if it exists) and return {EmployeeID: Score}"""
     json_path = Path(json_path)
 
     if not json_path.exists():
@@ -217,7 +217,7 @@ def open_previous_scores(json_path) -> dict[int, float]:
 
 
 def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
-    """Les output_dicts og output_list og reiknar stats fyrir hvern starfsmann."""
+    """Load output_dicts and output_list and calculate statistics for each employee."""
 
     if not os.path.exists(dict_path) or not os.path.exists(list_path):
         return {}
@@ -306,9 +306,9 @@ def open_previous_stats(dict_path: str, list_path: str) -> dict[int, dict]:
 
 
 def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dict[int,float], previous_availability) -> dict[int,dict]:
-    """Tekur employees úr Excel og bætir Score við það
-     - Ef starfsmaður var til áður: heldur gamla Score
-     - Annars: Score = 0"""
+    """Load employees from Excel and add scores to them
+     - If an employee existed before: keep the old score
+     - Otherwise: score = 0"""
     
     eligible_scores = [
         previous_scores[emp_id]
@@ -325,19 +325,19 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
 
         actual_prev_score = previous_scores.get(emp_id, 0)
 
-        # Stig fyrir úthlutun - meðaltal ef availability < 0.75
+        # Score for assignment – use average if availability < 0.75
         if emp_id not in previous_scores or prev_availability is None or prev_availability < 0.75:
             prev_score_for_algorithm = round(average_score, 1)
         else: prev_score_for_algorithm = previous_scores[emp_id]
 
-        # Fyrir plott - alltaf raunveruleg stig (0 ef í fríi)
+        # For plotting - always actual scores (0 if on leave)
         if current_availability <= 0:
-            info["prev_score"] = prev_score_for_algorithm  # Þannig score_added = 0
+            info["prev_score"] = prev_score_for_algorithm  # So score_added = 0
         else:
-            info["prev_score"] = actual_prev_score  # Raunveruleg stig
+            info["prev_score"] = actual_prev_score  # Actual scores
 
         info["Score"] = prev_score_for_algorithm
-        info["actual_prev_score"] = actual_prev_score  # Alltaf raunveruleg stig
+        info["actual_prev_score"] = actual_prev_score  # Always use actual scores
         info["Previous_availability"] = prev_availability if prev_availability is not None else 1
         info["Shifts_on_weekends"] = info.get("Shifts_on_weekends", 0)
         info["Number_of_shifts"] = info.get("Number_of_shifts", 0)
@@ -347,7 +347,7 @@ def merge_scores_into_employees(employees: dict[int, dict], previous_scores: dic
 
 
 def merge_previous_stats_into_employees(employees, previous_stats):
-    """Bætum stigum úr síðasta mánuði við employees dict"""
+    """Load statistics from the previous month into the employees dictionary"""
 
     for emp_id, info in employees.items():
 
