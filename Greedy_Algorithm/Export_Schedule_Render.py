@@ -2,6 +2,8 @@ import pandas as pd
 from datetime import timedelta
 import os
 
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
 
 def Export_Schedule_Render(
     rows,
@@ -13,7 +15,7 @@ def Export_Schedule_Render(
 ):
 
     # =========================
-    # SAME BASE PATH ALLTAF
+    # PATH
     # =========================
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     DATA_DIR = os.path.join(BASE_DIR, "Data")
@@ -37,6 +39,7 @@ def Export_Schedule_Render(
             "EventID": row["EventID"],
             "Date": str(event["Date"]),
             "Start": str(event["ShiftBegins"]),
+            "End": str(event["ShiftEnds"]),
             "Event": event["Event"],
             "Employee": employee["EmployeeName"]
         })
@@ -51,7 +54,7 @@ def Export_Schedule_Render(
 
     # ================= EVENTS =================
     grouped_events = df.groupby(
-        ["EventID", "Event", "Date", "Start"]
+        ["EventID", "Event", "Date", "Start", "End"]
     )["Employee"].apply(list).reset_index()
 
     max_staff = grouped_events["Employee"].apply(len).max()
@@ -61,7 +64,7 @@ def Export_Schedule_Render(
     for _, row in grouped_events.iterrows():
         col_name = f"{row['Event']} ({row['Date']} {row['Start']})"
 
-        employees = list(row["Employee"]) 
+        employees = list(row["Employee"])
         employees = employees + [""] * (max_staff - len(employees))
 
         event_table[col_name] = employees
@@ -130,9 +133,81 @@ def Export_Schedule_Render(
 
     # ================= EXPORT =================
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
+
         events_df.to_excel(writer, sheet_name="Events", index=False)
         employees_df.to_excel(writer, sheet_name="Employees", index=False)
         calendar_df.to_excel(writer, sheet_name="Calendar", index=False)
+
+        wb = writer.book
+        ws = writer.sheets["Events"]
+
+        # styles
+        header_font = Font(bold=True)
+        header_fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
+        center = Alignment(horizontal="center")
+        bottom_border = Border(bottom=Side(style="thin"))
+
+        # loop columns
+        for col in range(1, ws.max_column + 1):
+
+            header_text = ws.cell(row=1, column=col).value
+            if not header_text:
+                continue
+
+            try:
+                event_name, rest = header_text.split(" (")
+                rest = rest.replace(")", "")
+                date_str, time_str = rest.split(" ")
+            except:
+                continue
+
+            # find event (til að ná hall + end time)
+            event_data = None
+            for e in dict_events.values():
+                if e["Event"] == event_name:
+                    event_data = e
+                    break
+
+            if event_data:
+                hall = event_data.get("Hall", "")
+                start = event_data["ShiftBegins"].strftime("%H:%M")
+                end = event_data["ShiftEnds"].strftime("%H:%M")
+            else:
+                hall = ""
+                start = time_str
+                end = ""
+
+            # write new headers
+            ws.cell(row=1, column=col).value = f"{event_name} ({hall})"
+            ws.cell(row=2, column=col).value = date_str
+            ws.cell(row=3, column=col).value = f"{start} - {end}"
+
+            # style
+            for r in [1, 2, 3]:
+                cell = ws.cell(row=r, column=col)
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = center
+
+            # border undir row 3
+            ws.cell(row=3, column=col).border = bottom_border
+
+            # færa niður gögn (shift niður um 2)
+            for row_i in range(ws.max_row, 1, -1):
+                ws.cell(row=row_i + 2, column=col).value = ws.cell(row=row_i, column=col).value
+                ws.cell(row=row_i, column=col).value = None
+
+            # safna og sorta employees
+            employees = []
+            for r in range(5, ws.max_row + 1):
+                val = ws.cell(row=r, column=col).value
+                if val:
+                    employees.append(val)
+
+            employees.sort()
+
+            for i, name in enumerate(employees):
+                ws.cell(row=5 + i, column=col).value = name
 
     print("EXISTS AFTER EXPORT:", os.path.exists(output_path))
 
