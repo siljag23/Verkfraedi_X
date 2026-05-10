@@ -399,9 +399,10 @@ def Export_Schedule_Render(
         chart1.legend = None
         chart1.x_axis.tickLblPos = "low"
         chart1.x_axis.delete = False
+        chart1.title.overlay = False
         chart1.x_axis.textRotation = 45
         chart1.width = 30
-        chart1.height = 12
+        chart1.height = 6
 
         for s in chart1.series:
             s.graphicalProperties.solidFill = "FF6E1B"
@@ -424,9 +425,10 @@ def Export_Schedule_Render(
 
         chart2.x_axis.tickLblPos = "low"
         chart2.x_axis.delete = False
+        chart1.title.overlay = False
         chart2.x_axis.textRotation = 45
         chart2.width = 30
-        chart2.height = 12
+        chart2.height = 6
         for s in chart2.series:
             s.graphicalProperties.solidFill = "FF6E1B"
 
