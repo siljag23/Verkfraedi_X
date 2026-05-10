@@ -74,9 +74,9 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                     if role["filled_by"] is None
                 ]
                 for event_id in event_state
-                if not event_is_fully_staffed(event_id, event_state)}
-
-            print(f"WARNING: Unfilled positions: {unfilled}")
+                if not event_is_fully_staffed(event_id, event_state)
+            }
+            break
 
     # Final check for fully staffed teams and valid employee assignments
     for event_id in event_state:
@@ -89,5 +89,5 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             raise ValueError(
                 f"Illegeal final group for Event {event_id}. Employees picked: {final_team}")
 
-    return all_work_results, event_state
+    return all_work_results, event_state, unfilled
     
