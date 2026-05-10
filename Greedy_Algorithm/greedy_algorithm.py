@@ -26,11 +26,11 @@ base_min_shifts = 3
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
 month = input("Mánuður vaktaplans á format mm_yy: ")
 
-# Opna og lesa execl input sem inniheldur upplýsinar um viðburði og starfsmenn
+# Open and read excel input that contains information about events and employees
 dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
             f"{month}.xlsx", "Events", "Employees", "DaysOff", "ScoreKeys", "SkillsetScores", "EventReq")
 
-# Opna og les json dictionaries skjal sem inniheldur upplýsingar um viðburði og starfsmenn síðasta mánaðar
+# Open and read json files that contain information about events and employees from last period
 base_path = Path(__file__).resolve().parent
 
 previous_json_dict = base_path.parent / "Data" / "03_26_output_dicts.json"
@@ -38,13 +38,13 @@ previous_json_list = base_path.parent / "Data" / "03_26_output_list.json"
 previous_scores, previous_availability = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
-# Tengjum starfsmenn við stig síðusta mánaðar og uppfærum employees með stigum
+# Merge employees to scores from last period and update employees dictionary scores
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores, previous_availability)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
 
 rows = []
 
-# Röðum starfsmönnum niður á viðburði
+# Assign employees to events
 try:
     rows, event_state = assign_all_events(dict_events, 
                                           dict_employees, 
@@ -64,16 +64,16 @@ try:
 except Exception as e:
     print("ERROR ->", e)
 
-# Prentum niðurstöður -> fjöldi vakta, klst., stiga og helgarvakta per starfsmann
+# Print results -> number of shifts, hours, scores and weekend shifts per employee
 Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
 
-# Vistum niðurstöður í 2 json skjöl
+# Export results to 2 json files
 Export_Json(dict_employees, dict_events, rows, month)
 
 period_start = min(event["Date"] for event in dict_events.values())
 period_end = max(event["Date"] for event in dict_events.values())
 
-# Prentum niðurstöðurnar í excel
+# Export results to excel
 output_path = base_path.parent / "Data" / f"{month}_schedule_results.xlsx"
 
 export_schedule_to_excel(rows, 
@@ -83,106 +83,6 @@ export_schedule_to_excel(rows,
                          period_start = period_start, 
                          period_end = period_end )
 
-# Plottum niðurstöður og prentum tölfræði
-"""
+# Plot results and print numerical results
 Plot_Results(dict_employees, hours_per_employee)
-"""
 Plot_Total_Stats(dict_employees, hours_per_employee)
-
-
-"""
-# ---------------
-# Auka prent
-# ---------------
-
-print("")
-
-# --------------------------------------
-#  Sýnir hvernig vaktir skiptast á vikur
-# --------------------------------------
-print("\nVaktir per starfsmaður per viku:")
-print("-" * 50)
-
-# Safna saman öllum vikum
-all_weeks = set()
-for emp_id, info in dict_employees.items():
-    all_weeks.update(info.get("Shifts_per_week", {}).keys())
-
-all_weeks = sorted(all_weeks)
-
-# Prenta haus
-header = f"{'Starfsmaður':<20}" + "".join(f"{w:>12}" for w in all_weeks) + f"{'Samtals':>10}"
-print(header)
-print("-" * len(header))
-
-# Prenta hverja línu
-for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("EmployeeName", "")):
-    name = info.get("EmployeeName", str(emp_id))
-    shifts_per_week = info.get("Shifts_per_week", {})
-    total = info.get("Number_of_shifts", 0)
-    
-    row = f"{name:<20}"
-    for week in all_weeks:
-        count = shifts_per_week.get(week, 0)
-        row += f"{count:>12}"
-    row += f"{total:>10}"
-    print(row)
-
-
-# ----------------------------------------------------------------
-# Sýnir hversu margar vaktir af hverri tegund hver starfsmaður fær
-# ----------------------------------------------------------------
-print("\nVaktir per starfsmaður per category:")
-print("-" * 50)
-
-# Safna saman öllum categories
-all_categories = set()
-for emp_id, info in dict_employees.items():
-    all_categories.update(info.get("current_shifts_per_category", {}).keys())
-
-all_categories = sorted(all_categories)
-
-# Prenta haus
-header = f"{'Starfsmaður':<20}" + "".join(f"{c:>12}" for c in all_categories) + f"{'Samtals':>10}"
-print(header)
-print("-" * len(header))
-
-# Prenta hverja línu
-for emp_id, info in sorted(dict_employees.items(), key=lambda x: x[1].get("EmployeeName", "")):
-    name = info.get("EmployeeName", str(emp_id))
-    shifts_per_category = info.get("current_shifts_per_category", {})
-    total = info.get("Number_of_shifts", 0)
-
-    row = f"{name:<20}"
-    for category in all_categories:
-        count = shifts_per_category.get(category, 0)
-        row += f"{count:>12}"
-    row += f"{total:>10}"
-    print(row)
-
-print("")
-"""
-"""
-# -----------------------------------------
-# Reikna fjölda skipta sem par vinnur saman
-# -----------------------------------------
-from collections import defaultdict
-from itertools import combinations
-
-pair_counts = defaultdict(int)
-
-for event_id, state in event_state.items():
-    workers = [role["filled_by"] for role in state["roles"] if role["filled_by"] is not None]
-    for a, b in combinations(sorted(workers), 2):
-        pair_counts[(a, b)] += 1
-
-# Prentum hversu oft hvert par vinnur saman
-print("\nFjöldi þegar starfsmenn vinna saman:")
-print(f"{'Par':<30} {'Fjöldi':>8}")
-print("-" * 40)
-
-for (a, b), count in sorted(pair_counts.items(), key=lambda x: -x[1]):
-    name_a = dict_employees[a].get("EmployeeName", str(a))
-    name_b = dict_employees[b].get("EmployeeName", str(b))
-    print(f"{name_a} & {name_b:<20} {count:>8}")
-"""

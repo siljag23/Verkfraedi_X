@@ -6,14 +6,12 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                       assigned_shifts, min_rest_hours, employee_worked_days, score_rules, skillset_scores, event_requests, base_min_shifts):
     """
     Main function:
-
     selects an employee based on priority
     finds the best available shift/role for that employee
     assigns the shift
     repeats until all shifts are filled or no further assignments can be made
 
     Returns:
-
     all_work_results: list of all assignments
     event_state: status of all events after assignment
     """
@@ -79,7 +77,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                 if not event_is_fully_staffed(event_id, event_state)}
 
             raise ValueError(
-                f"Ekki tókst að manna öll hlutverk. Ófyllt staða: {unfilled}")
+                f"Failed to staff all roles. Unfilled position: {unfilled}")
 
     # Final check for fully staffed teams and valid employee assignments
     for event_id in event_state:
@@ -90,7 +88,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
 
         if not is_valid_final_team(final_team, dict_employees):
             raise ValueError(
-                f"Ólöglegur lokahópur fyrir Event {event_id}. Valdir: {final_team}")
+                f"Illegeal final group for Event {event_id}. Employees picked: {final_team}")
 
     return all_work_results, event_state
     
