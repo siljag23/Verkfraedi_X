@@ -4,7 +4,7 @@ import locale
 import numpy as np
 
 def Plot_Total_Stats(dict_employees, hours_per_employee):
-    """Prentum og plottum niðurstöður"""
+    """Print and plot results"""
 
     names = []
     current_shifts = []
@@ -30,11 +30,9 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         current_hours.append(hours_per_employee.get(emp_id, 0))
         prev_hours.append(emp.get("prev_hours_worked", 0))
 
-        # Fyrir plott - prev_score (0 ef í fríi)
         prev_score = emp.get("prev_score", 0)
         score_added = emp.get("score_added_this_period", 0)
 
-        # Ef availability er 0 þennan mánuð - sýna 0 stig fyrir síðasta mánuð
         if current_availability == 0:
             prev_scores.append(0)
             current_scores.append(0)
@@ -52,53 +50,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         sorted_prev = [x[1] for x in combined]
         sorted_current = [x[2] for x in combined]
         return sorted_names, sorted_prev, sorted_current
-    
-    def plot_stacked(names, prev_vals, current_vals, title, ylabel):
-        """Plottum niðurstöður frá síðasta og núverandi tímabili"""
-        sorted_names, sorted_prev, sorted_current = sort_combined(names, prev_vals, current_vals)
-
-        plt.figure(figsize=(12, 6))
-        plt.bar(sorted_names, sorted_prev, color="black", label="Last period")
-        plt.bar(sorted_names, sorted_current, bottom=sorted_prev, color="#ff6e1b", label="Current period")
-        plt.title(title, fontweight="bold")
-        plt.ylabel(ylabel, fontweight="bold")
-        plt.xticks(rotation=90)
-        plt.legend(loc="upper right")
-        plt.tight_layout()
-        plt.show()
-
-    """
-    plot_stacked(
-        names,
-        prev_shifts,
-        current_shifts,
-        "Total Shifts",
-        "Number of shifts",
-    )
-
-    plot_stacked(
-        names,
-        prev_hours,
-        current_hours,
-        "Total work hours",
-        "Hours",
-    )
-
-    plot_stacked(
-        names,
-        prev_scores,
-        current_scores,
-        "Total score",
-        "Score",
-    )
-
-    plot_stacked(names,
-        prev_weekends,
-        current_weekends,
-        "Total Shifts on Weekends",
-        "Number of Shifts on Weekends",
-    )
-    """
 
     def plot_normalized(names, prev_vals, current_vals, title, xlabel, ylabel):
         combined = list(zip(names, prev_vals, current_vals))
@@ -118,9 +69,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         plt.tight_layout()
         plt.show()
 
-
-    # Búa til normalized gögn með nöfnum - sleppum þeim sem eru með availability = 0
-    # Sía út þá með current eða previous availability = 0
     prev_avail_list = [e.get("Previous_availability", 1) for e in dict_employees.values()]    
     current_avail_list = [e.get("Availability_ratio", 1) for e in dict_employees.values()]
     actual_prev_scores = [e.get("actual_prev_score", 0) for e in dict_employees.values()]
@@ -153,7 +101,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
 
     #-----Print stats-----
     def print_stats(label, values):
-        """Prentar tölfræðilegar niðurstöður"""
+        """Prinst statistical results"""
         if not values:
             print(f"{label}: No data\n")
             return
@@ -164,15 +112,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         print(f"  Max: {np.max(values):.2f}")
         print(f"  Std: {np.std(values):.2f}\n")
 
-    
-    # Not normalized
-    total_shifts = [p + c for p, c in zip(prev_shifts, current_shifts)]
-    total_hours = [p + c for p, c in zip(prev_hours, current_hours)]
-    total_scores = [p + c for p, c in zip(prev_scores, current_scores)]
-    total_weekends = [p + c for p, c in zip(prev_weekends, current_weekends)]
-    
-
-    # Fyrir tölfræði - bara þeir með availability > 0 og current availability > 0
+    # For stats, only employees with previous and current availability > 0
     total_shifts_norm = [
         round((p + c)/(a_prev + a_curr)) for p, c, a_prev, a_curr
         in zip(prev_shifts, current_shifts, prev_avail_list, current_avail_list)
@@ -192,15 +132,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         ((p + c)/(a_prev + a_curr)) for p, c, a_prev, a_curr
         in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
-    
-    """
-    # Prentum tölfræðilegar niðurstöður
-    print("NOT normalized")
-    print_stats("Total Shifts", total_shifts)
-    print_stats("Total Hours", total_hours)
-    print_stats("Total Score", total_scores)
-    print_stats("Weekend Shifts", total_weekends)
-    """
     
     print("NORMALIZED")
     print_stats("Total Shifts (norm)", total_shifts_norm)

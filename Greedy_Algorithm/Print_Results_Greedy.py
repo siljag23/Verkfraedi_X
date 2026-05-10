@@ -1,7 +1,7 @@
 
-def Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee):
+def Print_Results_Greedy(dict_employees, hours_per_employee):
 #         print(f"{name:10} | shifts: {shifts:2.0f} | hours: {hours:5.1f} | score: {score:4.0f} | weekend: {weekend_shifts:2.0f}")
-    print("\nFjöldi klukkustunda, stiga og vakta per starfsmann:")
+    print("\nNumber of hours, scores and shifts for all employees:")
 
     for emp_id, info in sorted(
         dict_employees.items(),

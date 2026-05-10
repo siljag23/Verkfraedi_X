@@ -3,10 +3,10 @@ from shift_length import shift_length
 
 def lookup_score(rule_dict: dict, key: int, default=0):
     """
-    Sækir score fyrir tiltekinn lykil úr reglutöflu.
-    Ef lykillinn finnst ekki:
-    - og er stærri en hæsti skilgreindi lykillinn, þá er notað score fyrir hæsta lykil
-    - annars default
+    Fetches the score for a given key from the rule table.
+    If the key is not found:
+    - and it is greater than the highest defined key, then the score for the highest key is used
+    - otherwise, the default value is used.
     """
     if not rule_dict:
         return default
@@ -20,7 +20,7 @@ def lookup_score(rule_dict: dict, key: int, default=0):
     return default
 
 def get_event_datetime_info(event_id: int, dict_events):
-    """Sækir allar grunnupplýsingar um dagsetningu, tíma og skiptingu vaktar á daga"""
+    """Retrieves all basic information about the date, time, and distribution of a shift across days."""
     event = dict_events[event_id]
 
     raw_date = event["Date"]
@@ -70,14 +70,7 @@ def get_event_datetime_info(event_id: int, dict_events):
     }
 
 def build_event_roles(event_id: int, dict_events):
-    """
-    Býr til hlutverk fyrir event.
-    Dæmi: Employees=3, Skillset1=1, Skillset2=1
-    =>
-    [{"role_id": 0, "required_skill": 1},
-    {"role_id": 1, "required_skill": 2},
-    {"role_id": 2, "required_skill": None}]
-        """
+    """Builds roles for all events (role ID, required skill)"""
     event = dict_events[event_id]
         
     req_employees = event["Employees"]
@@ -116,7 +109,7 @@ def build_event_roles(event_id: int, dict_events):
     return roles
 
 def respects_min_rest(emp_id: int, shift_begins: datetime, shift_ends: datetime, min_rest_hours, assigned_shifts) -> bool:
-    """Athugar hvort starfsmenn uppfylli lágmarks hvíldartíma milli vakta"""
+    """Checks if employees respect minimum rest time between shifts"""
     rest_delta = timedelta(hours=min_rest_hours)
 
     for prev_begins, prev_ends in assigned_shifts.get(emp_id, []):
@@ -126,7 +119,7 @@ def respects_min_rest(emp_id: int, shift_begins: datetime, shift_ends: datetime,
     return True
 
 def respects_max_days(emp_id: int, blocked_days: set, employee_worked_days) -> bool:
-    """Athugar hvort starfsmenn vinni nokkuð meira en 6 daga á 7 daga tímabili"""
+    """Checks if employees respect maximum work days (max 6 days in every 7 day period)"""
     proposed_days = set(employee_worked_days[emp_id]) | blocked_days
 
     if not proposed_days:
@@ -145,7 +138,7 @@ def respects_max_days(emp_id: int, blocked_days: set, employee_worked_days) -> b
 
 def is_eligible_for_event(emp_id: int, event_id: int, dict_events, employee_days_off, employee_worked_days, daily_hours_per_employee, 
                           max_daily_hours, hours_per_employee, period_weeks, max_weekly_hours, min_rest_hours, assigned_shifts) -> bool:
-    """Almenn gjaldgengni starfsmanns fyrir viðburð, óháð því hvaða hlutverk innan vaktar er valið"""
+    """General employee eligibility for an event, regardless of which role within the shift is selected"""
     datetime_info = get_event_datetime_info(event_id, dict_events)
 
     event_date = datetime_info["event_date"]
@@ -185,10 +178,7 @@ def is_eligible_for_event(emp_id: int, event_id: int, dict_events, employee_days
     return True
 
 def is_valid_final_team(employee_ids: list[int], dict_employees) -> bool:
-    """
-    Lokatékk á hópnum þegar event er fullmannað.
-    Núverandi regla: ef einhver skillset 3 er í hópnum, þá má hópurinn ekki eingöngu vera skillset 3
-    """
+    """Final check on the team when the event is fully staffed: the group cannot consist exclusively of skillset 3 members"""
     if not employee_ids:
         return True
 
@@ -201,14 +191,11 @@ def is_valid_final_team(employee_ids: list[int], dict_employees) -> bool:
 
 
 def employee_priority(emp_id: int, dict_employees, hours_per_employee, base_min_shifts):
-    """Raðar starfsmönnum í forgangsröð, sá sem er lengst frá því að uppfylla lágmarksfjölda vakta er efst"""
+    """Ranks employees by priority, where the employee furthest from meeting the minimum number of shifts is ranked highest"""
     number_of_current_shifts = dict_employees[emp_id]["Number_of_shifts"]
     min_shifts = dict_employees[emp_id].get("min_shifts", base_min_shifts)
     availability_ratio = dict_employees[emp_id].get("Availability_ratio", 1)
-    score = dict_employees[emp_id]["Score"]
-    normalized_score = score / availability_ratio if availability_ratio > 0 else float("inf")
     
-    # Ef 0.0 = ekkert lokið, 1.0 = allt lokið
     if min_shifts > 0:
         completion_ratio = number_of_current_shifts / min_shifts
     else:
@@ -223,10 +210,7 @@ def employee_priority(emp_id: int, dict_employees, hours_per_employee, base_min_
     )
 
 def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dict_employees, score_rules, skillset_scores, event_requests) -> float:
-    """
-    Persónuleg stig fyrir starfsmenn fyrir hvert hlutverk á hverjum event.
-    HÆRRA score = betri kostur fyrir starfsmanninn.
-    """
+    """Personal scores for employees for each role in each event, the higher the score the better for the employee"""
     event = dict_events[event_id]
     datetime_info = get_event_datetime_info(event_id, dict_events)
     event_date = datetime_info["event_date"]
@@ -238,27 +222,23 @@ def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dic
     emp_current_skill = dict_employees[emp_id]["Skillset"]
     required_skill = role.get("required_skill")
 
-    # Stig sótt úr ScoreKeys úr excel input
-    # Helgarvakt í núverandi tímabili
+    # Scores retrieved from ScoreKeys sheet in the Excel input file
     weekend_adjustment = 0
     if event_date.weekday() in [4, 5, 6]:
         weekend_adjustment = lookup_score(
             score_rules.get("Weekend", {}), weekend_count, 0)
 
-    # Helgarvaktir frá síðasta tímabili
     prev_weekend_count = dict_employees[emp_id]["prev_weekend_shifts"]
     weekend_last_period_adjustment = 0
     if event_date.weekday() in [4, 5, 6]:
         weekend_last_period_adjustment = lookup_score(
             score_rules.get("Weekend_last_period", {}), prev_weekend_count, 0)
 
-    # Fjöldi vakta í sama sal
     hall_adjustment = 0
     if hall:
         hall_adjustment = lookup_score(
             score_rules.get("Hall", {}), hall_count, 0)
 
-    # Fjöldi vakta í sömu viku og þessi vakt
     event_iso_year, event_iso_week, _ = event_date.isocalendar()
     week_key = f"{event_iso_year}-W{event_iso_week:02d}"
 
@@ -270,7 +250,6 @@ def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dic
         0
     )
 
-    # Fjöldi vakta af þessari lengd
     shift_length_key = int(round(total_shift_hours))
 
     current_count_same_length = dict_employees[emp_id].get("Shifts_per_length", {}).get(shift_length_key, 0)
@@ -279,7 +258,6 @@ def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dic
         score_rules.get("Shifts_this_length", {}),
         current_count_same_length, 0)
 
-    # Fjöldi vakta 6+ klst.
     shift_over_six_hours_adjustment = 0
 
     if total_shift_hours > 6:
@@ -289,7 +267,6 @@ def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dic
             score_rules.get("Shift_over_six_hours", {}),
             current_over_six_count, 0)
         
-    # Fjöldi vakta af sömu category
     category = event["EventCategory"]
     category_count = dict_employees[emp_id].get("current_shifts_per_category", {}).get(category, 0)
 
@@ -298,7 +275,7 @@ def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dic
         category_adjustment = lookup_score(
             score_rules.get("Category", {}), category_count, 0)        
 
-    # Skillset score úr SkillsetScores
+    # Skillset score retrieved from SkillsetScores sheet in Excel input file
     skill_adjustment = 0
     if required_skill is not None:
         skill_adjustment = skillset_scores.get(required_skill, {}).get(emp_current_skill, 0)
@@ -322,13 +299,7 @@ def personal_role_score(emp_id: int, event_id: int, role: dict, dict_events, dic
 
 def choose_best_role_for_employee(emp_id: int, event_state: dict, dict_events, employee_days_off, employee_worked_days, daily_hours_per_employee, max_daily_hours,
                                 hours_per_employee, period_weeks, max_weekly_hours, min_rest_hours, assigned_shifts, dict_employees, score_rules, skillset_scores, event_requests):
-    """
-    Finnur besta lausa hlutverkið fyrir starfsmann yfir alla eventa.
-    Skilar t.d.
-    {"event_id": 15,
-        "role_id": 2,
-        "score": 11.5}
-    """
+    """Finds the best available role for employees"""
     best_option = None
 
     for event_id, state in event_state.items():
@@ -354,7 +325,7 @@ def choose_best_role_for_employee(emp_id: int, event_state: dict, dict_events, e
 
 def assign_employee_to_role(emp_id: int, event_id: int, role_id: int, event_state: dict, dict_events, hours_per_employee, 
                             employee_worked_days, daily_hours_per_employee, assigned_shifts, dict_employees):
-    """Úthlutar starfsmanni á tiltekið hlutverk og uppfærir allar stöðubreytur"""
+    """Assigns employee to a role and updates tracking variables"""
     event = dict_events[event_id]
     datetime_info = get_event_datetime_info(event_id, dict_events)
     hall = event["Hall"]
@@ -370,13 +341,11 @@ def assign_employee_to_role(emp_id: int, event_id: int, role_id: int, event_stat
     blocked_days = datetime_info["blocked_days"]
     event_score = event["EventRanking"]
 
-    # Merkjum role sem fyllt
     for role in event_state[event_id]["roles"]:
         if role["role_id"] == role_id:
             role["filled_by"] = emp_id
             break
 
-    # Uppfærum stöður starfsmanns
     hours_per_employee[emp_id] += total_shift_hours
     employee_worked_days[emp_id].update(blocked_days)
 

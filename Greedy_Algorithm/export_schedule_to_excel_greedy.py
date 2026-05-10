@@ -10,16 +10,7 @@ def export_schedule_to_excel(
     period_start=None,
     period_end=None
 ):
-    """
-    Vistar niðurstöður vaktaplans í Excel með tveimur sheetum:
-
-    1. Schedule:
-       Listi af öllum úthlutunum, ein lína per starfsmaður á event
-
-    2. EmployeeDays:
-       Tafla þar sem hver röð er starfsmaður og hver dálkur er dagsetning.
-       Sett er 1 ef starfsmaður er skráður á vakt þann dag.
-    """
+    """Exports results to an Excel file with two sheets, one with the schedule and one that shows what days employees got assigned to"""
 
     schedule_rows = []
 
@@ -63,10 +54,9 @@ def export_schedule_to_excel(
             ["Date", "Start", "EventID", "EmployeeID"]
         )
 
-    # Búa til EmployeeDays sheet
     employee_day_rows = []
 
-    # Ef period_start og period_end eru gefin, nota alla daga tímabilsins
+    # If period_start annd period_end are given we use all days in that period
     if period_start is not None and period_end is not None:
         from datetime import timedelta
         all_dates = []
@@ -75,12 +65,12 @@ def export_schedule_to_excel(
             all_dates.append(current)
             current += timedelta(days=1)
     else:
-        # Nota bara daga sem koma fyrir í rows
+        # Only use days that are in rows
         all_dates = sorted(
             {r["Date"] for r in schedule_rows if pd.notna(r["Date"])}
         )
 
-    # Fyrir hvern starfsmann, merkja 1 á dögum sem hann vinnur
+    # For each employee, mark the days he works
     for emp_id in sorted(dict_employees.keys()):
         row_dict = {"EmployeeID": emp_id}
 
