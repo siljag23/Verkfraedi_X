@@ -44,12 +44,15 @@ def Export_Schedule_Render(
 
     df = df.sort_values(["Date", "Start"])
 
-    grouped = df.groupby(
-        ["Event", "Hall", "Date", "Start", "End"]
-    )["Employee"].apply(list).reset_index()
+    grouped = (
+        df.groupby(["EventID", "Event", "Date", "Start", "End", "Hall"])["Employee"]
+        .apply(lambda x: sorted(x))  
+        .reset_index()
+    )
+    grouped = grouped.sort_values(["Date", "Start"]).reset_index(drop=True)
 
     # =========================
-    # EXPORT (SAFE VERSION)
+    # EXPORT 
     # =========================
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
 
@@ -79,13 +82,11 @@ def Export_Schedule_Render(
             start = row["Start"]
             end = row["End"]
             employees = sorted(row["Employee"])
-
-            # pretty date
-            pretty_date = f"{date.day}. {months[date.month - 1]} {date.year}"
+            date_print = f"{date.day}. {months[date.month - 1]} {date.year}"
 
             # HEADER
             ws.cell(row=1, column=col).value = f"{event} ({hall})"
-            ws.cell(row=2, column=col).value = pretty_date
+            ws.cell(row=2, column=col).value = date_print
             ws.cell(row=3, column=col).value = f"{start} - {end}"
 
             for r in [1, 2, 3]:
@@ -97,8 +98,8 @@ def Export_Schedule_Render(
             # weekend highlight
             if date.weekday() >= 5:
                 weekend_fill = PatternFill(
-                    start_color="F4CCCC",
-                    end_color="F4CCCC",
+                    start_color="FF6E1B",
+                    end_color="FF6E1B",
                     fill_type="solid"
                 )
                 for r in [1, 2, 3]:
@@ -109,11 +110,10 @@ def Export_Schedule_Render(
 
             # EMPLOYEES
             for i, name in enumerate(employees):
-                c = ws.cell(row=5 + i, column=col)
+                c = ws.cell(row=4 + i, column=col)
                 c.value = name
                 c.alignment = center
 
-            # fast fixed width (NO SLOW AUTO WIDTH)
             ws.column_dimensions[ws.cell(row=1, column=col).column_letter].width = 25
 
             col += 1
