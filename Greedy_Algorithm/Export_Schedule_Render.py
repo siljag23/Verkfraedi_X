@@ -332,23 +332,55 @@ def Export_Schedule_Render(
         ws_stats["B1"] = "Availability"
         ws_stats["C1"] = "Fjöldi vakta"
         ws_stats["D1"] = "Klukkustundir"
+        ws_stats["E1"] = "Fjöldi vakta / Starfshlutfall"
+        ws_stats["F1"] = "Fjöldi vinnustunda / Starfshlutfall"
 
-        for col in ["A", "B", "C", "D"]:
+        # header style
+        for col in ["A", "B", "C", "D", "E", "F"]:
             c = ws_stats[f"{col}1"]
             c.font = bold
             c.fill = fill
             c.alignment = center
 
+        # data
         for i, emp in enumerate(employees_sorted, start=2):
 
-            ws_stats.cell(row=i, column=1).value = emp
-            ws_stats.cell(row=i, column=2).value = availability.get(emp, "")
-            ws_stats.cell(row=i, column=3).value = int(shift_counts.get(emp, 0))
-            ws_stats.cell(row=i, column=4).value = round(hours_counts.get(emp, 0), 1)
+            avail = availability.get(emp, 0) or 0
+            shifts = shift_counts.get(emp, 0)
+            hours = hours_counts.get(emp, 0)
 
+            ws_stats.cell(row=i, column=1).value = emp
+            ws_stats.cell(row=i, column=2).value = round(avail, 2)
+            ws_stats.cell(row=i, column=3).value = int(shifts)
+            ws_stats.cell(row=i, column=4).value = round(hours, 1)
+
+            if avail > 0:
+                norm_shifts = round(shifts / avail)  # heiltala
+                norm_hours = round((hours / avail) * 2) / 2  # 0.5 skref
+            else:
+                norm_shifts = 0
+                norm_hours = 0
+
+            ws_stats.cell(row=i, column=5).value = norm_shifts
+            ws_stats.cell(row=i, column=6).value = norm_hours
+
+        # center allt
         for row in ws_stats.iter_rows():
             for cell in row:
                 cell.alignment = center
+
+        # dálkabreidd
+        ws_stats.column_dimensions["A"].width = 22
+        ws_stats.column_dimensions["B"].width = 15
+        ws_stats.column_dimensions["C"].width = 15
+        ws_stats.column_dimensions["D"].width = 18
+        ws_stats.column_dimensions["E"].width = 28
+        ws_stats.column_dimensions["F"].width = 32
+
+
+        # =========================
+        # CHARTS
+        # =========================
 
         from openpyxl.chart import BarChart, Reference
 
@@ -356,11 +388,11 @@ def Export_Schedule_Render(
 
         # ===== CHART 1 =====
         chart1 = BarChart()
-        chart1.title = "Dreifing vakta (normalized)"
-        chart1.y_axis.title = "Hlutfall"
-        chart1.x_axis.title = "Starfsmenn"
+        chart1.title = "Fjöldi vakta / Starfshlutfall"
+        chart1.y_axis.title = "Vaktir"
+        chart1.x_axis.title = ""
 
-        data = Reference(ws_stats, min_col=3, min_row=1, max_row=last_row)
+        data = Reference(ws_stats, min_col=5, min_row=1, max_row=last_row)
         cats = Reference(ws_stats, min_col=1, min_row=2, max_row=last_row)
 
         chart1.add_data(data, titles_from_data=True)
@@ -371,16 +403,16 @@ def Export_Schedule_Render(
         for s in chart1.series:
             s.graphicalProperties.solidFill = "FF6E1B"
 
-        ws_stats.add_chart(chart1, "F2")
+        ws_stats.add_chart(chart1, "H2")
 
 
         # ===== CHART 2 =====
         chart2 = BarChart()
-        chart2.title = "Dreifing klukkustunda (normalized)"
-        chart2.y_axis.title = "Hlutfall"
-        chart2.x_axis.title = "Starfsmenn"
+        chart2.title = "Fjöldi vinnustunda / Starfshlutfall"
+        chart2.y_axis.title = "Vinnustundir"
+        chart2.x_axis.title = ""
 
-        data2 = Reference(ws_stats, min_col=4, min_row=1, max_row=last_row)
+        data2 = Reference(ws_stats, min_col=6, min_row=1, max_row=last_row)
 
         chart2.add_data(data2, titles_from_data=True)
         chart2.set_categories(cats)
@@ -390,5 +422,5 @@ def Export_Schedule_Render(
         for s in chart2.series:
             s.graphicalProperties.solidFill = "FF6E1B"
 
-        ws_stats.add_chart(chart2, "F20")
+        ws_stats.add_chart(chart2, "H20")
     return output_path
