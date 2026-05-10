@@ -29,12 +29,12 @@ def Export_Schedule_Render(
         employee = dict_employees[row["EmployeeID"]]
 
         schedule_rows.append({
-            "Event": event["Event"],
-            "Hall": event["Hall"],
-            "Date": pd.to_datetime(event["Date"]).date(),
-            "Start": event["ShiftBegins"],
-            "End": event["ShiftEnds"],
-            "Employee": employee["EmployeeName"]
+            "Event": event.get("Event", ""),
+            "Hall": event.get("Hall", ""),
+            "Date": pd.to_datetime(event["Date"]),
+            "Start": str(event["ShiftBegins"]),
+            "End": str(event["ShiftEnds"]),
+            "Employee": employee.get("EmployeeName", "")
         })
 
     df = pd.DataFrame(schedule_rows)
@@ -42,17 +42,20 @@ def Export_Schedule_Render(
     if df.empty:
         return output_path
 
+    # 🔥 tryggir rétta tímaröð
     df = df.sort_values(["Date", "Start"])
 
+    # 🔥 GROUPBY Á RÉTTUM DÁLKUM (ENGIN EventID!)
     grouped = (
-        df.groupby(["EventID", "Event", "Date", "Start", "End", "Hall"])["Employee"]
-        .apply(lambda x: sorted(x))  
+        df.groupby(["Event", "Date", "Start", "End", "Hall"])["Employee"]
+        .apply(lambda x: sorted(x))  # starfrófsröð
         .reset_index()
     )
+
     grouped = grouped.sort_values(["Date", "Start"]).reset_index(drop=True)
 
     # =========================
-    # EXPORT 
+    # EXPORT
     # =========================
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
 
@@ -81,7 +84,9 @@ def Export_Schedule_Render(
             date = row["Date"]
             start = row["Start"]
             end = row["End"]
-            employees = sorted(row["Employee"])
+            employees = row["Employee"]
+
+            # 🔥 íslenskt date format
             date_print = f"{date.day}. {months[date.month - 1]} {date.year}"
 
             # HEADER
@@ -95,7 +100,7 @@ def Export_Schedule_Render(
                 c.fill = fill
                 c.alignment = center
 
-            # weekend highlight
+            # helgar litur
             if date.weekday() >= 5:
                 weekend_fill = PatternFill(
                     start_color="FF6E1B",
@@ -105,10 +110,10 @@ def Export_Schedule_Render(
                 for r in [1, 2, 3]:
                     ws.cell(row=r, column=col).fill = weekend_fill
 
-            # line under header
+            # lína undir header
             ws.cell(row=3, column=col).border = border
 
-            # EMPLOYEES
+            # EMPLOYEES (engin tómlína)
             for i, name in enumerate(employees):
                 c = ws.cell(row=4 + i, column=col)
                 c.value = name
