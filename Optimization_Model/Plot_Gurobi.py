@@ -30,43 +30,46 @@ with open("Optimization_Model/Gurobi.log", "r", encoding="utf-8") as f:
 # -------------------------
 # PLOT
 # -------------------------
-fig, ax1 = plt.subplots()
+fig, ax1 = plt.subplots(figsize=(14,6))
 
-ax1.step(times, incumbent, where="post", label="Incumbent")
-ax1.step(times, bestbd, where="post", linestyle="--", label="BestBd")
-ax1.set_xlabel("Time (s)")
-ax1.set_ylabel("Objective")
+ax1.step(times, incumbent, where="post", label="Incumbent", color="black")
+ax1.step(times, bestbd, where="post", linestyle="--", label="BestBd", color="#ff6e1b")
+ax1.set_xlabel("Time (s)", fontsize=15, fontweight='bold')
+ax1.set_ylabel("Objective", fontsize=15, fontweight='bold')
+ax1.set_ylim(0, 400)
 
 ax2 = ax1.twinx()
-ax2.plot(times, gap, linestyle=":", label="Gap")
-ax2.set_ylabel("Gap (%)")
+ax2.step(times, gap, where="post", linestyle=":", label="Gap", color="black")
+ax2.set_ylabel("Gap [%]", fontsize=15, fontweight='bold')
+ax2.set_ylim(0, 100)
 
 lines1, labels1 = ax1.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
 ax1.legend(lines1 + lines2, labels1 + labels2)
 
-plt.title("Gurobi Progress", fontsize = 20)
+plt.title("Optimization Progress", fontsize = 20, fontweight='bold')
 plt.show()
 
 # -------------------------
 # ZOOMED PLOT
 # -------------------------
-fig, ax1 = plt.subplots()
+fig, ax1 = plt.subplots(figsize=(14,6))
 
-ax1.step(times, incumbent, where="post", label="Incumbent")
-ax1.step(times, bestbd, where="post", linestyle="--", label="BestBd")
-ax1.set_xlabel("Time (s)")
-ax1.set_ylabel("Objective")
+ax1.step(times, incumbent, where="post", label="Incumbent", color="black")
+ax1.step(times, bestbd, where="post", linestyle="--", label="BestBd", color="#ff6e1b")
+ax1.set_xlabel("Time (s)", fontsize=15, fontweight='bold')
+ax1.set_ylabel("Objective", fontsize=15, fontweight='bold')
 
 ax2 = ax1.twinx()
-ax2.step(times, gap, where="post", linestyle=":", label="Gap")
-ax2.set_ylabel("Gap (%)")
+ax2.step(times, gap, where="post", linestyle=":", label="Gap", color="black")
+ax2.set_ylabel("Gap [%]", fontsize=15, fontweight='bold')
 
-ax1.set_xlim(0, max(times))
+ax1.set_xlim(0, 1000)
+ax2.set_ylim(20, 70)
 
 lines1, labels1 = ax1.get_legend_handles_labels()
 lines2, labels2 = ax2.get_legend_handles_labels()
 ax1.legend(lines1 + lines2, labels1 + labels2)
 
-plt.title("Gurobi Progress (Zoomed)", fontsize = 20)
+plt.title("Early Optimization Progress", fontsize = 20, fontweight='bold')
 plt.show()

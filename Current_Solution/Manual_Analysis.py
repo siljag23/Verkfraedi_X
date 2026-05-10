@@ -3,6 +3,7 @@ import json
 from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
 from Optimization_Model.Total_Stats import Print_Stats
 from Current_Solution.Current_Solution_Stats import Plot_Manual_Total
+from Current_Solution.Manual_Objective import Build_Objective_Input, Manual_Objective
 
 from Current_Solution.Current_Solution_Stats import (
     Compute_Manual_Stats,

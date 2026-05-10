@@ -473,12 +473,11 @@
             "Availability": 0.7666666666666667,
             "Number_of_shifts": 4,
             "Shifts_on_weekends": 3,
-            "Total_hours": 16.0,
-            "Total_score": 280.0,
+            "Total_hours": 15.5,
+            "Total_score": 270.0,
             "Shifts_per_hall": {
-                "EB": 2,
-                "NL": 1,
-                "KL": 1
+                "EB": 3,
+                "NL": 1
             }
         },
         "3": {
@@ -486,11 +485,12 @@
             "Skillset": 2,
             "Availability": 0.9,
             "Number_of_shifts": 6,
-            "Shifts_on_weekends": 2,
-            "Total_hours": 19.0,
-            "Total_score": 330.0,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 19.5,
+            "Total_score": 340.0,
             "Shifts_per_hall": {
-                "EB": 5,
+                "EB": 4,
+                "KL": 1,
                 "NL": 1
             }
         },
@@ -499,11 +499,12 @@
             "Skillset": 2,
             "Availability": 1.0,
             "Number_of_shifts": 6,
-            "Shifts_on_weekends": 3,
+            "Shifts_on_weekends": 2,
             "Total_hours": 21.5,
-            "Total_score": 360.0,
+            "Total_score": 350.0,
             "Shifts_per_hall": {
-                "EB": 6
+                "EB": 5,
+                "NL": 1
             }
         },
         "5": {
@@ -512,10 +513,11 @@
             "Availability": 0.7333333333333333,
             "Number_of_shifts": 4,
             "Shifts_on_weekends": 3,
-            "Total_hours": 15.5,
-            "Total_score": 260.0,
+            "Total_hours": 15.0,
+            "Total_score": 250.0,
             "Shifts_per_hall": {
-                "EB": 4
+                "NL": 1,
+                "EB": 3
             }
         },
         "6": {
@@ -544,12 +546,10 @@
             "Availability": 1.0,
             "Number_of_shifts": 7,
             "Shifts_on_weekends": 2,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
+            "Total_hours": 22.5,
+            "Total_score": 390.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "KL": 2,
-                "NL": 1
+                "EB": 7
             }
         },
         "9": {
@@ -557,11 +557,12 @@
             "Skillset": 2,
             "Availability": 0.9333333333333333,
             "Number_of_shifts": 6,
-            "Shifts_on_weekends": 2,
-            "Total_hours": 20.0,
-            "Total_score": 330.0,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 21.0,
+            "Total_score": 340.0,
             "Shifts_per_hall": {
-                "EB": 5,
+                "EB": 4,
+                "KL": 1,
                 "NL": 1
             }
         },
@@ -571,11 +572,12 @@
             "Availability": 1.0,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 4,
-            "Total_hours": 21.0,
+            "Total_hours": 20.0,
             "Total_score": 360.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "NL": 1
+                "EB": 3,
+                "BL": 1,
+                "KL": 1
             }
         },
         "11": {
@@ -583,8 +585,8 @@
             "Skillset": 2,
             "Availability": 0.5333333333333333,
             "Number_of_shifts": 3,
-            "Shifts_on_weekends": 2,
-            "Total_hours": 11.0,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 12.0,
             "Total_score": 190.0,
             "Shifts_per_hall": {
                 "EB": 3
@@ -592,6 +594,70 @@
         },
         "12": {
             "EmployeeName": "Gréta",
+            "Skillset": 2,
+            "Availability": 1.0,
+            "Number_of_shifts": 5,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 21.5,
+            "Total_score": 340.0,
+            "Shifts_per_hall": {
+                "EB": 4,
+                "NL": 1
+            }
+        },
+        "13": {
+            "EmployeeName": "Guðný  ",
+            "Skillset": 2,
+            "Availability": 1.0,
+            "Number_of_shifts": 5,
+            "Shifts_on_weekends": 4,
+            "Total_hours": 20.0,
+            "Total_score": 340.0,
+            "Shifts_per_hall": {
+                "EB": 4,
+                "NL": 1
+            }
+        },
+        "14": {
+            "EmployeeName": "Hólmfríður ",
+            "Skillset": 2,
+            "Availability": 0.6666666666666666,
+            "Number_of_shifts": 4,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 15.0,
+            "Total_score": 250.0,
+            "Shifts_per_hall": {
+                "EB": 3,
+                "NL": 1
+            }
+        },
+        "15": {
+            "EmployeeName": "Hrafnkell",
+            "Skillset": 2,
+            "Availability": 1.0,
+            "Number_of_shifts": 5,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 20.5,
+            "Total_score": 370.0,
+            "Shifts_per_hall": {
+                "EB": 4,
+                "BL": 1
+            }
+        },
+        "16": {
+            "EmployeeName": "Hrannar ",
+            "Skillset": 2,
+            "Availability": 0.8,
+            "Number_of_shifts": 5,
+            "Shifts_on_weekends": 3,
+            "Total_hours": 18.0,
+            "Total_score": 290.0,
+            "Shifts_per_hall": {
+                "EB": 5
+            }
+        },
+        "17": {
+            "EmployeeName": "Jórunn  ",
             "Skillset": 2,
             "Availability": 1.0,
             "Number_of_shifts": 6,
@@ -602,82 +668,17 @@
                 "EB": 6
             }
         },
-        "13": {
-            "EmployeeName": "Guðný  ",
-            "Skillset": 2,
-            "Availability": 1.0,
-            "Number_of_shifts": 6,
-            "Shifts_on_weekends": 5,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
-            "Shifts_per_hall": {
-                "EB": 4,
-                "KL": 1,
-                "NL": 1
-            }
-        },
-        "14": {
-            "EmployeeName": "Hólmfríður ",
-            "Skillset": 2,
-            "Availability": 0.6666666666666666,
-            "Number_of_shifts": 4,
-            "Shifts_on_weekends": 3,
-            "Total_hours": 14.0,
-            "Total_score": 240.0,
-            "Shifts_per_hall": {
-                "EB": 4
-            }
-        },
-        "15": {
-            "EmployeeName": "Hrafnkell",
-            "Skillset": 2,
-            "Availability": 1.0,
-            "Number_of_shifts": 5,
-            "Shifts_on_weekends": 3,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
-            "Shifts_per_hall": {
-                "EB": 3,
-                "NL": 1,
-                "BL": 1
-            }
-        },
-        "16": {
-            "EmployeeName": "Hrannar ",
-            "Skillset": 2,
-            "Availability": 0.8,
-            "Number_of_shifts": 5,
-            "Shifts_on_weekends": 2,
-            "Total_hours": 17.0,
-            "Total_score": 290.0,
-            "Shifts_per_hall": {
-                "EB": 4,
-                "BL": 1
-            }
-        },
-        "17": {
-            "EmployeeName": "Jórunn  ",
-            "Skillset": 2,
-            "Availability": 1.0,
-            "Number_of_shifts": 6,
-            "Shifts_on_weekends": 3,
-            "Total_hours": 21.5,
-            "Total_score": 350.0,
-            "Shifts_per_hall": {
-                "EB": 5,
-                "NL": 1
-            }
-        },
         "18": {
             "EmployeeName": "Katrín Hel",
             "Skillset": 2,
             "Availability": 0.3333333333333333,
             "Number_of_shifts": 2,
-            "Shifts_on_weekends": 1,
+            "Shifts_on_weekends": 2,
             "Total_hours": 7.0,
-            "Total_score": 120.0,
+            "Total_score": 130.0,
             "Shifts_per_hall": {
-                "EB": 2
+                "KL": 1,
+                "EB": 1
             }
         },
         "19": {
@@ -686,11 +687,11 @@
             "Availability": 1.0,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 3,
-            "Total_hours": 21.0,
-            "Total_score": 360.0,
+            "Total_hours": 21.5,
+            "Total_score": 340.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "NL": 1
+                "NL": 1,
+                "EB": 4
             }
         },
         "20": {
@@ -698,13 +699,12 @@
             "Skillset": 2,
             "Availability": 0.9,
             "Number_of_shifts": 5,
-            "Shifts_on_weekends": 3,
-            "Total_hours": 19.0,
-            "Total_score": 330.0,
+            "Shifts_on_weekends": 2,
+            "Total_hours": 18.5,
+            "Total_score": 320.0,
             "Shifts_per_hall": {
-                "NL": 1,
-                "EB": 3,
-                "KL": 1
+                "EB": 4,
+                "NL": 1
             }
         },
         "21": {
@@ -723,10 +723,11 @@
             "Availability": 1.0,
             "Number_of_shifts": 6,
             "Shifts_on_weekends": 3,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
+            "Total_hours": 20.5,
+            "Total_score": 350.0,
             "Shifts_per_hall": {
-                "EB": 6
+                "EB": 5,
+                "NL": 1
             }
         },
         "23": {
@@ -748,9 +749,10 @@
             "Number_of_shifts": 4,
             "Shifts_on_weekends": 1,
             "Total_hours": 12.5,
-            "Total_score": 220.0,
+            "Total_score": 210.0,
             "Shifts_per_hall": {
-                "EB": 4
+                "EB": 3,
+                "KL": 1
             }
         },
         "25": {
@@ -769,11 +771,12 @@
             "Availability": 1.0,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 4,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
+            "Total_hours": 20.5,
+            "Total_score": 350.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "NL": 1
+                "EB": 3,
+                "NL": 1,
+                "KL": 1
             }
         },
         "27": {
@@ -782,11 +785,12 @@
             "Availability": 0.8,
             "Number_of_shifts": 4,
             "Shifts_on_weekends": 3,
-            "Total_hours": 17.0,
+            "Total_hours": 16.0,
             "Total_score": 290.0,
             "Shifts_per_hall": {
-                "EB": 3,
-                "KL": 1
+                "NL": 1,
+                "EB": 2,
+                "BL": 1
             }
         },
         "28": {
@@ -795,11 +799,10 @@
             "Availability": 0.8,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 3,
-            "Total_hours": 17.0,
-            "Total_score": 280.0,
+            "Total_hours": 17.5,
+            "Total_score": 290.0,
             "Shifts_per_hall": {
-                "EB": 4,
-                "NL": 1
+                "EB": 5
             }
         },
         "29": {
@@ -808,7 +811,7 @@
             "Availability": 0.7666666666666667,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 2,
-            "Total_hours": 16.0,
+            "Total_hours": 17.0,
             "Total_score": 280.0,
             "Shifts_per_hall": {
                 "EB": 4,
@@ -821,36 +824,34 @@
             "Availability": 1.0,
             "Number_of_shifts": 6,
             "Shifts_on_weekends": 4,
-            "Total_hours": 21.5,
-            "Total_score": 350.0,
+            "Total_hours": 20.5,
+            "Total_score": 340.0,
             "Shifts_per_hall": {
-                "EB": 5,
-                "NL": 1
+                "EB": 6
             }
         },
         "31": {
             "EmployeeName": "Sveinn",
             "Skillset": 2,
             "Availability": 1.0,
-            "Number_of_shifts": 5,
+            "Number_of_shifts": 6,
             "Shifts_on_weekends": 3,
             "Total_hours": 21.0,
             "Total_score": 360.0,
             "Shifts_per_hall": {
-                "KL": 1,
-                "EB": 4
+                "EB": 6
             }
         },
         "32": {
             "EmployeeName": "Sæmundur ",
             "Skillset": 2,
             "Availability": 1.0,
-            "Number_of_shifts": 6,
-            "Shifts_on_weekends": 4,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
+            "Number_of_shifts": 7,
+            "Shifts_on_weekends": 2,
+            "Total_hours": 22.5,
+            "Total_score": 390.0,
             "Shifts_per_hall": {
-                "EB": 6
+                "EB": 7
             }
         },
         "33": {
@@ -859,11 +860,10 @@
             "Availability": 1.0,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 3,
-            "Total_hours": 21.0,
-            "Total_score": 360.0,
+            "Total_hours": 20.0,
+            "Total_score": 340.0,
             "Shifts_per_hall": {
-                "EB": 3,
-                "BL": 1,
+                "EB": 4,
                 "NL": 1
             }
         },
@@ -896,10 +896,11 @@
             "Availability": 1.0,
             "Number_of_shifts": 6,
             "Shifts_on_weekends": 4,
-            "Total_hours": 21.5,
-            "Total_score": 360.0,
+            "Total_hours": 22.0,
+            "Total_score": 350.0,
             "Shifts_per_hall": {
-                "EB": 6
+                "EB": 5,
+                "NL": 1
             }
         },
         "37": {
@@ -908,8 +909,8 @@
             "Availability": 0.9666666666666667,
             "Number_of_shifts": 6,
             "Shifts_on_weekends": 3,
-            "Total_hours": 20.5,
-            "Total_score": 350.0,
+            "Total_hours": 21.0,
+            "Total_score": 370.0,
             "Shifts_per_hall": {
                 "EB": 5,
                 "NL": 1
@@ -921,8 +922,8 @@
             "Availability": 1.0,
             "Number_of_shifts": 6,
             "Shifts_on_weekends": 3,
-            "Total_hours": 21.0,
-            "Total_score": 350.0,
+            "Total_hours": 21.5,
+            "Total_score": 370.0,
             "Shifts_per_hall": {
                 "EB": 5,
                 "NL": 1
@@ -935,11 +936,11 @@
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 3,
             "Total_hours": 20.5,
-            "Total_score": 360.0,
+            "Total_score": 350.0,
             "Shifts_per_hall": {
+                "KL": 1,
                 "EB": 3,
-                "NL": 1,
-                "BL": 1
+                "NL": 1
             }
         },
         "40": {
@@ -948,8 +949,8 @@
             "Availability": 0.6666666666666666,
             "Number_of_shifts": 4,
             "Shifts_on_weekends": 2,
-            "Total_hours": 13.5,
-            "Total_score": 240.0,
+            "Total_hours": 14.5,
+            "Total_score": 260.0,
             "Shifts_per_hall": {
                 "EB": 4
             }
@@ -960,11 +961,11 @@
             "Availability": 1.0,
             "Number_of_shifts": 5,
             "Shifts_on_weekends": 3,
-            "Total_hours": 21.0,
-            "Total_score": 360.0,
+            "Total_hours": 20.0,
+            "Total_score": 350.0,
             "Shifts_per_hall": {
-                "NL": 1,
-                "EB": 4
+                "EB": 4,
+                "BL": 1
             }
         }
     }

@@ -17,6 +17,9 @@ from Optimization_Model.Plot_Total_Stats import Plot_Total_Stats
 from Optimization_Model.Plot_Total_Stats_Normalized import Plot_Total_Stats_Normalized
 
 from Current_Solution.Manual_Analysis import Run_Manual_Analysis
+from Current_Solution.Manual_Objective import Manual_Objective
+from Current_Solution.Manual_Objective import Build_Objective_Input
+from Current_Solution.Manual_Objective import Build_Manual_Works
 
 # -------------------------
 # SETTINGS
@@ -100,7 +103,7 @@ Export_Json(
     events,
     output_file
 )
-
+"""
 # -------------------------
 # PRINT RESULTS
 # -------------------------
@@ -118,6 +121,7 @@ Print_Results(
     shift_score,
     weekend
 )
+"""
 
 # -------------------------
 # PRINT STATS
@@ -160,6 +164,7 @@ Print_Stats("March ", raw_current, filter_zero=False)
 Print_Stats("March (Normalized)", norm_current, filter_zero=True)
 """
 
+"""
 # Prenta Mars, Apríl og Total stats
 Print_Stats("March", raw_history, filter_zero=False)
 Print_Stats("March (Normalized)", norm_history, filter_zero=True)
@@ -169,14 +174,57 @@ Print_Stats("April (Normalized)", norm_current, filter_zero=True)
 
 Print_Stats("Total", raw_total, filter_zero=False)
 Print_Stats("Total (Normalized)", norm_total, filter_zero=True)
-
+"""
 # -------------------------
 # PLOT
 # -------------------------
-Plot_Total_Stats(raw_current, raw_total)
-Plot_Total_Stats_Normalized(norm_current, norm_history)
+#Plot_Total_Stats(raw_current, raw_total)
+#Plot_Total_Stats_Normalized(norm_current, norm_history)
 
 # -------------------------
-# MANUAL
+# MANUAL STATS
 # -------------------------
-#Run_Manual_Analysis(employees, hist_availability, curr_availability)
+Run_Manual_Analysis(employees, hist_availability, curr_availability)
+
+"""
+# -------------------------
+# GREEDY OBJECTIVE
+# -------------------------
+inputs = Build_Objective_Input(
+    "Data/04_26_output_list.json",
+    "Data/04_26_output_dicts.json"
+)
+
+obj = Manual_Objective(*inputs)
+
+print("\n--- GREEDY OBJECTIVE ---")
+print("Objective value:", round(obj, 2))
+
+# -------------------------
+# MANUAL OBJECTIVE
+# -------------------------
+works_manual_04 = Build_Manual_Works(
+    "Current_Solution/current_input.xlsx",
+    "04_26",
+    dict_events
+)
+obj_manual = Manual_Objective(
+    employees,
+    events,
+    works_manual_04,  
+    shift_dur,
+    shift_score,
+    weekend,
+    hall,
+    halls=list(set(hall.values())),
+    hist_shifts=hist_shifts,
+    hist_weekend=hist_weekend,
+    scale=scale,
+    weeks=weeks,
+    event_date=event_date,
+    requests=requests
+)
+
+print("\n--- MANUAL OBJECTIVE ---")
+print("Objective value:", round(obj_manual, 2))
+"""

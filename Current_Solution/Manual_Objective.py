@@ -1,5 +1,99 @@
 import pandas as pd
 
+def Build_Objective_Input(list_path, dict_path):
+
+    import json
+    import pandas as pd
+    from Optimization_Model.Compute_Shift_Duration import Compute_Shift_Duration
+
+    # -------------------------
+    # Load data
+    # -------------------------
+    with open(dict_path, encoding="utf-8") as f:
+        data = json.load(f)
+    with open(list_path, encoding="utf-8") as f:
+        assignment_list = json.load(f)
+
+    dict_events = {int(k): v for k, v in data["events"].items()}
+    dict_employees = {int(k): v for k, v in data["employees"].items()}
+
+    employees = list(dict_employees.keys())
+    events = list(dict_events.keys())
+
+    # -------------------------
+    # works_manual
+    # -------------------------
+    works_manual = {}
+    for event_id, emp_id in assignment_list:
+        works_manual[(emp_id, event_id)] = 1
+
+    # -------------------------
+    # shift duration
+    # -------------------------
+    shift_dur = Compute_Shift_Duration(dict_events)
+
+    # -------------------------
+    # score
+    # -------------------------
+    shift_score = {j: dict_events[j]["EventRanking"] for j in events}
+
+    # -------------------------
+    # weekend
+    # -------------------------
+    weekend = {
+        j: 1 if pd.to_datetime(dict_events[j]["Date"]).weekday() >= 4 else 0
+        for j in events
+    }
+
+    # -------------------------
+    # hall
+    # -------------------------
+    hall = {j: dict_events[j]["Hall"] for j in events}
+    halls = list(set(hall.values()))
+
+    # -------------------------
+    # availability
+    # -------------------------
+    scale = {i: dict_employees[i]["Availability_ratio"] for i in employees}
+
+    # -------------------------
+    # dates & weeks
+    # -------------------------
+    event_date = {
+        j: pd.to_datetime(dict_events[j]["Date"])
+        for j in events
+    }
+
+    weeks = list(set(d.isocalendar().week for d in event_date.values()))
+
+    # -------------------------
+    # history (default 0)
+    # -------------------------
+    hist_shifts = {i: 0 for i in employees}
+    hist_weekend = {i: 0 for i in employees}
+
+    # -------------------------
+    # requests (default empty)
+    # -------------------------
+    requests = []
+
+    return (
+        employees,
+        events,
+        works_manual,
+        shift_dur,
+        shift_score,
+        weekend,
+        hall,
+        halls,
+        hist_shifts,
+        hist_weekend,
+        scale,
+        weeks,
+        event_date,
+        requests
+    )
+
 def Build_Manual_Works(excel_path, sheet_name, dict_events):
 
     df = pd.read_excel(excel_path, sheet_name=sheet_name)
@@ -23,7 +117,6 @@ def Build_Manual_Works(excel_path, sheet_name, dict_events):
             works_manual[(emp, event_id)] = 1
 
     return works_manual
-
 
 def Manual_Objective(
     employees,
@@ -55,7 +148,7 @@ def Manual_Objective(
     PENALTY_HISTORY = 0.5
 
     # =========================
-    # Active employees (IMPORTANT FIX)
+    # Active employees 
     # =========================
     active_employees = [i for i in employees if scale[i] > 0]
 
@@ -118,7 +211,7 @@ def Manual_Objective(
     max_weekly = max(all_weekly_values)
 
     # =========================
-    # Hall variety
+    # Hall variety 
     # =========================
     works_hall = {(i, h): 0 for i in employees for h in halls}
 

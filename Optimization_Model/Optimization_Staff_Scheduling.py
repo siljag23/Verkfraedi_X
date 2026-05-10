@@ -251,8 +251,8 @@ def Optimization_Staff_Scheduling(
         GRB.MAXIMIZE
     )
 
-    #model.setParam('MIPGap', 0.01)
-    #model.setParam('TimeLimit', 10)
+    model.setParam('MIPGap', 0.01)
+    model.setParam('TimeLimit', 30)
 
     model.optimize()
 

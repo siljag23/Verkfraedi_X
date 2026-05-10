@@ -178,7 +178,7 @@ def Plot_Manual_Total(manual_current, manual_history, title, normalized=False):
         plt.show()
 
     plot_metric("shifts", "Shifts", "Total Shifts")
-    plot_metric("hours", "Work Hours", "Total Work Hours")
+    plot_metric("hours", "Hours", "Total Hours")
     plot_metric("score", "Score", "Total Score")
     plot_metric("weekend", "Weekend Shifts", "Total Weekend Shifts")
 
@@ -190,7 +190,7 @@ def Plot_Manual_One(stats, title, normalized=False):
     ids = sorted(stats.keys())
     x = np.arange(len(ids))
 
-    suffix = " (Normalized)" if normalized else ""
+    suffix = "(Normalized)" if normalized else ""
 
     def plot_metric(key, ylabel, metric_name):
 
@@ -209,7 +209,7 @@ def Plot_Manual_One(stats, title, normalized=False):
         plt.show()
 
     plot_metric("shifts", "Shifts", "Total Shifts")
-    plot_metric("hours", "Work Hours", "Total Work Hours")
+    plot_metric("hours", "Hours", "Total Hours")
     plot_metric("score", "Score", "Total Score")
     plot_metric("weekend", "Weekend Shifts", "Total Weekend Shifts")
 
