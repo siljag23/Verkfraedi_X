@@ -26,6 +26,19 @@ def Export_Schedule_Render(
     # =========================
     schedule_rows = []
 
+    for row in rows:
+        event = dict_events[row["EventID"]]
+        employee = dict_employees[row["EmployeeID"]]
+
+        schedule_rows.append({
+            "Event": event.get("Event", ""),
+            "Hall": event.get("Hall", ""),
+            "Date": pd.to_datetime(event["Date"]),
+            "Start": str(event["ShiftBegins"]),
+            "End": str(event["ShiftEnds"]),
+            "Employee": employee.get("EmployeeName", "")
+        })
+
     # FIX: bæta við events sem fengu enga starfsmenn
     existing_events = set(row["EventID"] for row in rows)
 
