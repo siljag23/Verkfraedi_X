@@ -42,10 +42,8 @@ def Export_Schedule_Render(
     if df.empty:
         return output_path
 
-    # 🔥 tryggir rétta tímaröð
     df = df.sort_values(["Date", "Start"])
 
-    # 🔥 GROUPBY Á RÉTTUM DÁLKUM (ENGIN EventID!)
     grouped = (
         df.groupby(["Event", "Date", "Start", "End", "Hall"])["Employee"]
         .apply(lambda x: sorted(x))  # starfrófsröð
@@ -53,6 +51,17 @@ def Export_Schedule_Render(
     )
 
     grouped = grouped.sort_values(["Date", "Start"]).reset_index(drop=True)
+
+
+    # =========================
+    # EMPLOYEE VIEW DATA
+    # =========================
+    emp_grouped = (
+        df.groupby("Employee")[["Event", "Date", "Start", "End", "Hall"]]
+        .apply(lambda x: list(zip(x["Event"], x["Date"], x["Start"], x["End"], x["Hall"])))
+    )
+
+    emp_grouped = dict(sorted(emp_grouped.items()))
 
     # =========================
     # EXPORT
@@ -63,6 +72,7 @@ def Export_Schedule_Render(
 
         wb = writer.book
         ws = wb.create_sheet("Events")
+        ws_emp = wb.create_sheet("Employees")
 
         # styles
         bold = Font(bold=True)
@@ -86,10 +96,8 @@ def Export_Schedule_Render(
             end = row["End"]
             employees = row["Employee"]
 
-            # 🔥 íslenskt date format
             date_print = f"{date.day}. {months[date.month - 1]} {date.year}"
 
-            # HEADER
             ws.cell(row=1, column=col).value = f"{event} ({hall})"
             ws.cell(row=2, column=col).value = date_print
             ws.cell(row=3, column=col).value = f"{start} - {end}"
@@ -100,7 +108,6 @@ def Export_Schedule_Render(
                 c.fill = fill
                 c.alignment = center
 
-            # helgar litur
             if date.weekday() >= 5:
                 weekend_fill = PatternFill(
                     start_color="FF6E1B",
@@ -110,16 +117,48 @@ def Export_Schedule_Render(
                 for r in [1, 2, 3]:
                     ws.cell(row=r, column=col).fill = weekend_fill
 
-            # lína undir header
             ws.cell(row=3, column=col).border = border
 
-            # EMPLOYEES (engin tómlína)
             for i, name in enumerate(employees):
                 c = ws.cell(row=4 + i, column=col)
                 c.value = name
                 c.alignment = center
 
             ws.column_dimensions[ws.cell(row=1, column=col).column_letter].width = 25
+
+            col += 1
+        
+        # =========================
+        # EMPLOYEES SHEET
+        # =========================
+        for emp, events in emp_grouped.items():
+
+            c = ws_emp.cell(row=1, column=col)
+            c.value = emp
+            c.font = bold
+            c.fill = fill
+            c.alignment = center
+
+            row_ptr = 2
+
+            for event, date, start, end, hall in events:
+
+                date_print = f"{date.day}. {months[date.month - 1]} {date.year}"
+
+                ws_emp.cell(row=row_ptr, column=col).value = f"{event} ({hall})"
+
+                ws_emp.cell(row=row_ptr + 1, column=col).value = date_print
+
+                ws_emp.cell(row=row_ptr + 2, column=col).value = f"{start} - {end}"
+
+                for r in [row_ptr, row_ptr + 1, row_ptr + 2]:
+                    ws_emp.cell(row=r, column=col).alignment = center
+
+                ws_emp.cell(row=row_ptr + 2, column=col).border = border
+
+                row_ptr += 3
+
+            ws_emp.column_dimensions[ws_emp.cell(row=1, column=col).column_letter].width = 25
 
             col += 1
 
