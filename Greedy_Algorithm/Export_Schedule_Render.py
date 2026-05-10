@@ -86,7 +86,7 @@ def Export_Schedule_Render(
         ]
 
         # =========================
-        # EVENTS SHEET (ÓBREYTT)
+        # EVENTS SHEET 
         # =========================
         col = 1
         for _, row in grouped.iterrows():
@@ -117,11 +117,21 @@ def Export_Schedule_Render(
                 c.value = name
                 c.alignment = center
 
+            
+            if date.weekday() >= 5:
+                weekend_fill = PatternFill(
+                    start_color="FF6E1B",
+                    end_color="FF6E1B",
+                    fill_type="solid"
+                )
+                for r in [1, 2, 3]:
+                    ws.cell(row=r, column=col).fill = weekend_fill
+
             ws.column_dimensions[ws.cell(row=1, column=col).column_letter].width = 25
             col += 1
 
         # =========================
-        # EMPLOYEES SHEET (ÓBREYTT)
+        # EMPLOYEES SHEET 
         # =========================
         col = 1
         for emp, events in emp_grouped.items():
@@ -149,13 +159,16 @@ def Export_Schedule_Render(
             ws_emp.column_dimensions[ws_emp.cell(row=1, column=col).column_letter].width = 25
             col += 1
 
+            for column in ws_emp.columns:
+                for cell in column:
+                    cell.alignment = Alignment(horizontal="center", vertical="center")
+
         # =========================
-        # CALENDAR SHEET (FIXAÐ)
+        # CALENDAR SHEET 
         # =========================
 
         df_sorted = df.sort_values(["Date", "Start"])
 
-        # 🔥 ALLAR DAGSETNINGAR (ekki bara events)
         all_dates = pd.date_range(
             df_sorted["Date"].min(),
             df_sorted["Date"].max()
@@ -278,5 +291,9 @@ def Export_Schedule_Render(
 
         for col in range(1, 8):
             ws_cal.column_dimensions[chr(64 + col)].width = 25
+        
+        for column in ws_cal.columns:
+            for cell in column:
+                cell.alignment = Alignment(horizontal="center", vertical="center")
 
     return output_path
