@@ -33,7 +33,7 @@ h1 {
 }
 
 .drop-zone:hover {
-    border-color: orange;
+    border-color: #e65c10;
 }
 
 button {
@@ -44,15 +44,39 @@ button {
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
+    margin-top: 10px;
 }
 
 button:hover {
     background: #e65c10;
 }
 
+/* Status (mitt á milli takka) */
+#status {
+    margin: 25px 0;
+    min-height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+/* Download button */
 #download {
-    margin-top: 20px;
     display: none;
+}
+
+/* Template link */
+.template-link {
+    display: block;
+    margin-bottom: 20px;
+    color: #ff6e1b;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.template-link:hover {
+    text-decoration: underline;
 }
 </style>
 </head>
@@ -62,6 +86,11 @@ button:hover {
 <div class="container">
     <h1>Vaktaplan Þjónustufulltrúa</h1>
 
+    <!-- 🔥 TEMPLATE DOWNLOAD -->
+    <a href="/template" class="template-link" download>
+        Sækja Excel sniðmát
+    </a>
+
     <div class="drop-zone" id="drop">
         Dragðu Excel-skrá hingað <br>
         eða smelltu til að velja
@@ -69,10 +98,13 @@ button:hover {
 
     <input type="file" id="fileInput" hidden>
 
+    <!-- TAKKI 1 -->
     <button onclick="upload()">Búa til vaktaplan</button>
 
+    <!-- STATUS -->
     <div id="status"></div>
 
+    <!-- TAKKI 2 -->
     <a id="download" href="#" download>
         <button>Sækja vaktaplan</button>
     </a>
