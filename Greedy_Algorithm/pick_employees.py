@@ -38,6 +38,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
             "roles": build_event_roles(event_id, dict_events)}
 
     all_work_results = []
+    unfilled = {}
 
     # Main loop:
     # 1. find employee with highest priority
