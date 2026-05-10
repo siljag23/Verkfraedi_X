@@ -1,5 +1,5 @@
 import pandas as pd
-from datetime import timedelta, datetime
+from datetime import datetime
 import os
 
 
@@ -29,12 +29,11 @@ def Export_Schedule_Render(
         employee = dict_employees[row["EmployeeID"]]
 
         schedule_rows.append({
-            "EventID": row["EventID"],
-            "Date": str(event["Date"]),
-            "Start": str(event["ShiftBegins"]),
-            "End": str(event["ShiftEnds"]),
             "Event": event["Event"],
             "Hall": event["Hall"],
+            "Date": pd.to_datetime(event["Date"]).date(),
+            "Start": event["ShiftBegins"],
+            "End": event["ShiftEnds"],
             "Employee": employee["EmployeeName"]
         })
 
@@ -43,23 +42,21 @@ def Export_Schedule_Render(
     if df.empty:
         return output_path
 
-    df["Date"] = pd.to_datetime(df["Date"]).dt.date
     df = df.sort_values(["Date", "Start"])
 
-    # ================= EVENTS =================
     grouped = df.groupby(
-        ["EventID", "Event", "Hall", "Date", "Start", "End"]
+        ["Event", "Hall", "Date", "Start", "End"]
     )["Employee"].apply(list).reset_index()
 
-    # ================= EXPORT =================
+    # =========================
+    # EXPORT (SAFE VERSION)
+    # =========================
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
-        grouped.to_excel(writer, sheet_name="Events", index=False)
 
-        from openpyxl import load_workbook
         from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 
-        wb = load_workbook(output_path)
-        ws = wb["Events"]
+        wb = writer.book
+        ws = wb.create_sheet("Events")
 
         # styles
         bold = Font(bold=True)
@@ -71,8 +68,6 @@ def Export_Schedule_Render(
             "janúar", "febrúar", "mars", "apríl", "maí", "júní",
             "júlí", "ágúst", "september", "október", "nóvember", "desember"
         ]
-
-        ws.delete_rows(1, ws.max_row)
 
         col = 1
 
@@ -94,19 +89,22 @@ def Export_Schedule_Render(
             ws.cell(row=3, column=col).value = f"{start} - {end}"
 
             for r in [1, 2, 3]:
-                cell = ws.cell(row=r, column=col)
-                cell.font = bold
-                cell.fill = fill
-                cell.alignment = center
+                c = ws.cell(row=r, column=col)
+                c.font = bold
+                c.fill = fill
+                c.alignment = center
 
-            # weekend color
+            # weekend highlight
             if date.weekday() >= 5:
+                weekend_fill = PatternFill(
+                    start_color="F4CCCC",
+                    end_color="F4CCCC",
+                    fill_type="solid"
+                )
                 for r in [1, 2, 3]:
-                    ws.cell(row=r, column=col).fill = PatternFill(
-                        start_color="F4CCCC", end_color="F4CCCC", fill_type="solid"
-                    )
+                    ws.cell(row=r, column=col).fill = weekend_fill
 
-            # LINE UNDER HEADER
+            # line under header
             ws.cell(row=3, column=col).border = border
 
             # EMPLOYEES
@@ -115,19 +113,9 @@ def Export_Schedule_Render(
                 c.value = name
                 c.alignment = center
 
+            # fast fixed width (NO SLOW AUTO WIDTH)
+            ws.column_dimensions[ws.cell(row=1, column=col).column_letter].width = 25
+
             col += 1
-
-        # AUTO WIDTH
-        for col_cells in ws.columns:
-            max_length = 0
-            col_letter = col_cells[0].column_letter
-
-            for cell in col_cells:
-                if cell.value:
-                    max_length = max(max_length, len(str(cell.value)))
-
-            ws.column_dimensions[col_letter].width = max_length + 3
-
-        wb.save(output_path)
 
     return output_path
