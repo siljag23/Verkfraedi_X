@@ -1,6 +1,6 @@
 import pandas as pd
 
-def validate_events(df):
+def validate_excel(df):
     errors = []
 
     required_fields = {
