@@ -89,7 +89,7 @@ def run_greedy(input_path):
         # =========================
         # Run greedy
         # =========================
-        rows, _ = assign_all_events(
+        rows, _, unfilled = assign_all_events(
             dict_events,
             dict_employees,
             hours_per_employee,
