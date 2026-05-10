@@ -1,5 +1,8 @@
 import pandas as pd
 
+# =========================
+# FILE STRUCTURE VALIDATION
+# =========================
 def validate_excel(file_path):
     errors = []
 
@@ -24,17 +27,40 @@ def validate_excel(file_path):
             if col not in df.columns:
                 errors.append(f"Events sheet vantar dálk: {col}")
 
-        # 🔥 tryggir að EventID sé unique
-        if "EventID" in df.columns:
-            if df["EventID"].duplicated().any():
-                errors.append("EventID er ekki unique")
+        if not df.empty:
 
-        # 🔥 dagsetningar
-        if "Date" in df.columns:
-            try:
-                pd.to_datetime(df["Date"])
-            except Exception:
-                errors.append("Ógild dagsetning í Events")
+            # NULL check fyrst
+            if "EventID" in df.columns:
+                if df["EventID"].isnull().any():
+                    errors.append("Vantar EventID")
+
+                elif df["EventID"].duplicated().any():
+                    dup = df[df["EventID"].duplicated()]["EventID"].tolist()
+                    errors.append(f"EventID er ekki unique: {dup}")
+
+            # Event name tómt
+            if "Event" in df.columns:
+                if df["Event"].isnull().any() or (df["Event"] == "").any():
+                    errors.append("Vantar nafn á viðburði")
+
+            # Date validation
+            if "Date" in df.columns:
+                try:
+                    pd.to_datetime(df["Date"])
+                except Exception:
+                    errors.append("Ógild dagsetning í Events")
+
+            # Time check
+            if "ShiftBegins" in df.columns and "ShiftEnds" in df.columns:
+                for i, row in df.iterrows():
+                    try:
+                        start = pd.to_datetime(row["ShiftBegins"])
+                        end = pd.to_datetime(row["ShiftEnds"])
+
+                        if end <= start:
+                            errors.append(f"Viðburður '{row.get('Event', i)}' hefur ógildan tíma")
+                    except Exception:
+                        errors.append(f"Viðburður '{row.get('Event', i)}' hefur ógilt time format")
 
     # ================= EMPLOYEES =================
     if "Employees" in xls.sheet_names:
@@ -46,47 +72,21 @@ def validate_excel(file_path):
             if col not in df.columns:
                 errors.append(f"Employees sheet vantar dálk: {col}")
 
-        # 🔥 unique ID
-        if "EmployeeID" in df.columns:
-            if df["EmployeeID"].duplicated().any():
-                errors.append("EmployeeID er ekki unique")
+        if not df.empty:
 
-    return errors
+            # NULL vs DUPLICATE
+            if "EmployeeID" in df.columns:
+                if df["EmployeeID"].isnull().any():
+                    errors.append("Vantar EmployeeID hjá starfsmanni")
 
+                elif df["EmployeeID"].duplicated().any():
+                    dup = df[df["EmployeeID"].duplicated()]["EmployeeID"].tolist()
+                    errors.append(f"EmployeeID er ekki unique: {dup}")
 
-# =========================
-# CONTENT VALIDATION
-# =========================
-def validate_data_content(events_df, employees_df):
-    errors = []
-
-    # 🔥 empty dataframe
-    if events_df.empty:
-        errors.append("Events sheet er tómt")
-
-    if employees_df.empty:
-        errors.append("Employees sheet er tómt")
-
-    # 🔥 missing values
-    if "Date" in events_df.columns:
-        if events_df["Date"].isnull().any():
-            errors.append("Það vantar dagsetningu í Events")
-
-    # 🔥 time validation (öruggari)
-    for i, row in events_df.iterrows():
-        try:
-            start = pd.to_datetime(row["ShiftBegins"])
-            end = pd.to_datetime(row["ShiftEnds"])
-
-            if end <= start:
-                errors.append(f"Viðburður '{row.get('Event', i)}' hefur ógildan tíma")
-        except Exception:
-            errors.append(f"Viðburður '{row.get('Event', i)}' hefur ógild time format")
-
-    # 🔥 employee names
-    if "EmployeeName" in employees_df.columns:
-        if employees_df["EmployeeName"].isnull().any():
-            errors.append("Starfsmaður án nafns")
+            # ❗ Name check
+            if "EmployeeName" in df.columns:
+                if df["EmployeeName"].isnull().any() or (df["EmployeeName"] == "").any():
+                    errors.append("Starfsmaður án nafns")
 
     return errors
 
