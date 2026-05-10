@@ -17,7 +17,7 @@ def Export_Schedule_Render(
     os.makedirs(DATA_DIR, exist_ok=True)
 
     base_name = os.path.splitext(os.path.basename(input_path))[0]
-    output_path = os.path.join(DATA_DIR, f"{base_name}_schedule.xlsx")
+    output_path = os.path.join(DATA_DIR, f"{base_name}_vaktaplan.xlsx")
 
     # =========================
     # BUILD DATA
@@ -131,6 +131,7 @@ def Export_Schedule_Render(
         # =========================
         # EMPLOYEES SHEET
         # =========================
+        col = 1
         for emp, events in emp_grouped.items():
 
             c = ws_emp.cell(row=1, column=col)
