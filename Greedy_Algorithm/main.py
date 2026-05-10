@@ -5,7 +5,8 @@ import os
 import pandas as pd
 
 from Greedy_Algorithm.greedy_render import run_greedy
-from Greedy_Algorithm.validator import validate_excel
+from Greedy_Algorithm.validator import validate_excel, check_feasibility
+from Greedy_Algorithm.open_excel import open_excel
 
 app = FastAPI()
 
@@ -35,7 +36,7 @@ async def validate(file: UploadFile = File(...)):
 
     print("VALIDATING:", input_path)
 
-    # LOAD EVENTS SHEET
+    # LOAD EVENTS
     try:
         df = pd.read_excel(input_path, sheet_name="Events")
     except Exception:
@@ -44,7 +45,31 @@ async def validate(file: UploadFile = File(...)):
             "errors": ["Vantar 'Events' sheet eða ekki hægt að lesa skrá"]
         }
 
+    # 🔍 BASIC VALIDATION
     errors = validate_excel(df)
+
+    # FEASIBILITY (bara ef basic OK)
+    if not errors:
+        try:
+            filename = os.path.basename(input_path)
+
+            dict_events, dict_employees, employee_days, _, _, _ = open_excel(
+                filename,
+                "Events",
+                "Employees",
+                "DaysOff",
+                "ScoreKeys",
+                "SkillsetScores",
+                "EventReq"
+            )
+
+            errors += check_feasibility(dict_events, dict_employees, employee_days)
+
+        except Exception as e:
+            return {
+                "status": "error",
+                "errors": ["Villa við lestur gagna fyrir feasibility check"]
+            }
 
     if errors:
         return {
@@ -70,7 +95,7 @@ async def run(file: UploadFile = File(...)):
 
     print("SAVED:", input_path)
 
-    # VALIDATION AGAIN (safety)
+    # LOAD EVENTS
     try:
         df = pd.read_excel(input_path, sheet_name="Events")
     except Exception:
@@ -79,7 +104,31 @@ async def run(file: UploadFile = File(...)):
             "errors": ["Vantar 'Events' sheet eða ekki hægt að lesa skrá"]
         }
 
+    # BASIC VALIDATION
     errors = validate_excel(df)
+
+    # FEASIBILITY CHECK
+    if not errors:
+        try:
+            filename = os.path.basename(input_path)
+
+            dict_events, dict_employees, employee_days, _, _, _ = open_excel(
+                filename,
+                "Events",
+                "Employees",
+                "DaysOff",
+                "ScoreKeys",
+                "SkillsetScores",
+                "EventReq"
+            )
+
+            errors += check_feasibility(dict_events, dict_employees, employee_days)
+
+        except Exception:
+            return {
+                "status": "error",
+                "errors": ["Villa við feasibility check"]
+            }
 
     if errors:
         return {
@@ -87,7 +136,7 @@ async def run(file: UploadFile = File(...)):
             "errors": errors
         }
 
-    # 🚀 RUN ALGORITHM
+    # RUN ALGORITHM
     result = run_greedy(input_path)
 
     if result["status"] == "success":

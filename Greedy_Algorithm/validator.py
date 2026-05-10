@@ -29,3 +29,29 @@ def validate_excel(df):
                 errors.append(f"Viðburður {event_number}: vantar {label}")
 
     return errors
+
+def check_feasibility(dict_events, dict_employees, employee_days):
+    errors = []
+
+    for event_id, event in dict_events.items():
+
+        event_name = event.get("Event", f"Event {event_id}")
+        date = event.get("Date")
+        required = int(event.get("Employees", 0) or 0)
+
+        available = 0
+
+        for emp_id in dict_employees:
+
+            # ef starfsmaður er EKKI í fríi þann dag → hann er laus
+            if date not in employee_days.get(emp_id, set()):
+                available += 1
+
+        if available < required:
+            missing = required - available
+
+            errors.append(
+                f"Viðburður '{event_name}' ({date}) vantar {missing} starfsmenn"
+            )
+
+    return errors
