@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+from datetime import timedelta
 import os
 
 
@@ -73,8 +74,8 @@ def Export_Schedule_Render(
         wb = writer.book
         ws = wb.create_sheet("Events")
         ws_emp = wb.create_sheet("Employees")
+        ws_cal = wb.create_sheet("Calendar")
 
-        # styles
         bold = Font(bold=True)
         fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
         border = Border(bottom=Side(style="thin"))
@@ -162,5 +163,117 @@ def Export_Schedule_Render(
             ws_emp.column_dimensions[ws_emp.cell(row=1, column=col).column_letter].width = 25
 
             col += 1
+        # =========================
+        # CALENDAR SHEET
+        # =========================
+        df_sorted = df.sort_values(["Date", "Start"])
+        dates = sorted(df_sorted["Date"].dt.date.unique())
+        weeks = []
+        current_week = []
+
+        for d in dates:
+            if len(current_week) == 0:
+                # fylla upp að fyrsta degi viku
+                start_weekday = d.weekday()  # 0=Mon
+                for _ in range(start_weekday):
+                    current_week.append(None)
+
+            current_week.append(d)
+
+            if len(current_week) == 7:
+                weeks.append(current_week)
+                current_week = []
+
+        if current_week:
+            while len(current_week) < 7:
+                current_week.append(None)
+            weeks.append(current_week)
+
+        weekdays = ["Mán", "Þri", "Mið", "Fim", "Fös", "Lau", "Sun"]
+
+        row_ptr = 1
+
+        for week in weeks:
+
+            for col, d in enumerate(week, start=1):
+                cell = ws_cal.cell(row=row_ptr, column=col)
+
+                if d:
+                    cell.value = f"{d.day}. {months[d.month - 1]}"
+                else:
+                    cell.value = ""
+
+                cell.font = bold
+                cell.fill = fill
+                cell.alignment = center
+
+            for col, d in enumerate(week, start=1):
+                cell = ws_cal.cell(row=row_ptr + 1, column=col)
+
+                if d:
+                    cell.value = weekdays[d.weekday()]
+                else:
+                    cell.value = ""
+
+                cell.font = bold
+                cell.fill = fill
+                cell.alignment = center
+                cell.border = border
+
+            max_rows_in_week = 0
+            day_events_map = []
+
+            for d in week:
+                if d is None:
+                    day_events_map.append([])
+                    continue
+
+                day_df = df_sorted[df_sorted["Date"].dt.date == d]
+
+                events = []
+
+                grouped_day = (
+                    day_df.groupby(["Event", "Start", "End", "Hall"])["Employee"]
+                    .apply(list)
+                    .reset_index()
+                    .sort_values("Start")
+                )
+
+                for _, r in grouped_day.iterrows():
+                    events.append({
+                        "title": f"{r['Event']} ({r['Hall']})",
+                        "time": f"{r['Start']} - {r['End']}",
+                        "employees": sorted(r["Employee"])
+                    })
+
+                day_events_map.append(events)
+
+                height = sum(2 + len(e["employees"]) for e in events)
+                max_rows_in_week = max(max_rows_in_week, height)
+
+            for col, events in enumerate(day_events_map, start=1):
+
+                r_ptr = row_ptr + 2
+
+                for e in events:
+
+                    ws_cal.cell(row=r_ptr, column=col).value = e["title"]
+                    ws_cal.cell(row=r_ptr + 1, column=col).value = e["time"]
+
+                    ws_cal.cell(row=r_ptr + 1, column=col).border = border
+
+                    ws_cal.cell(row=r_ptr, column=col).alignment = center
+                    ws_cal.cell(row=r_ptr + 1, column=col).alignment = center
+
+                    for i, emp in enumerate(e["employees"]):
+                        ws_cal.cell(row=r_ptr + 2 + i, column=col).value = emp
+                        ws_cal.cell(row=r_ptr + 2 + i, column=col).alignment = center
+
+                    r_ptr += 2 + len(e["employees"])
+
+            row_ptr += max_rows_in_week + 3
+
+        for col in range(1, 8):
+            ws_cal.column_dimensions[chr(64 + col)].width = 25
 
     return output_path
