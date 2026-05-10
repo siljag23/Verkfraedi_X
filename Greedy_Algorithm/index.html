@@ -51,7 +51,7 @@ button:hover {
     background: #e65c10;
 }
 
-/* Status (mitt á milli takka) */
+/* Status */
 #status {
     margin: 25px 0;
     min-height: 28px;
@@ -61,12 +61,12 @@ button:hover {
     font-size: 16px;
 }
 
-/* Download button */
+/* Download */
 #download {
     display: none;
 }
 
-/* Template link */
+/* Template */
 .template-link {
     display: block;
     margin-bottom: 20px;
@@ -86,7 +86,6 @@ button:hover {
 <div class="container">
     <h1>Vaktaplan Þjónustufulltrúa</h1>
 
-    <!-- 🔥 TEMPLATE DOWNLOAD -->
     <a href="/template" class="template-link" download>
         Sækja Excel sniðmát
     </a>
@@ -98,13 +97,11 @@ button:hover {
 
     <input type="file" id="fileInput" hidden>
 
-    <!-- TAKKI 1 -->
+    <button onclick="validateFile()">Athuga skjal</button>
     <button onclick="upload()">Búa til vaktaplan</button>
 
-    <!-- STATUS -->
     <div id="status"></div>
 
-    <!-- TAKKI 2 -->
     <a id="download" href="#" download>
         <button>Sækja vaktaplan</button>
     </a>
@@ -143,7 +140,37 @@ drop.ondrop = (e) => {
     drop.innerHTML = selectedFile.name;
 };
 
-// upload
+// VALIDATE
+async function validateFile() {
+
+    if (!selectedFile) {
+        alert("Veldu skrá fyrst");
+        return;
+    }
+
+    status.innerHTML = "Athuga skjal...";
+    status.style.color = "black";
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    const res = await fetch("/validate", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.status === "error") {
+        status.innerHTML = "❌<br>" + data.errors.join("<br>");
+        status.style.color = "red";
+    } else {
+        status.innerHTML = "✅ Engar villur fundust";
+        status.style.color = "green";
+    }
+}
+
+// RUN
 async function upload() {
 
     if (!selectedFile) {
@@ -152,6 +179,7 @@ async function upload() {
     }
 
     status.innerHTML = "Býr til vaktaplan...";
+    status.style.color = "black";
     download.style.display = "none";
 
     const formData = new FormData();
@@ -166,12 +194,14 @@ async function upload() {
 
     if (data.status === "success") {
         status.innerHTML = "Vaktaplan tilbúið ✅";
+        status.style.color = "green";
 
         download.href = data.download_url;
         download.style.display = "block";
 
     } else {
         status.innerHTML = "Villa ❌";
+        status.style.color = "red";
         console.error(data);
     }
 }

@@ -2,7 +2,9 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
 import shutil
 import os
+
 from Greedy_Algorithm.greedy_render import run_greedy
+from Greedy_Algorithm.validator import validate_excel
 
 app = FastAPI()
 
@@ -20,6 +22,32 @@ def home():
 
 
 # -------------------------
+# VALIDATE ONLY
+# -------------------------
+@app.post("/validate")
+async def validate(file: UploadFile = File(...)):
+
+    input_path = os.path.join(DATA_DIR, file.filename)
+
+    with open(input_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    print("VALIDATING:", input_path)
+
+    errors = validate_excel(input_path)
+
+    if errors:
+        return {
+            "status": "error",
+            "errors": errors
+        }
+
+    return {
+        "status": "ok"
+    }
+
+
+# -------------------------
 # RUN GREEDY
 # -------------------------
 @app.post("/run")
@@ -32,6 +60,16 @@ async def run(file: UploadFile = File(...)):
 
     print("SAVED:", input_path)
 
+    # 🔍 VALIDATION AGAIN (safety)
+    errors = validate_excel(input_path)
+
+    if errors:
+        return {
+            "status": "error",
+            "errors": errors
+        }
+
+    # 🚀 RUN ALGORITHM
     result = run_greedy(input_path)
 
     if result["status"] == "success":
@@ -64,7 +102,7 @@ def download(filename: str):
 
 
 # -------------------------
-# DOWNLOAD TEMPLATE 
+# DOWNLOAD TEMPLATE
 # -------------------------
 @app.get("/template")
 def download_template():
