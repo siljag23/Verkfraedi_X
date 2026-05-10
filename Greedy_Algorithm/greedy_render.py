@@ -135,8 +135,6 @@ def run_greedy(input_path):
         }
 
     except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e),
-            "trace": traceback.format_exc()
-        }
+        print("ERROR IN GREEDY:")
+        print(traceback.format_exc())
+        raise e
