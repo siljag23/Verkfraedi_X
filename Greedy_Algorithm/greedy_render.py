@@ -1,16 +1,30 @@
 import os
 from collections import defaultdict
-from open_excel import (
+from Greedy_Algorithm.open_excel import (
     open_excel,
     open_previous_scores,
     open_previous_stats,
     merge_scores_into_employees,
     merge_previous_stats_into_employees,
 )
-from pick_employees import assign_all_events
-from Export_Json_Greedy import Export_Json
-from Export_Schedule_Render import Export_Schedule_Render
+from Greedy_Algorithm.pick_employees import assign_all_events
+from Greedy_Algorithm.Export_Json_Greedy import Export_Json
+from Greedy_Algorithm.Export_Schedule_Render import Export_Schedule_Render
 import traceback
+
+
+# -------------------------
+# Helper: previous month
+# -------------------------
+def get_previous_month(month_str):
+    m, y = month_str.split("_")
+    m = int(m)
+    y = int(y)
+
+    if m == 1:
+        return f"12_{y-1}"
+    else:
+        return f"{m-1:02d}_{y}"
 
 
 def run_greedy(input_path):
@@ -51,17 +65,26 @@ def run_greedy(input_path):
         )
 
         # =========================
-        # Previous data
+        # Previous data (fixed)
         # =========================
-        prev_dict = os.path.join("Data", f"{month}_output_dicts.json")
-        prev_list = os.path.join("Data", f"{month}_output_list.json")
+        prev_month = get_previous_month(month)
+
+        prev_dict = os.path.join("Data", f"{prev_month}_output_dicts.json")
+        prev_list = os.path.join("Data", f"{prev_month}_output_list.json")
 
         if os.path.exists(prev_dict) and os.path.exists(prev_list):
-            previous_scores = open_previous_scores(prev_dict)
+            previous_scores, previous_availability = open_previous_scores(prev_dict)
             previous_stats = open_previous_stats(prev_dict, prev_list)
 
-            dict_employees = merge_scores_into_employees(dict_employees, previous_scores)
-            dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
+            dict_employees = merge_scores_into_employees(
+                dict_employees,
+                previous_scores,
+                previous_availability
+            )
+            dict_employees = merge_previous_stats_into_employees(
+                dict_employees,
+                previous_stats
+            )
 
         # =========================
         # Run greedy
@@ -101,7 +124,7 @@ def run_greedy(input_path):
             rows,
             dict_events,
             dict_employees,
-            input_path,  
+            input_path,
             period_start,
             period_end
         )
