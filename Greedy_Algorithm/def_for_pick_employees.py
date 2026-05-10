@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, time
-from shift_length import shift_length
+from Greedy_Algorithm.shift_length import shift_length
 
 def lookup_score(rule_dict: dict, key: int, default=0):
     """
