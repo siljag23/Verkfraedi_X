@@ -36,7 +36,7 @@ async def validate(file: UploadFile = File(...)):
 
     print("VALIDATING:", input_path)
 
-    # LOAD EVENTS
+    # 🔍 LOAD EVENTS
     try:
         df = pd.read_excel(input_path, sheet_name="Events")
     except Exception:
@@ -45,31 +45,8 @@ async def validate(file: UploadFile = File(...)):
             "errors": ["Vantar 'Events' sheet eða ekki hægt að lesa skrá"]
         }
 
-    # 🔍 BASIC VALIDATION
+    # ❌ STOPPA ef input vantar
     errors = validate_excel(df)
-
-    # FEASIBILITY (bara ef basic OK)
-    if not errors:
-        try:
-            filename = os.path.basename(input_path)
-
-            dict_events, dict_employees, employee_days, _, _, _ = open_excel(
-                filename,
-                "Events",
-                "Employees",
-                "DaysOff",
-                "ScoreKeys",
-                "SkillsetScores",
-                "EventReq"
-            )
-
-            errors += check_feasibility(dict_events, dict_employees, employee_days)
-
-        except Exception as e:
-            return {
-                "status": "error",
-                "errors": ["Villa við lestur gagna fyrir feasibility check"]
-            }
 
     if errors:
         return {
@@ -77,8 +54,30 @@ async def validate(file: UploadFile = File(...)):
             "errors": errors
         }
 
+    # ⚠️ FEASIBILITY (bara warning)
+    warnings = []
+
+    try:
+        filename = os.path.basename(input_path)
+
+        dict_events, dict_employees, employee_days, _, _, _ = open_excel(
+            filename,
+            "Events",
+            "Employees",
+            "DaysOff",
+            "ScoreKeys",
+            "SkillsetScores",
+            "EventReq"
+        )
+
+        warnings = check_feasibility(dict_events, dict_employees, employee_days)
+
+    except Exception:
+        warnings = ["Villa við feasibility check"]
+
     return {
-        "status": "ok"
+        "status": "ok",
+        "warnings": warnings
     }
 
 
@@ -95,7 +94,7 @@ async def run(file: UploadFile = File(...)):
 
     print("SAVED:", input_path)
 
-    # LOAD EVENTS
+    # 🔍 LOAD EVENTS
     try:
         df = pd.read_excel(input_path, sheet_name="Events")
     except Exception:
@@ -104,31 +103,8 @@ async def run(file: UploadFile = File(...)):
             "errors": ["Vantar 'Events' sheet eða ekki hægt að lesa skrá"]
         }
 
-    # BASIC VALIDATION
+    # ❌ STOPPA ef input vantar
     errors = validate_excel(df)
-
-    # FEASIBILITY CHECK
-    if not errors:
-        try:
-            filename = os.path.basename(input_path)
-
-            dict_events, dict_employees, employee_days, _, _, _ = open_excel(
-                filename,
-                "Events",
-                "Employees",
-                "DaysOff",
-                "ScoreKeys",
-                "SkillsetScores",
-                "EventReq"
-            )
-
-            errors += check_feasibility(dict_events, dict_employees, employee_days)
-
-        except Exception:
-            return {
-                "status": "error",
-                "errors": ["Villa við feasibility check"]
-            }
 
     if errors:
         return {
@@ -136,7 +112,28 @@ async def run(file: UploadFile = File(...)):
             "errors": errors
         }
 
-    # RUN ALGORITHM
+    # ⚠️ FEASIBILITY (EN keyrum áfram)
+    warnings = []
+
+    try:
+        filename = os.path.basename(input_path)
+
+        dict_events, dict_employees, employee_days, _, _, _ = open_excel(
+            filename,
+            "Events",
+            "Employees",
+            "DaysOff",
+            "ScoreKeys",
+            "SkillsetScores",
+            "EventReq"
+        )
+
+        warnings = check_feasibility(dict_events, dict_employees, employee_days)
+
+    except Exception:
+        warnings = ["Villa við feasibility check"]
+
+    # 🚀 ALLTAF keyra greedy ef input er OK
     result = run_greedy(input_path)
 
     if result["status"] == "success":
@@ -144,7 +141,8 @@ async def run(file: UploadFile = File(...)):
 
         return {
             "status": "success",
-            "download_url": f"/download/{filename}"
+            "download_url": f"/download/{filename}",
+            "warnings": warnings  # 🔥 sendum warnings í frontend
         }
 
     return result

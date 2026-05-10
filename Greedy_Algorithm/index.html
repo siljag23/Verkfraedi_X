@@ -59,6 +59,7 @@ button:hover {
     justify-content: center;
     align-items: center;
     font-size: 16px;
+    text-align: center;
 }
 
 /* Download */
@@ -140,7 +141,9 @@ drop.ondrop = (e) => {
     drop.innerHTML = selectedFile.name;
 };
 
+// =========================
 // VALIDATE
+// =========================
 async function validateFile() {
 
     if (!selectedFile) {
@@ -162,19 +165,32 @@ async function validateFile() {
     const data = await res.json();
 
     if (data.status === "error") {
+
         status.innerHTML = "❌<br>" + data.errors.join("<br>");
         status.style.color = "red";
+
     } else {
-        status.innerHTML = "✅ Engar villur fundust";
+
+        let message = "✅ Engar villur fundust";
+
+        // 🔥 sýna warnings
+        if (data.warnings && data.warnings.length > 0) {
+            message += "<br><br>⚠️ Athugið:<br>";
+            message += data.warnings.join("<br>");
+        }
+
+        status.innerHTML = message;
         status.style.color = "green";
     }
 }
 
+// =========================
 // RUN
+// =========================
 async function upload() {
 
     if (!selectedFile) {
-        alert("Select file first");
+        alert("Veldu skrá fyrst");
         return;
     }
 
@@ -193,16 +209,25 @@ async function upload() {
     const data = await res.json();
 
     if (data.status === "success") {
-        status.innerHTML = "Vaktaplan tilbúið ✅";
+
+        let message = "Vaktaplan tilbúið ✅";
+
+        // 🔥 sýna warnings
+        if (data.warnings && data.warnings.length > 0) {
+            message += "<br><br>⚠️ Ekki tókst að manna allar vaktir:<br>";
+            message += data.warnings.join("<br>");
+        }
+
+        status.innerHTML = message;
         status.style.color = "green";
 
         download.href = data.download_url;
         download.style.display = "block";
 
     } else {
-        status.innerHTML = "Villa ❌";
+
+        status.innerHTML = "❌<br>" + data.errors.join("<br>");
         status.style.color = "red";
-        console.error(data);
     }
 }
 </script>
