@@ -1,6 +1,7 @@
 import pandas as pd
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
+from openpyxl.chart import BarChart, Reference
 
 
 def Export_Schedule_Render(
@@ -63,6 +64,30 @@ def Export_Schedule_Render(
     emp_grouped = dict(sorted(emp_grouped.items()))
 
     # =========================
+    # STATS DATA
+    # =========================
+
+    # fjöldi vakta per starfsmaður
+    shift_counts = df.groupby("Employee").size()
+
+    # klukkutímar
+    def calc_hours(row):
+        start = pd.to_datetime(row["Start"])
+        end = pd.to_datetime(row["End"])
+        if end < start:
+            end += pd.Timedelta(days=1)
+        return (end - start).total_seconds() / 3600
+
+    df["Hours"] = df.apply(calc_hours, axis=1)
+    hours_counts = df.groupby("Employee")["Hours"].sum()
+
+    # availability (ef til)
+    availability = {}
+    for emp_id, emp in dict_employees.items():
+        name = emp.get("EmployeeName", "")
+        availability[name] = emp.get("Availability", "")
+
+    # =========================
     # EXPORT
     # =========================
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
@@ -73,6 +98,7 @@ def Export_Schedule_Render(
         ws = wb.create_sheet("Events")
         ws_emp = wb.create_sheet("Employees")
         ws_cal = wb.create_sheet("Calendar")
+        ws_stats = wb.create_sheet("Stats")
 
         bold = Font(bold=True)
         fill = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
@@ -295,5 +321,58 @@ def Export_Schedule_Render(
         for column in ws_cal.columns:
             for cell in column:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        # =========================
+        # STATS SHEET
+        # =========================
+
+        employees_sorted = sorted(df["Employee"].unique())
+
+        ws_stats["A1"] = "Starfsmaður"
+        ws_stats["B1"] = "Availability"
+        ws_stats["C1"] = "Fjöldi vakta"
+        ws_stats["D1"] = "Klukkustundir"
+
+        for col in ["A", "B", "C", "D"]:
+            c = ws_stats[f"{col}1"]
+            c.font = bold
+            c.fill = fill
+            c.alignment = center
+
+        for i, emp in enumerate(employees_sorted, start=2):
+
+            ws_stats.cell(row=i, column=1).value = emp
+            ws_stats.cell(row=i, column=2).value = availability.get(emp, "")
+            ws_stats.cell(row=i, column=3).value = int(shift_counts.get(emp, 0))
+            ws_stats.cell(row=i, column=4).value = round(hours_counts.get(emp, 0), 1)
+
+        for row in ws_stats.iter_rows():
+            for cell in row:
+                cell.alignment = center
+
+        last_row = len(employees_sorted) + 1
+
+        # ===== CHART 1: VAKTIR =====
+        chart1 = BarChart()
+        chart1.title = "Dreifing vakta"
+
+        data = Reference(ws_stats, min_col=3, min_row=1, max_row=last_row)
+        cats = Reference(ws_stats, min_col=1, min_row=2, max_row=last_row)
+
+        chart1.add_data(data, titles_from_data=True)
+        chart1.set_categories(cats)
+
+        ws_stats.add_chart(chart1, "F2")
+
+
+        # ===== CHART 2: KLST =====
+        chart2 = BarChart()
+        chart2.title = "Dreifing klukkustunda"
+
+        data2 = Reference(ws_stats, min_col=4, min_row=1, max_row=last_row)
+        chart2.add_data(data2, titles_from_data=True)
+        chart2.set_categories(cats)
+
+        ws_stats.add_chart(chart2, "F20")
 
     return output_path
