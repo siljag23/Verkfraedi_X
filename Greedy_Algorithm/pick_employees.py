@@ -76,8 +76,7 @@ def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_
                 for event_id in event_state
                 if not event_is_fully_staffed(event_id, event_state)}
 
-            raise ValueError(
-                f"Failed to staff all roles. Unfilled position: {unfilled}")
+            print(f"WARNING: Unfilled positions: {unfilled}")
 
     # Final check for fully staffed teams and valid employee assignments
     for event_id in event_state:

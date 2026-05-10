@@ -171,13 +171,13 @@ async function validateFile() {
 
     } else {
 
-        let message = "✅ Engar villur fundust";
-
-        // 🔥 sýna warnings
         if (data.warnings && data.warnings.length > 0) {
-            message += "<br><br>⚠️ Athugið:<br>";
-            message += data.warnings.join("<br>");
-        }
+            status.innerHTML = "⚠️<br>" + data.warnings.join("<br>");
+            status.style.color = "#e65c10"; // appelsínugult
+        } else {
+            status.innerHTML = "✅ Engar villur fundust";
+            status.style.color = "green";
+}
 
         status.innerHTML = message;
         status.style.color = "green";
