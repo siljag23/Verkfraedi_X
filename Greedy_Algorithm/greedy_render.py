@@ -89,7 +89,7 @@ def run_greedy(input_path):
         # =========================
         # Run greedy
         # =========================
-        rows, _, unfilled = assign_all_events(
+        rows, event_state, unfilled = assign_all_events(
             dict_events,
             dict_employees,
             hours_per_employee,
@@ -122,6 +122,7 @@ def run_greedy(input_path):
 
         output_file = Export_Schedule_Render(
             rows,
+            event_state, 
             dict_events,
             dict_employees,
             input_path,
