@@ -1,14 +1,14 @@
-
-from open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
-from pick_employees import assign_all_events
-from Print_Results_Greedy import Print_Results_Greedy
-from Plot_Results_Greedy import Plot_Results
-from Plot_Total_Stats_Greedy import Plot_Total_Stats
-from Export_Json_Greedy import Export_Json
-from export_schedule_to_excel_greedy import export_schedule_to_excel
 from collections import defaultdict
 from pathlib import Path
 import os
+
+from Greedy_Algorithm.open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
+from Greedy_Algorithm.pick_employees import assign_all_events
+from Greedy_Algorithm.Print_Results_Greedy import Print_Results_Greedy
+from Greedy_Algorithm.Plot_Results_Greedy import Plot_Results
+from Greedy_Algorithm.Plot_Total_Stats_Greedy import Plot_Total_Stats
+from Greedy_Algorithm.Export_Json_Greedy import Export_Json
+from Greedy_Algorithm.export_schedule_to_excel_greedy import export_schedule_to_excel
 
 # Upphafsstilla breytur
 hours_per_employee = defaultdict(float)

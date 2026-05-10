@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
 import shutil
 import os
-from greedy_render import run_greedy
+from Greedy_Algorithm.greedy_render import run_greedy
 
 app = FastAPI()
 

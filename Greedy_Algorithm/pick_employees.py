@@ -1,5 +1,5 @@
 
-from def_for_pick_employees import build_event_roles, is_valid_final_team, employee_priority, choose_best_role_for_employee, assign_employee_to_role, event_is_fully_staffed, get_event_datetime_info, lookup_score
+from Greedy_Algorithm.def_for_pick_employees import build_event_roles, is_valid_final_team, employee_priority, choose_best_role_for_employee, assign_employee_to_role, event_is_fully_staffed, get_event_datetime_info, lookup_score
 
 
 def assign_all_events(dict_events, dict_employees, hours_per_employee, employee_days_off, daily_hours_per_employee, max_daily_hours, max_weekly_hours, 
