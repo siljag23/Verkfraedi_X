@@ -354,9 +354,10 @@ def Export_Schedule_Render(
             ws_stats.cell(row=i, column=3).value = int(shifts)
             ws_stats.cell(row=i, column=4).value = round(hours, 1)
 
+            # NORMALIZED
             if avail > 0:
-                norm_shifts = round(shifts / avail)  # heiltala
-                norm_hours = round((hours / avail) * 2) / 2  # 0.5 skref
+                norm_shifts = round(shifts / avail)
+                norm_hours = round((hours / avail) * 2) / 2
             else:
                 norm_shifts = 0
                 norm_hours = 0
@@ -364,12 +365,10 @@ def Export_Schedule_Render(
             ws_stats.cell(row=i, column=5).value = norm_shifts
             ws_stats.cell(row=i, column=6).value = norm_hours
 
-        # center allt
         for row in ws_stats.iter_rows():
             for cell in row:
                 cell.alignment = center
 
-        # dálkabreidd
         ws_stats.column_dimensions["A"].width = 22
         ws_stats.column_dimensions["B"].width = 15
         ws_stats.column_dimensions["C"].width = 15
@@ -381,7 +380,6 @@ def Export_Schedule_Render(
         # =========================
         # CHARTS
         # =========================
-
         from openpyxl.chart import BarChart, Reference
 
         last_row = len(employees_sorted) + 1
@@ -399,6 +397,9 @@ def Export_Schedule_Render(
         chart1.set_categories(cats)
 
         chart1.legend = None
+        chart1.x_axis.tickLblPos = "low"
+        chart1.x_axis.delete = False
+        chart1.x_axis.textRotation = 45
 
         for s in chart1.series:
             s.graphicalProperties.solidFill = "FF6E1B"
@@ -418,6 +419,10 @@ def Export_Schedule_Render(
         chart2.set_categories(cats)
 
         chart2.legend = None
+
+        chart2.x_axis.tickLblPos = "low"
+        chart2.x_axis.delete = False
+        chart2.x_axis.textRotation = 45
 
         for s in chart2.series:
             s.graphicalProperties.solidFill = "FF6E1B"
