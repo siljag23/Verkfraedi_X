@@ -77,5 +77,5 @@ def download_template():
     return FileResponse(
         template_path,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        filename="template.xlsx"
+        filename="mm_yy.xlsx"
     )
