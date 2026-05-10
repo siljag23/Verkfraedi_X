@@ -85,7 +85,7 @@ def Export_Schedule_Render(
     availability = {}
     for emp_id, emp in dict_employees.items():
         name = emp.get("EmployeeName", "")
-        availability[name] = emp.get("Availability", "")
+        availability[name] = round(emp.get("Availability_ratio", 0), 2)
 
     # =========================
     # EXPORT
@@ -350,11 +350,15 @@ def Export_Schedule_Render(
             for cell in row:
                 cell.alignment = center
 
+        from openpyxl.chart import BarChart, Reference
+
         last_row = len(employees_sorted) + 1
 
-        # ===== CHART 1: VAKTIR =====
+        # ===== CHART 1 =====
         chart1 = BarChart()
-        chart1.title = "Dreifing vakta"
+        chart1.title = "Dreifing vakta (normalized)"
+        chart1.y_axis.title = "Hlutfall"
+        chart1.x_axis.title = "Starfsmenn"
 
         data = Reference(ws_stats, min_col=3, min_row=1, max_row=last_row)
         cats = Reference(ws_stats, min_col=1, min_row=2, max_row=last_row)
@@ -362,17 +366,29 @@ def Export_Schedule_Render(
         chart1.add_data(data, titles_from_data=True)
         chart1.set_categories(cats)
 
+        chart1.legend = None
+
+        for s in chart1.series:
+            s.graphicalProperties.solidFill = "FF6E1B"
+
         ws_stats.add_chart(chart1, "F2")
 
 
-        # ===== CHART 2: KLST =====
+        # ===== CHART 2 =====
         chart2 = BarChart()
-        chart2.title = "Dreifing klukkustunda"
+        chart2.title = "Dreifing klukkustunda (normalized)"
+        chart2.y_axis.title = "Hlutfall"
+        chart2.x_axis.title = "Starfsmenn"
 
         data2 = Reference(ws_stats, min_col=4, min_row=1, max_row=last_row)
+
         chart2.add_data(data2, titles_from_data=True)
         chart2.set_categories(cats)
 
-        ws_stats.add_chart(chart2, "F20")
+        chart2.legend = None
 
+        for s in chart2.series:
+            s.graphicalProperties.solidFill = "FF6E1B"
+
+        ws_stats.add_chart(chart2, "F20")
     return output_path
