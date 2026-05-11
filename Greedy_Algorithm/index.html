@@ -16,9 +16,14 @@ body {
     background: white;
     padding: 40px;
     width: 400px;
+    height: 420px; /* 🔥 fast height */
     margin: auto;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 h1 {
@@ -27,9 +32,21 @@ h1 {
 
 .drop-zone {
     border: 2px dashed #999;
-    padding: 30px;
+    height: 90px; /* 🔥 fixed size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     cursor: pointer;
     margin-bottom: 20px;
+
+    overflow: hidden;
+}
+
+.drop-zone span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .drop-zone:hover {
@@ -92,8 +109,7 @@ button:hover {
     </a>
 
     <div class="drop-zone" id="drop">
-        Dragðu Excel-skrá hingað <br>
-        eða smelltu til að velja
+        <span>Dragðu Excel-skrá hingað <br> eða smelltu til að velja</span>
     </div>
 
     <input type="file" id="fileInput" hidden>
@@ -122,7 +138,7 @@ drop.onclick = () => fileInput.click();
 // file select
 fileInput.onchange = () => {
     selectedFile = fileInput.files[0];
-    drop.innerHTML = selectedFile.name;
+    drop.innerHTML = "<span>" + selectedFile.name + "</span>";
 };
 
 // drag
@@ -138,7 +154,7 @@ drop.ondragleave = () => {
 drop.ondrop = (e) => {
     e.preventDefault();
     selectedFile = e.dataTransfer.files[0];
-    drop.innerHTML = selectedFile.name;
+    drop.innerHTML = "<span>" + selectedFile.name + "</span>";
 };
 
 // =========================
@@ -173,14 +189,11 @@ async function validateFile() {
 
         if (data.warnings && data.warnings.length > 0) {
             status.innerHTML = "⚠️<br>" + data.warnings.join("<br>");
-            status.style.color = "#e65c10"; // appelsínugult
+            status.style.color = "#e65c10";
         } else {
             status.innerHTML = "✅ Engar villur fundust";
             status.style.color = "green";
-}
-
-        status.innerHTML = message;
-        status.style.color = "green";
+        }
     }
 }
 
@@ -212,7 +225,6 @@ async function upload() {
 
         let message = "Vaktaplan tilbúið ✅";
 
-        // 🔥 sýna warnings
         if (data.warnings && data.warnings.length > 0) {
             message += "<br><br>⚠️ Ekki tókst að manna allar vaktir:<br>";
             message += data.warnings.join("<br>");
