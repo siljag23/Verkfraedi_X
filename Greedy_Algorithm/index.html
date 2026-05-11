@@ -49,7 +49,7 @@ h1 {
 }
 
 .drop-zone:hover {
-    border-color: #e65c10;
+    border-color: #ff6e1b;
 }
 
 button {
@@ -63,10 +63,10 @@ button {
 }
 
 button:hover {
-    background: #e65c10;
+    background: #ff6e1b;
 }
 
-/* 🔥 NEW: takkar í röð */
+
 .button-row {
     display: flex;
     gap: 10px;
@@ -88,7 +88,6 @@ button:hover {
     text-align: center;
 }
 
-/* 🔥 FIX: heldur plássi */
 #download {
     visibility: hidden;
     height: 45px;
@@ -124,7 +123,7 @@ button:hover {
 
     <input type="file" id="fileInput" hidden>
 
-    <!-- 🔥 TAKKAR Í RÖÐ -->
+
     <div class="button-row">
         <button onclick="validateFile()">Athuga skjal</button>
         <button onclick="upload()">Búa til vaktaplan</button>
@@ -202,7 +201,7 @@ async function validateFile() {
 
         if (data.warnings && data.warnings.length > 0) {
             status.innerHTML = "⚠️<br>" + data.warnings.join("<br>");
-            status.style.color = "#e65c10";
+            status.style.color = "##ff6e1b";
         } else {
             status.innerHTML = "✅ Engar villur fundust";
             status.style.color = "green";
