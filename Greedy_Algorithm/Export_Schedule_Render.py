@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from openpyxl.chart import BarChart, Reference
 
+
 def Export_Schedule_Render(
     rows,
     event_state,
@@ -38,23 +39,23 @@ def Export_Schedule_Render(
             "Employee": employee.get("EmployeeName", "")
         })
 
-    for event_id, event in dict_events.items():
+    # FIX: bæta við events sem fengu enga starfsmenn
+    existing_events = set(row["EventID"] for row in rows)
 
-        state = event_state.get(event_id, {})
+    for event_id, state in event_state.items():
+        if event_id in existing_events:
+            continue
 
-        assigned = state.get("Assigned", 0)
-        required = event.get("Employees", 0)
-        missing = required - assigned
+        event = dict_events[event_id]
 
-        for _ in range(max(0, missing)):
-            schedule_rows.append({
-                "Event": event.get("Event", ""),
-                "Hall": event.get("Hall", ""),
-                "Date": pd.to_datetime(event["Date"]),
-                "Start": str(event["ShiftBegins"]),
-                "End": str(event["ShiftEnds"]),
-                "Employee": None   
-            })
+        schedule_rows.append({
+            "Event": event.get("Event", ""),
+            "Hall": event.get("Hall", ""),
+            "Date": pd.to_datetime(event["Date"]),
+            "Start": str(event["ShiftBegins"]),
+            "End": str(event["ShiftEnds"]),
+            "Employee": "x"
+        })
 
     df = pd.DataFrame(schedule_rows)
 
@@ -65,7 +66,7 @@ def Export_Schedule_Render(
 
     grouped = (
         df.groupby(["Event", "Date", "Start", "End", "Hall"])["Employee"]
-        .apply(lambda x: sorted([v for v in x if pd.notna(v)]))
+        .apply(lambda x: sorted(x))
         .reset_index()
     )
 
@@ -75,14 +76,13 @@ def Export_Schedule_Render(
     # EMPLOYEE VIEW DATA
     # =========================
     emp_grouped = (
-        df[df["Employee"].notna()]
-        .groupby("Employee")[["Event", "Date", "Start", "End", "Hall"]]
+        df.groupby("Employee")[["Event", "Date", "Start", "End", "Hall"]]
         .apply(lambda x: list(zip(x["Event"], x["Date"], x["Start"], x["End"], x["Hall"])))
     )
 
     emp_grouped = dict(sorted(emp_grouped.items()))
 
-    unassigned = df[df["Employee"].isna()]
+    unassigned = df[df["Employee"] == "X"]
 
     if not unassigned.empty:
         emp_grouped["Ómannaðar vaktir"] = list(zip(
@@ -96,8 +96,11 @@ def Export_Schedule_Render(
     # =========================
     # STATS DATA
     # =========================
+
+    # fjöldi vakta per starfsmaður
     shift_counts = df.groupby("Employee").size()
 
+    # klukkutímar
     def calc_hours(row):
         start = pd.to_datetime(row["Start"])
         end = pd.to_datetime(row["End"])
@@ -108,6 +111,7 @@ def Export_Schedule_Render(
     df["Hours"] = df.apply(calc_hours, axis=1)
     hours_counts = df.groupby("Employee")["Hours"].sum()
 
+    # availability (ef til)
     availability = {}
     for emp_id, emp in dict_employees.items():
         name = emp.get("EmployeeName", "")
@@ -138,14 +142,23 @@ def Export_Schedule_Render(
         ]
 
         # =========================
-        # EVENTS SHEET
+        # EVENTS SHEET 
         # =========================
         col = 1
         for _, row in grouped.iterrows():
 
-            ws.cell(row=1, column=col).value = f"{row['Event']} ({row['Hall']})"
-            ws.cell(row=2, column=col).value = f"{row['Date'].day}. {months[row['Date'].month-1]} {row['Date'].year}"
-            ws.cell(row=3, column=col).value = f"{row['Start']} - {row['End']}"
+            event = row["Event"]
+            hall = row["Hall"]
+            date = row["Date"]
+            start = row["Start"]
+            end = row["End"]
+            employees = row["Employee"]
+
+            date_print = f"{date.day}. {months[date.month - 1]} {date.year}"
+
+            ws.cell(row=1, column=col).value = f"{event} ({hall})"
+            ws.cell(row=2, column=col).value = date_print
+            ws.cell(row=3, column=col).value = f"{start} - {end}"
 
             for r in [1, 2, 3]:
                 c = ws.cell(row=r, column=col)
@@ -155,50 +168,331 @@ def Export_Schedule_Render(
 
             ws.cell(row=3, column=col).border = border
 
-            for i, name in enumerate(row["Employee"]):
-                if name is None:
-                    continue
-                ws.cell(row=4 + i, column=col).value = name
+            for i, name in enumerate(employees):
+                c = ws.cell(row=4 + i, column=col)
+                c.value = name
+                c.alignment = center
+
+            
+            if date.weekday() >= 5:
+                weekend_fill = PatternFill(
+                    start_color="FF6E1B",
+                    end_color="FF6E1B",
+                    fill_type="solid"
+                )
+                for r in [1, 2, 3]:
+                    ws.cell(row=r, column=col).fill = weekend_fill
 
             ws.column_dimensions[ws.cell(row=1, column=col).column_letter].width = 25
             col += 1
 
         # =========================
-        # EMPLOYEES SHEET
+        # EMPLOYEES SHEET 
         # =========================
         col = 1
         for emp, events in emp_grouped.items():
 
-            ws_emp.cell(row=1, column=col).value = emp
+            c = ws_emp.cell(row=1, column=col)
+            c.value = emp
+            c.font = bold
+            c.fill = fill
+            c.alignment = center
 
             row_ptr = 2
+
             for event, date, start, end, hall in events:
+
+                date_print = f"{date.day}. {months[date.month - 1]} {date.year}"
+
                 ws_emp.cell(row=row_ptr, column=col).value = f"{event} ({hall})"
-                ws_emp.cell(row=row_ptr + 1, column=col).value = f"{date.day}. {months[date.month-1]} {date.year}"
+                ws_emp.cell(row=row_ptr + 1, column=col).value = date_print
                 ws_emp.cell(row=row_ptr + 2, column=col).value = f"{start} - {end}"
+
+                ws_emp.cell(row=row_ptr + 2, column=col).border = border
+
                 row_ptr += 3
 
+            ws_emp.column_dimensions[ws_emp.cell(row=1, column=col).column_letter].width = 25
             col += 1
+
+            for column in ws_emp.columns:
+                for cell in column:
+                    cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        # =========================
+        # CALENDAR SHEET 
+        # =========================
+
+        df_sorted = df.sort_values(["Date", "Start"])
+
+        all_dates = pd.date_range(
+            df_sorted["Date"].min(),
+            df_sorted["Date"].max()
+        ).date
+
+        weeks = []
+        current = []
+
+        for d in all_dates:
+            if len(current) == 0:
+                for _ in range(d.weekday()):
+                    current.append(None)
+
+            current.append(d)
+
+            if len(current) == 7:
+                weeks.append(current)
+                current = []
+
+        if current:
+            while len(current) < 7:
+                current.append(None)
+            weeks.append(current)
+
+        weekdays = ["Mán", "Þri", "Mið", "Fim", "Fös", "Lau", "Sun"]
+
+        row_ptr = 1
+
+        for week in weeks:
+
+            # ===== VIKA HEADER =====
+            week_start = next((d for d in week if d), None)
+            week_end = next((d for d in reversed(week) if d), None)
+
+            if week_start and week_end:
+                text = f"Vika {week_start.day}. - {week_end.day}. {months[week_start.month - 1]}"
+            else:
+                text = ""
+
+            ws_cal.merge_cells(start_row=row_ptr, start_column=1, end_row=row_ptr, end_column=7)
+            c = ws_cal.cell(row=row_ptr, column=1)
+            c.value = text
+            c.font = bold
+            c.fill = orange
+            c.alignment = center
+
+            row_ptr += 1
+
+            # ===== DATE ROW =====
+            for col, d in enumerate(week, start=1):
+                cell = ws_cal.cell(row=row_ptr, column=col)
+                cell.value = f"{d.day}. {months[d.month - 1]}" if d else ""
+                cell.font = bold
+                cell.fill = fill
+                cell.alignment = center
+
+            # ===== WEEKDAY ROW =====
+            for col, d in enumerate(week, start=1):
+                cell = ws_cal.cell(row=row_ptr + 1, column=col)
+                cell.value = weekdays[d.weekday()] if d else ""
+                cell.font = bold
+                cell.fill = fill
+                cell.alignment = center
+                cell.border = border
+
+            max_rows = 0
+            day_map = []
+
+            for d in week:
+                if d is None:
+                    day_map.append([])
+                    continue
+
+                day_df = df_sorted[df_sorted["Date"].dt.date == d]
+
+                events = []
+
+                grouped_day = (
+                    day_df.groupby(["Event", "Start", "End", "Hall"])["Employee"]
+                    .apply(list)
+                    .reset_index()
+                    .sort_values("Start")
+                )
+
+                for _, r in grouped_day.iterrows():
+                    events.append({
+                        "title": f"{r['Event']} ({r['Hall']})",
+                        "time": f"{r['Start']} - {r['End']}",
+                        "employees": sorted(r["Employee"])
+                    })
+
+                day_map.append(events)
+
+                height = sum(2 + len(e["employees"]) for e in events)
+                max_rows = max(max_rows, height)
+
+            # ===== FILL CONTENT =====
+            for col, events in enumerate(day_map, start=1):
+                r_ptr = row_ptr + 2
+
+                for e in events:
+
+                    t = ws_cal.cell(row=r_ptr, column=col)
+                    t.value = e["title"]
+                    t.font = bold
+                    t.alignment = center
+
+                    ti = ws_cal.cell(row=r_ptr + 1, column=col)
+                    ti.value = e["time"]
+                    ti.font = bold
+                    ti.alignment = center
+                    ti.border = border
+
+                    for i, emp in enumerate(e["employees"]):
+                        ws_cal.cell(row=r_ptr + 2 + i, column=col).value = emp
+
+                    r_ptr += 2 + len(e["employees"])
+
+            row_ptr += max_rows + 3
+
+        for col in range(1, 8):
+            ws_cal.column_dimensions[chr(64 + col)].width = 25
+        
+        for column in ws_cal.columns:
+            for cell in column:
+                cell.alignment = Alignment(horizontal="center", vertical="center")
 
         # =========================
         # STATS SHEET
         # =========================
-        employees_sorted = sorted([str(e) for e in df["Employee"].dropna().unique()])
+        employees_sorted = sorted(df["Employee"].unique())
+        has_unassigned = "x" in employees_sorted
 
-        if df["Employee"].isna().any():
+        if has_unassigned:
+            employees_sorted.remove("x")
             employees_sorted = ["Ómannaðar vaktir"] + employees_sorted
 
         ws_stats["A1"] = "Starfsmaður"
+        ws_stats["B1"] = "Availability"
         ws_stats["C1"] = "Fjöldi vakta"
+        ws_stats["D1"] = "Klukkustundir"
+        ws_stats["E1"] = "Fjöldi vakta / Starfshlutfall"
+        ws_stats["F1"] = "Fjöldi vinnustunda / Starfshlutfall"
 
+        # header style
+        for col in ["A", "B", "C", "D", "E", "F"]:
+            c = ws_stats[f"{col}1"]
+            c.font = bold
+            c.fill = fill
+            c.alignment = center
+
+        # data
         for i, emp in enumerate(employees_sorted, start=2):
 
             if emp == "Ómannaðar vaktir":
-                ws_stats.cell(row=i, column=1).value = emp
-                ws_stats.cell(row=i, column=3).value = int(shift_counts.get(None, 0))
+                shifts = shift_counts.get("x", 0)
+                hours = hours_counts.get("x", 0)
+
+                ws_stats.cell(row=i, column=1).value = "Ómannaðar vaktir"
+                ws_stats.cell(row=i, column=2).value = 0
+                ws_stats.cell(row=i, column=3).value = int(shifts)
+                ws_stats.cell(row=i, column=4).value = round(hours, 1)
+                ws_stats.cell(row=i, column=5).value = shifts
+                ws_stats.cell(row=i, column=6).value = hours
                 continue
 
-            ws_stats.cell(row=i, column=1).value = emp
-            ws_stats.cell(row=i, column=3).value = int(shift_counts.get(emp, 0))
+            avail = availability.get(emp, 0) or 0
+            shifts = shift_counts.get(emp, 0)
+            hours = hours_counts.get(emp, 0)
 
-    return output_path
+            ws_stats.cell(row=i, column=1).value = emp
+            ws_stats.cell(row=i, column=2).value = round(avail, 2)
+            ws_stats.cell(row=i, column=3).value = int(shifts)
+            ws_stats.cell(row=i, column=4).value = round(hours, 1)
+
+            # NORMALIZED
+            if avail > 0:
+                norm_shifts = round(shifts / avail)
+                norm_hours = round((hours / avail) * 2) / 2
+            else:
+                norm_shifts = 0
+                norm_hours = 0
+
+            ws_stats.cell(row=i, column=5).value = norm_shifts
+            ws_stats.cell(row=i, column=6).value = norm_hours
+
+        for row in ws_stats.iter_rows():
+            for cell in row:
+                cell.alignment = center
+
+        ws_stats.column_dimensions["A"].width = 22
+        ws_stats.column_dimensions["B"].width = 15
+        ws_stats.column_dimensions["C"].width = 15
+        ws_stats.column_dimensions["D"].width = 18
+        ws_stats.column_dimensions["E"].width = 28
+        ws_stats.column_dimensions["F"].width = 32
+
+
+        # =========================
+        # CHARTS
+        # =========================
+        from openpyxl.chart import BarChart, Reference
+
+        last_row = len(employees_sorted) + 1
+
+        # ===== CHART 1 =====
+        chart1 = BarChart()
+        chart1.title = "Fjöldi vakta / Starfshlutfall"
+        chart1.y_axis.title = "Vaktir"
+        chart1.x_axis.title = ""
+
+        data = Reference(ws_stats, min_col=5, min_row=1, max_row=last_row)
+        cats = Reference(ws_stats, min_col=1, min_row=2, max_row=last_row)
+
+        chart1.add_data(data, titles_from_data=True)
+        chart1.set_categories(cats)
+
+        chart1.legend = None
+        chart1.x_axis.tickLblPos = "low"
+        chart1.x_axis.delete = False
+        chart1.title.overlay = False
+        chart1.x_axis.textRotation = 45
+        chart1.width = 30
+        chart1.height = 8
+
+        for s in chart1.series:
+            s.graphicalProperties.solidFill = "FF6E1B"
+
+        values = [
+            ws_stats.cell(row=i, column=5).value or 0
+            for i in range(2, last_row + 1)
+        ]
+
+        chart1.y_axis.scaling.min = 0
+        chart1.y_axis.scaling.max = max(values) + 1 if values else 5
+        chart1.y_axis.majorUnit = 1
+        ws_stats.add_chart(chart1, "H2")
+
+
+        # ===== CHART 2 =====
+        chart2 = BarChart()
+        chart2.title = "Fjöldi vinnustunda / Starfshlutfall"
+        chart2.y_axis.title = "Vinnustundir"
+        chart2.x_axis.title = ""
+
+        data2 = Reference(ws_stats, min_col=6, min_row=1, max_row=last_row)
+
+        chart2.add_data(data2, titles_from_data=True)
+        chart2.set_categories(cats)
+
+        chart2.legend = None
+
+        chart2.x_axis.tickLblPos = "low"
+        chart2.x_axis.delete = False
+        chart2.title.overlay = False
+        chart2.x_axis.textRotation = 45
+        chart2.width = 30
+        chart2.height = 8
+        for s in chart2.series:
+            s.graphicalProperties.solidFill = "FF6E1B"
+
+        values2 = [
+            ws_stats.cell(row=i, column=6).value or 0
+            for i in range(2, last_row + 1)
+        ]
+
+        chart2.y_axis.scaling.min = 0
+        chart2.y_axis.scaling.max = max(values2) + 1 if values2 else 5
+        chart2.y_axis.majorUnit = 1
+        ws_stats.add_chart(chart2, "H20")
+    return output_path 
