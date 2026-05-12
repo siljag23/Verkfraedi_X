@@ -68,7 +68,7 @@ period_end=None
 
     grouped = (
         df.groupby(["Event", "Date", "Start", "End", "Hall"])["Employee"]
-        .apply(lambda x: sorted(x, key=lambda v: (v == "x", v)))
+        .apply(lambda x: sorted(x))
         .reset_index()
     )
 
@@ -78,9 +78,9 @@ period_end=None
     # EMPLOYEE VIEW DATA
     # =========================
     emp_grouped = (
-        df.groupby("Employee")[["Event", "Date", "Start", "End", "Hall"]]
-        .apply(lambda x: list(zip(x["Event"], x["Date"], x["Start"], x["End"], x["Hall"])))
-    )
+        df[df["Employee"] != "x"]
+        .groupby("Employee")[["Event", "Date", "Start", "End", "Hall"]]
+        .apply(lambda x: list(zip(x["Event"], x["Date"], x["Start"], x["End"], x["Hall"]))))
 
     emp_grouped = dict(sorted(emp_grouped.items()))
 
