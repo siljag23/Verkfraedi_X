@@ -172,7 +172,7 @@ def download(filename: str):
 @app.get("/template")
 def download_template():
 
-    template_path = os.path.join(BASE_DIR, "Greedy_Algorithm", "mm_yy.xlsx")
+    template_path = os.path.join(BASE_DIR, "Data", "mm_yy.xlsx")
 
     if not os.path.exists(template_path):
         return {"error": "Template not found"}
