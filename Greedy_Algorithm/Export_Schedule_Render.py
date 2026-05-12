@@ -183,7 +183,7 @@ def Export_Schedule_Render(
         # =========================
         # STATS SHEET
         # =========================
-        employees_sorted = sorted([e for e in df["Employee"].unique() if e is not None])
+        employees_sorted = sorted([str(e) for e in df["Employee"].dropna().unique()])
 
         if df["Employee"].isna().any():
             employees_sorted = ["Ómannaðar vaktir"] + employees_sorted
