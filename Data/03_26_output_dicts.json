@@ -558,13 +558,13 @@
             "EmployeeName": "Alda/ Miðó ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 360.0
+            "Score": 410.0
         },
         "3": {
             "EmployeeName": "Anna Soffía ",
             "Skillset": 2,
             "Availability_ratio": 0.9032258064516129,
-            "Score": 340.0
+            "Score": 350.0
         },
         "4": {
             "EmployeeName": "Arnar Ragn",
@@ -660,7 +660,7 @@
             "EmployeeName": "Katrín Sig ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 410.0
+            "Score": 350.0
         },
         "20": {
             "EmployeeName": "Laufey ",
