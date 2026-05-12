@@ -65,7 +65,7 @@ def Export_Schedule_Render(
 
     grouped = (
         df.groupby(["Event", "Date", "Start", "End", "Hall"])["Employee"]
-        .apply(lambda x: sorted(x, key=lambda v: (v is None, v)))
+        .apply(lambda x: sorted([v for v in x if pd.notna(v)]))
         .reset_index()
     )
 
