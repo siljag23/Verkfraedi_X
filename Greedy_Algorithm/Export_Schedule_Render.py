@@ -30,13 +30,16 @@ def Export_Schedule_Render(
         event = dict_events[row["EventID"]]
         employee = dict_employees[row["EmployeeID"]]
 
+    missing = state.get("Required", 0) - state.get("Assigned", 0)
+
+    for _ in range(max(0, missing)):
         schedule_rows.append({
             "Event": event.get("Event", ""),
             "Hall": event.get("Hall", ""),
             "Date": pd.to_datetime(event["Date"]),
             "Start": str(event["ShiftBegins"]),
             "End": str(event["ShiftEnds"]),
-            "Employee": employee.get("EmployeeName", "")
+            "Employee": "x" 
         })
 
     # FIX: bæta við events sem fengu enga starfsmenn
@@ -54,7 +57,7 @@ def Export_Schedule_Render(
             "Date": pd.to_datetime(event["Date"]),
             "Start": str(event["ShiftBegins"]),
             "End": str(event["ShiftEnds"]),
-            "Employee": ""
+            "Employee": "x"
         })
 
     df = pd.DataFrame(schedule_rows)
@@ -81,6 +84,17 @@ def Export_Schedule_Render(
     )
 
     emp_grouped = dict(sorted(emp_grouped.items()))
+
+    unassigned = df[df["Employee"] == "x"]
+
+    if not unassigned.empty:
+        emp_grouped["Ómannaðar vaktir"] = list(zip(
+            unassigned["Event"],
+            unassigned["Date"],
+            unassigned["Start"],
+            unassigned["End"],
+            unassigned["Hall"]
+        ))
 
     # =========================
     # STATS DATA
@@ -344,8 +358,12 @@ def Export_Schedule_Render(
         # =========================
         # STATS SHEET
         # =========================
-
         employees_sorted = sorted(df["Employee"].unique())
+        has_unassigned = "x" in employees_sorted
+
+        if has_unassigned:
+            employees_sorted.remove("x")
+            employees_sorted = ["Ómannaðar vaktir"] + employees_sorted
 
         ws_stats["A1"] = "Starfsmaður"
         ws_stats["B1"] = "Availability"
@@ -363,6 +381,18 @@ def Export_Schedule_Render(
 
         # data
         for i, emp in enumerate(employees_sorted, start=2):
+
+            if emp == "Ómannaðar vaktir":
+                shifts = shift_counts.get("x", 0)
+                hours = hours_counts.get("x", 0)
+
+                ws_stats.cell(row=i, column=1).value = "Ómannaðar vaktir"
+                ws_stats.cell(row=i, column=2).value = 0
+                ws_stats.cell(row=i, column=3).value = int(shifts)
+                ws_stats.cell(row=i, column=4).value = round(hours, 1)
+                ws_stats.cell(row=i, column=5).value = shifts
+                ws_stats.cell(row=i, column=6).value = hours
+                continue
 
             avail = availability.get(emp, 0) or 0
             shifts = shift_counts.get(emp, 0)
