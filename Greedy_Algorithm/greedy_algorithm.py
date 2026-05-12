@@ -31,7 +31,7 @@ dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, e
 
 # Open and read json files that contain information about events and employees from last period
 base_path = Path(__file__).resolve().parent
-"""
+
 previous_json_dict = base_path.parent / "Data" / "03_26_output_dicts.json"
 previous_json_list = base_path.parent / "Data" / "03_26_output_list.json"
 previous_scores, previous_availability = open_previous_scores(previous_json_dict)
@@ -40,7 +40,7 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 # Merge employees to scores from last period and update employees dictionary scores
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores, previous_availability)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
-"""
+
 rows = []
 
 # Assign employees to events
@@ -83,4 +83,5 @@ export_schedule_to_excel(rows,
                          period_end = period_end )
 
 # Plot results and print numerical results
+
 Plot_Total_Stats(dict_employees, hours_per_employee)
