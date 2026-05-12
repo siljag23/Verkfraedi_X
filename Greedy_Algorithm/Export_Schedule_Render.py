@@ -63,7 +63,7 @@ period_end=None
                 "Date": pd.to_datetime(event["Date"]),
                 "Start": str(event["ShiftBegins"]),
                 "End": str(event["ShiftEnds"]),
-                "Employee": "x"
+                "Employee": ""
             })
 
     df = pd.DataFrame(schedule_rows)
@@ -85,13 +85,13 @@ period_end=None
     # EMPLOYEE VIEW DATA
     # =========================
     emp_grouped = (
-        df[df["Employee"] != "x"]
+        df[df["Employee"] != ""]
         .groupby("Employee")[["Event", "Date", "Start", "End", "Hall"]]
         .apply(lambda x: list(zip(x["Event"], x["Date"], x["Start"], x["End"], x["Hall"]))))
 
     emp_grouped = dict(sorted(emp_grouped.items()))
 
-    unassigned = df[df["Employee"] == "x"]
+    unassigned = df[df["Employee"] == ""]
 
     if not unassigned.empty:
         emp_grouped["Ómannaðar vaktir"] = list(zip(
@@ -176,7 +176,7 @@ period_end=None
             ws.cell(row=3, column=col).border = border
 
             for i, name in enumerate(employees):
-                c = ws.cell(row=3 + i, column=col)
+                c = ws.cell(row=4 + i, column=col)
                 c.value = name
                 c.alignment = center
 
@@ -363,10 +363,10 @@ period_end=None
         # STATS SHEET
         # =========================
         employees_sorted = sorted(df["Employee"].unique())
-        has_unassigned = "x" in employees_sorted
+        has_unassigned = "" in employees_sorted
 
         if has_unassigned:
-            employees_sorted.remove("x")
+            employees_sorted.remove("")
             employees_sorted = ["Ómannaðar vaktir"] + employees_sorted
 
         ws_stats["A1"] = "Starfsmaður"
@@ -387,8 +387,8 @@ period_end=None
         for i, emp in enumerate(employees_sorted, start=2):
 
             if emp == "Ómannaðar vaktir":
-                shifts = shift_counts.get("x", 0)
-                hours = hours_counts.get("x", 0)
+                shifts = shift_counts.get("", 0)
+                hours = hours_counts.get("", 0)
 
                 ws_stats.cell(row=i, column=1).value = "Ómannaðar vaktir"
                 ws_stats.cell(row=i, column=2).value = 0
