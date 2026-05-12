@@ -39,7 +39,7 @@ def Export_Schedule_Render(
             "Date": pd.to_datetime(event["Date"]),
             "Start": str(event["ShiftBegins"]),
             "End": str(event["ShiftEnds"]),
-            "Employee": "x"
+            "Employee": "x" 
         })
 
     # FIX: bæta við events sem fengu enga starfsmenn
