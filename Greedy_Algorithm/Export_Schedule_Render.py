@@ -3,15 +3,14 @@ import os
 from datetime import datetime, timedelta
 from openpyxl.chart import BarChart, Reference
 
-
 def Export_Schedule_Render(
-    rows,
-    event_state,
-    dict_events,
-    dict_employees,
-    input_path,
-    period_start=None,
-    period_end=None
+rows,
+event_state,
+dict_events,
+dict_employees,
+input_path,
+period_start=None,
+period_end=None
 ):
 
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -30,35 +29,35 @@ def Export_Schedule_Render(
         event = dict_events[row["EventID"]]
         employee = dict_employees[row["EmployeeID"]]
 
-    missing = state.get("Required", 0) - state.get("Assigned", 0)
-
-    for _ in range(max(0, missing)):
         schedule_rows.append({
             "Event": event.get("Event", ""),
             "Hall": event.get("Hall", ""),
             "Date": pd.to_datetime(event["Date"]),
             "Start": str(event["ShiftBegins"]),
             "End": str(event["ShiftEnds"]),
-            "Employee": "x" 
+            "Employee": employee.get("EmployeeName", "")
         })
 
-    # FIX: bæta við events sem fengu enga starfsmenn
-    existing_events = set(row["EventID"] for row in rows)
-
     for event_id, state in event_state.items():
-        if event_id in existing_events:
+
+        assigned = state.get("Assigned", 0)
+        required = state.get("Required", 0)
+        missing = required - assigned
+
+        if missing <= 0:
             continue
 
         event = dict_events[event_id]
 
-        schedule_rows.append({
-            "Event": event.get("Event", ""),
-            "Hall": event.get("Hall", ""),
-            "Date": pd.to_datetime(event["Date"]),
-            "Start": str(event["ShiftBegins"]),
-            "End": str(event["ShiftEnds"]),
-            "Employee": "x"
-        })
+        for _ in range(missing):
+            schedule_rows.append({
+                "Event": event.get("Event", ""),
+                "Hall": event.get("Hall", ""),
+                "Date": pd.to_datetime(event["Date"]),
+                "Start": str(event["ShiftBegins"]),
+                "End": str(event["ShiftEnds"]),
+                "Employee": "x"
+            })
 
     df = pd.DataFrame(schedule_rows)
 
@@ -69,7 +68,7 @@ def Export_Schedule_Render(
 
     grouped = (
         df.groupby(["Event", "Date", "Start", "End", "Hall"])["Employee"]
-        .apply(lambda x: sorted(x))
+        .apply(lambda x: sorted(x, key=lambda v: (v == "x", v)))
         .reset_index()
     )
 
@@ -100,10 +99,8 @@ def Export_Schedule_Render(
     # STATS DATA
     # =========================
 
-    # fjöldi vakta per starfsmaður
     shift_counts = df.groupby("Employee").size()
 
-    # klukkutímar
     def calc_hours(row):
         start = pd.to_datetime(row["Start"])
         end = pd.to_datetime(row["End"])
@@ -114,7 +111,6 @@ def Export_Schedule_Render(
     df["Hours"] = df.apply(calc_hours, axis=1)
     hours_counts = df.groupby("Employee")["Hours"].sum()
 
-    # availability (ef til)
     availability = {}
     for emp_id, emp in dict_employees.items():
         name = emp.get("EmployeeName", "")
@@ -143,6 +139,7 @@ def Export_Schedule_Render(
             "janúar", "febrúar", "mars", "apríl", "maí", "júní",
             "júlí", "ágúst", "september", "október", "nóvember", "desember"
         ]
+
 
         # =========================
         # EVENTS SHEET 
