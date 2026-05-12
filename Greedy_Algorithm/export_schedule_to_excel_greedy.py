@@ -37,7 +37,7 @@ def export_schedule_to_excel(
             "End": event.get("ShiftEnds"),
             "Event": event.get("Event"),
             "Hall": event.get("Hall", ""),
-            "Category": event.get("Category", ""),
+            "Category": event.get("EventCategory", ""),
             "EmployeeID": emp_id,
             "Employee": employee.get("EmployeeName"),
             "Skillset": employee.get("Skillset"),
