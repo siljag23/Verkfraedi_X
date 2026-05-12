@@ -30,34 +30,13 @@ def Export_Schedule_Render(
         event = dict_events[row["EventID"]]
         employee = dict_employees[row["EmployeeID"]]
 
-    missing = state.get("Required", 0) - state.get("Assigned", 0)
-
-    for _ in range(max(0, missing)):
         schedule_rows.append({
             "Event": event.get("Event", ""),
             "Hall": event.get("Hall", ""),
             "Date": pd.to_datetime(event["Date"]),
             "Start": str(event["ShiftBegins"]),
             "End": str(event["ShiftEnds"]),
-            "Employee": "x" 
-        })
-
-    # FIX: bæta við events sem fengu enga starfsmenn
-    existing_events = set(row["EventID"] for row in rows)
-
-    for event_id, state in event_state.items():
-        if event_id in existing_events:
-            continue
-
-        event = dict_events[event_id]
-
-        schedule_rows.append({
-            "Event": event.get("Event", ""),
-            "Hall": event.get("Hall", ""),
-            "Date": pd.to_datetime(event["Date"]),
-            "Start": str(event["ShiftBegins"]),
-            "End": str(event["ShiftEnds"]),
-            "Employee": "x"
+            "Employee": employee.get("EmployeeName", "")
         })
 
     df = pd.DataFrame(schedule_rows)
@@ -85,7 +64,7 @@ def Export_Schedule_Render(
 
     emp_grouped = dict(sorted(emp_grouped.items()))
 
-    unassigned = df[df["Employee"] == "x"]
+    unassigned = df[df["Employee"] == "X"]
 
     if not unassigned.empty:
         emp_grouped["Ómannaðar vaktir"] = list(zip(
@@ -100,10 +79,8 @@ def Export_Schedule_Render(
     # STATS DATA
     # =========================
 
-    # fjöldi vakta per starfsmaður
     shift_counts = df.groupby("Employee").size()
 
-    # klukkutímar
     def calc_hours(row):
         start = pd.to_datetime(row["Start"])
         end = pd.to_datetime(row["End"])
@@ -114,7 +91,6 @@ def Export_Schedule_Render(
     df["Hours"] = df.apply(calc_hours, axis=1)
     hours_counts = df.groupby("Employee")["Hours"].sum()
 
-    # availability (ef til)
     availability = {}
     for emp_id, emp in dict_employees.items():
         name = emp.get("EmployeeName", "")
@@ -258,7 +234,6 @@ def Export_Schedule_Render(
 
         for week in weeks:
 
-            # ===== VIKA HEADER =====
             week_start = next((d for d in week if d), None)
             week_end = next((d for d in reversed(week) if d), None)
 
@@ -276,7 +251,6 @@ def Export_Schedule_Render(
 
             row_ptr += 1
 
-            # ===== DATE ROW =====
             for col, d in enumerate(week, start=1):
                 cell = ws_cal.cell(row=row_ptr, column=col)
                 cell.value = f"{d.day}. {months[d.month - 1]}" if d else ""
@@ -284,7 +258,6 @@ def Export_Schedule_Render(
                 cell.fill = fill
                 cell.alignment = center
 
-            # ===== WEEKDAY ROW =====
             for col, d in enumerate(week, start=1):
                 cell = ws_cal.cell(row=row_ptr + 1, column=col)
                 cell.value = weekdays[d.weekday()] if d else ""
@@ -324,7 +297,6 @@ def Export_Schedule_Render(
                 height = sum(2 + len(e["employees"]) for e in events)
                 max_rows = max(max_rows, height)
 
-            # ===== FILL CONTENT =====
             for col, events in enumerate(day_map, start=1):
                 r_ptr = row_ptr + 2
 
@@ -372,14 +344,12 @@ def Export_Schedule_Render(
         ws_stats["E1"] = "Fjöldi vakta / Starfshlutfall"
         ws_stats["F1"] = "Fjöldi vinnustunda / Starfshlutfall"
 
-        # header style
         for col in ["A", "B", "C", "D", "E", "F"]:
             c = ws_stats[f"{col}1"]
             c.font = bold
             c.fill = fill
             c.alignment = center
 
-        # data
         for i, emp in enumerate(employees_sorted, start=2):
 
             if emp == "Ómannaðar vaktir":
@@ -403,7 +373,6 @@ def Export_Schedule_Render(
             ws_stats.cell(row=i, column=3).value = int(shifts)
             ws_stats.cell(row=i, column=4).value = round(hours, 1)
 
-            # NORMALIZED
             if avail > 0:
                 norm_shifts = round(shifts / avail)
                 norm_hours = round((hours / avail) * 2) / 2
@@ -498,4 +467,4 @@ def Export_Schedule_Render(
         chart2.y_axis.scaling.max = max(values2) + 1 if values2 else 5
         chart2.y_axis.majorUnit = 1
         ws_stats.add_chart(chart2, "H20")
-    return output_path
+    return output_path 
