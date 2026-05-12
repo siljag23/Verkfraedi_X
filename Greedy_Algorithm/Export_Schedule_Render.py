@@ -43,7 +43,7 @@ period_end=None
         state = event_state.get(event_id, {})
 
         assigned = state.get("Assigned", 0)
-        required = event.get("Required", 0)
+        required = event.get("Employees", 0)
         missing = required - assigned
 
         if assigned == 0 and missing <= 0:
