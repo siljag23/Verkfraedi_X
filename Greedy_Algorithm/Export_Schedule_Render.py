@@ -43,7 +43,7 @@ period_end=None
         state = event_state.get(event_id, {})
 
         assigned = state.get("Assigned", 0)
-        required = state.get("Required", 0)
+        required = event.get("Required", 0)
         missing = required - assigned
 
         if assigned == 0 and missing <= 0:
@@ -176,7 +176,7 @@ period_end=None
             ws.cell(row=3, column=col).border = border
 
             for i, name in enumerate(employees):
-                c = ws.cell(row=4 + i, column=col)
+                c = ws.cell(row=3 + i, column=col)
                 c.value = name
                 c.alignment = center
 
