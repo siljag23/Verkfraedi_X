@@ -467,25 +467,25 @@
             "EmployeeName": "Alda/ Miðó ",
             "Skillset": 2,
             "Availability_ratio": 0.7666666666666667,
-            "Score": 250.0
+            "Score": 240.0
         },
         "3": {
             "EmployeeName": "Anna Soffía ",
             "Skillset": 2,
             "Availability_ratio": 0.9,
-            "Score": 350.0
+            "Score": 320.0
         },
         "4": {
             "EmployeeName": "Arnar Ragn",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 330.0
+            "Score": 390.0
         },
         "5": {
             "EmployeeName": "Auður ",
             "Skillset": 2,
             "Availability_ratio": 0.7333333333333333,
-            "Score": 240.0
+            "Score": 250.0
         },
         "6": {
             "EmployeeName": "Ágústa",
@@ -503,7 +503,7 @@
             "EmployeeName": "Elísabet ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 390.0
+            "Score": 350.0
         },
         "9": {
             "EmployeeName": "Elmar ",
@@ -515,67 +515,67 @@
             "EmployeeName": "Erna ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 340.0
+            "Score": 330.0
         },
         "11": {
             "EmployeeName": "Gaukur ",
             "Skillset": 2,
             "Availability_ratio": 0.5333333333333333,
-            "Score": 220.0
+            "Score": 240.0
         },
         "12": {
             "EmployeeName": "Gréta",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 380.0
+            "Score": 370.0
         },
         "13": {
             "EmployeeName": "Guðný  ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 400.0
+            "Score": 380.0
         },
         "14": {
             "EmployeeName": "Hólmfríður ",
             "Skillset": 2,
             "Availability_ratio": 0.6666666666666666,
-            "Score": 270.0
+            "Score": 260.0
         },
         "15": {
             "EmployeeName": "Hrafnkell",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 360.0
+            "Score": 340.0
         },
         "16": {
             "EmployeeName": "Hrannar ",
             "Skillset": 2,
             "Availability_ratio": 0.8,
-            "Score": 270.0
+            "Score": 240.0
         },
         "17": {
             "EmployeeName": "Jórunn  ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 290.0
+            "Score": 370.0
         },
         "18": {
             "EmployeeName": "Katrín Hel",
             "Skillset": 2,
             "Availability_ratio": 0.3333333333333333,
-            "Score": 100.0
+            "Score": 120.0
         },
         "19": {
             "EmployeeName": "Katrín Sig ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 340.0
+            "Score": 330.0
         },
         "20": {
             "EmployeeName": "Laufey ",
             "Skillset": 2,
             "Availability_ratio": 0.9,
-            "Score": 330.0
+            "Score": 320.0
         },
         "21": {
             "EmployeeName": "Magnea",
@@ -587,19 +587,19 @@
             "EmployeeName": "Magnús  ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 360.0
+            "Score": 370.0
         },
         "23": {
             "EmployeeName": "Margrét Lára",
             "Skillset": 2,
             "Availability_ratio": 0.2,
-            "Score": 140.0
+            "Score": 70.0
         },
         "24": {
             "EmployeeName": "Orri",
             "Skillset": 2,
             "Availability_ratio": 0.6,
-            "Score": 250.0
+            "Score": 190.0
         },
         "25": {
             "EmployeeName": "Palli",
@@ -611,19 +611,19 @@
             "EmployeeName": "Rut ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 310.0
+            "Score": 340.0
         },
         "27": {
             "EmployeeName": "Sara B",
             "Skillset": 2,
             "Availability_ratio": 0.8,
-            "Score": 230.0
+            "Score": 270.0
         },
         "28": {
             "EmployeeName": "Sara Júlía ",
             "Skillset": 2,
             "Availability_ratio": 0.8,
-            "Score": 280.0
+            "Score": 260.0
         },
         "29": {
             "EmployeeName": "Selma ",
@@ -647,13 +647,13 @@
             "EmployeeName": "Sæmundur ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 390.0
+            "Score": 410.0
         },
         "33": {
             "EmployeeName": "Valdís ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 380.0
+            "Score": 390.0
         },
         "34": {
             "EmployeeName": "Vero",
@@ -665,7 +665,7 @@
             "EmployeeName": "Védís ",
             "Skillset": 2,
             "Availability_ratio": 1.0,
-            "Score": 340.0
+            "Score": 350.0
         },
         "36": {
             "EmployeeName": "Unnar ",
@@ -677,7 +677,7 @@
             "EmployeeName": "Ömmi",
             "Skillset": 2,
             "Availability_ratio": 0.9666666666666667,
-            "Score": 350.0
+            "Score": 310.0
         },
         "38": {
             "EmployeeName": "Arnar ",
@@ -689,19 +689,19 @@
             "EmployeeName": "Róbert ",
             "Skillset": 1,
             "Availability_ratio": 1.0,
-            "Score": 370.0
+            "Score": 390.0
         },
         "40": {
             "EmployeeName": "Jara ",
             "Skillset": 1,
             "Availability_ratio": 0.6666666666666666,
-            "Score": 240.0
+            "Score": 260.0
         },
         "41": {
             "EmployeeName": "Þórey ",
             "Skillset": 1,
             "Availability_ratio": 1.0,
-            "Score": 340.0
+            "Score": 380.0
         }
     }
 }
