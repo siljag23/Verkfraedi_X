@@ -38,18 +38,25 @@ period_end=None
             "Employee": employee.get("EmployeeName", "")
         })
 
-    for event_id, state in event_state.items():
+    for event_id, event in dict_events.items():
+
+        state = event_state.get(event_id, {})
 
         assigned = state.get("Assigned", 0)
         required = state.get("Required", 0)
         missing = required - assigned
 
-        if missing <= 0:
-            continue
+        if assigned == 0 and missing <= 0:
+            schedule_rows.append({
+                "Event": event.get("Event", ""),
+                "Hall": event.get("Hall", ""),
+                "Date": pd.to_datetime(event["Date"]),
+                "Start": str(event["ShiftBegins"]),
+                "End": str(event["ShiftEnds"]),
+                "Employee": ""
+            })
 
-        event = dict_events[event_id]
-
-        for _ in range(missing):
+        for _ in range(max(0, missing)):
             schedule_rows.append({
                 "Event": event.get("Event", ""),
                 "Hall": event.get("Hall", ""),
