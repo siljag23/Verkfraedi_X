@@ -105,7 +105,6 @@ def open_excel(file_name, sheet_1_name, sheet_2_name, sheet_3_name, sheet_4_name
     # Load days off data
     days_off = days_off.fillna(0)
     days_off["EmployeeID"] = days_off["EmployeeID"].astype(int)
-    employees["EmployeeID"] = employees["EmployeeID"].astype(int)
 
     employee_days = {}
 

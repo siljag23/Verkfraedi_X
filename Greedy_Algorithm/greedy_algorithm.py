@@ -5,7 +5,6 @@ import os
 from Greedy_Algorithm.open_excel import open_excel, open_previous_scores, open_previous_stats, merge_scores_into_employees, merge_previous_stats_into_employees
 from Greedy_Algorithm.pick_employees import assign_all_events
 from Greedy_Algorithm.Print_Results_Greedy import Print_Results_Greedy
-from Greedy_Algorithm.Plot_Results_Greedy import Plot_Results
 from Greedy_Algorithm.Plot_Total_Stats_Greedy import Plot_Total_Stats
 from Greedy_Algorithm.Export_Json_Greedy import Export_Json
 from Greedy_Algorithm.export_schedule_to_excel_greedy import export_schedule_to_excel
@@ -32,7 +31,7 @@ dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, e
 
 # Open and read json files that contain information about events and employees from last period
 base_path = Path(__file__).resolve().parent
-
+"""
 previous_json_dict = base_path.parent / "Data" / "03_26_output_dicts.json"
 previous_json_list = base_path.parent / "Data" / "03_26_output_list.json"
 previous_scores, previous_availability = open_previous_scores(previous_json_dict)
@@ -41,12 +40,12 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 # Merge employees to scores from last period and update employees dictionary scores
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores, previous_availability)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
-
+"""
 rows = []
 
 # Assign employees to events
 try:
-    rows, event_state = assign_all_events(dict_events, 
+    rows, event_state, unfilled = assign_all_events(dict_events, 
                                           dict_employees, 
                                           hours_per_employee, 
                                           employees_days_off, 
@@ -65,7 +64,7 @@ except Exception as e:
     print("ERROR ->", e)
 
 # Print results -> number of shifts, hours, scores and weekend shifts per employee
-Print_Results_Greedy(dict_employees, shifts_per_employee, hours_per_employee)
+Print_Results_Greedy(dict_employees, hours_per_employee)
 
 # Export results to 2 json files
 Export_Json(dict_employees, dict_events, rows, month)
@@ -84,5 +83,4 @@ export_schedule_to_excel(rows,
                          period_end = period_end )
 
 # Plot results and print numerical results
-Plot_Results(dict_employees, hours_per_employee)
 Plot_Total_Stats(dict_employees, hours_per_employee)
