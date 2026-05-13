@@ -5,8 +5,8 @@ def Export_Json(dict_employees, dict_events, rows, month):
     """Export info for current scheduling period to 2 json files"""
     base_path = Path(__file__).resolve().parent
 
-    output_list_path = base_path.parent / "Data" / f"{month}_output_list.json"
-    output_dict_path = base_path.parent / "Data" / f"{month}_output_dicts.json"
+    output_list_path = Path("Data") / f"{month}_output_list.json"
+    output_dict_path = Path("Data") / f"{month}_output_dicts.json"
 
     pairs_for_json = [[row["EventID"], row["EmployeeID"]] for row in rows]
 
