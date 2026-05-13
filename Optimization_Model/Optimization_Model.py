@@ -186,7 +186,7 @@ Print_Stats("Total (Normalized)", norm_total, filter_zero=True)
 # -------------------------
 Run_Manual_Analysis(employees, hist_availability, curr_availability)
 
-"""
+
 # -------------------------
 # GREEDY OBJECTIVE
 # -------------------------
@@ -200,6 +200,7 @@ obj = Manual_Objective(*inputs)
 print("\n--- GREEDY OBJECTIVE ---")
 print("Objective value:", round(obj, 2))
 
+"""
 # -------------------------
 # MANUAL OBJECTIVE
 # -------------------------
