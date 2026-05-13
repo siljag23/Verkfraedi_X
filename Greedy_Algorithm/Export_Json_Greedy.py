@@ -33,3 +33,6 @@ def Export_Json(dict_employees, dict_events, rows, month):
 
     with open(output_dict_path, "w", encoding="utf-8") as f:
         json.dump(info_for_json, f, indent=4, ensure_ascii=False, default=str)
+
+    print("WRITING JSON TO:", output_list_path)
+    print("WRITING JSON TO:", output_dict_path)
