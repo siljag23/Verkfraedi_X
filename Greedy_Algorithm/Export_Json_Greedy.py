@@ -1,7 +1,9 @@
 import json
 from pathlib import Path
 
+print("EXPORT_JSON FILE LOADED")
 def Export_Json(dict_employees, dict_events, rows, month):
+    print("EXPORT_JSON CALLED")
     """Export info for current scheduling period to 2 json files"""
     base_path = Path(__file__).resolve().parent
 
