@@ -109,7 +109,7 @@ def run_greedy(input_path):
         # =========================
         # Export JSON
         # =========================
-        Export_Json(dict_employees, dict_events, rows, month)
+        Export_Json(dict_employees, dict_events, rows, os.path.splitext(filename)[0])
 
         # =========================
         # Export Excel
