@@ -43,13 +43,6 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         current_weekends.append(emp.get("Shifts_on_weekends", 0))
         prev_weekends.append(emp.get("prev_weekend_shifts", 0))
 
-    def sort_combined(names, prev_vals, current_vals):
-        combined = list(zip(names, prev_vals, current_vals))
-        combined = sorted(combined, key=lambda x: int(x[0]))
-        sorted_names = [x[0] for x in combined]
-        sorted_prev = [x[1] for x in combined]
-        sorted_current = [x[2] for x in combined]
-        return sorted_names, sorted_prev, sorted_current
 
     def plot_normalized(names, prev_vals, current_vals, title, xlabel, ylabel):
         combined = list(zip(names, prev_vals, current_vals))

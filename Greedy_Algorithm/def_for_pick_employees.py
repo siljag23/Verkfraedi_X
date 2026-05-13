@@ -203,8 +203,8 @@ def employee_priority(emp_id: int, dict_employees, hours_per_employee, base_min_
     return (
         completion_ratio,
         -availability_ratio,
-        hours_per_employee[emp_id],
         dict_employees[emp_id]["Score"],
+        hours_per_employee[emp_id],
         dict_employees[emp_id]["Number_of_shifts"],
         emp_id
     )
