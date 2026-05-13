@@ -41,7 +41,7 @@ previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 dict_employees = merge_scores_into_employees(dict_employees, previous_scores, previous_availability)
 dict_employees = merge_previous_stats_into_employees(dict_employees, previous_stats)
 
-rows = []
+rows = [] 
 
 # Assign employees to events
 try:
