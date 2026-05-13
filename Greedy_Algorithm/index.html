@@ -16,7 +16,7 @@ body {
     background: white;
     padding: 40px;
     width: 400px;
-    min-height: 420px;
+    min-height: 520px;
     margin: auto;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -36,16 +36,10 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
     cursor: pointer;
-    margin-bottom: 20px;
-    overflow: hidden;
-}
-
-.drop-zone span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-bottom: 15px;
+    text-align: center;
+    padding: 10px;
 }
 
 .drop-zone:hover {
@@ -53,7 +47,7 @@ h1 {
 }
 
 button {
-    padding: 12px 20px;
+    padding: 12px;
     border: none;
     background: #ff6e1b;
     color: white;
@@ -62,48 +56,18 @@ button {
     border-radius: 5px;
 }
 
-button:hover {
-    background: #ff6e1b;
-}
-
-
 .button-row {
     display: flex;
     gap: 10px;
-    justify-content: center;
 }
 
-.button-row button {
-    flex: 1;
-}
-
-/* Status */
 #status {
     margin: 10px 0;
     min-height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 15px;   
-    text-align: center;
 }
 
 #download {
     visibility: hidden;
-    height: 45px;
-}
-
-/* Template */
-.template-link {
-    display: block;
-    margin-bottom: 20px;
-    color: #ff6e1b;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.template-link:hover {
-    text-decoration: underline;
 }
 </style>
 </head>
@@ -111,120 +75,87 @@ button:hover {
 <body>
 
 <div class="container">
-    <h1>Vaktaplan Þjónustufulltrúa</h1>
 
-    <a href="/template" class="template-link" download>
-        Sækja Excel sniðmát
-    </a>
+<h1>Vaktaplan</h1>
 
-    <div class="drop-zone" id="drop">
-        <span>Dragðu Excel-skrá hingað <br> eða smelltu til að velja</span>
-    </div>
+<!-- CURRENT FILE -->
+<div class="drop-zone" id="dropCurrent">
+    <span>Núverandi Excel skjal</span>
+</div>
+<input type="file" id="fileCurrent" hidden>
 
-    <input type="file" id="fileInput" hidden>
+<!-- PREVIOUS FILE -->
+<div class="drop-zone" id="dropPrevious">
+    <span>Fyrra vaktaplan (optional)</span>
+</div>
+<input type="file" id="filePrevious" hidden>
 
+<div class="button-row">
+    <button onclick="upload()">Keyra</button>
+</div>
 
-    <div class="button-row">
-        <button onclick="validateFile()">Athuga skjal</button>
-        <button onclick="upload()">Búa til vaktaplan</button>
-    </div>
+<div id="status"></div>
 
-    <div id="status"></div>
+<a id="download" href="#" download>
+    <button>Sækja vaktaplan</button>
+</a>
 
-    <a id="download" href="#" download>
-        <button>Sækja vaktaplan</button>
-    </a>
 </div>
 
 <script>
-let selectedFile = null;
+let currentFile = null;
+let previousFile = null;
 
-const drop = document.getElementById("drop");
-const fileInput = document.getElementById("fileInput");
+// elements
+const dropCurrent = document.getElementById("dropCurrent");
+const dropPrevious = document.getElementById("dropPrevious");
+
+const fileCurrent = document.getElementById("fileCurrent");
+const filePrevious = document.getElementById("filePrevious");
+
 const status = document.getElementById("status");
 const download = document.getElementById("download");
 
-// click
-drop.onclick = () => fileInput.click();
+// =====================
+// CURRENT FILE
+// =====================
+dropCurrent.onclick = () => fileCurrent.click();
 
-// file select
-fileInput.onchange = () => {
-    selectedFile = fileInput.files[0];
-    drop.innerHTML = "<span>" + selectedFile.name + "</span>";
+fileCurrent.onchange = () => {
+    currentFile = fileCurrent.files[0];
+    dropCurrent.innerHTML = "<span>" + currentFile.name + "</span>";
 };
 
-// drag
-drop.ondragover = (e) => {
-    e.preventDefault();
-    drop.style.borderColor = "#ff6e1b";
+// =====================
+// PREVIOUS FILE
+// =====================
+dropPrevious.onclick = () => filePrevious.click();
+
+filePrevious.onchange = () => {
+    previousFile = filePrevious.files[0];
+    dropPrevious.innerHTML = "<span>" + previousFile.name + "</span>";
 };
 
-drop.ondragleave = () => {
-    drop.style.borderColor = "#999";
-};
-
-drop.ondrop = (e) => {
-    e.preventDefault();
-    selectedFile = e.dataTransfer.files[0];
-    drop.innerHTML = "<span>" + selectedFile.name + "</span>";
-};
-
-// =========================
-// VALIDATE
-// =========================
-async function validateFile() {
-
-    if (!selectedFile) {
-        alert("Veldu skrá fyrst");
-        return;
-    }
-
-    status.innerHTML = "Athuga skjal...";
-    status.style.color = "black";
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    const res = await fetch("/validate", {
-        method: "POST",
-        body: formData
-    });
-
-    const data = await res.json();
-
-    if (data.status === "error") {
-
-        status.innerHTML = "❌<br>" + data.errors.join("<br>");
-        status.style.color = "red";
-
-    } else {
-
-        if (data.warnings && data.warnings.length > 0) {
-            status.innerHTML = "⚠️<br>" + data.warnings.join("<br>");
-            status.style.color = "##ff6e1b";
-        } else {
-            status.innerHTML = "✅ Engar villur fundust";
-            status.style.color = "green";
-        }
-    }
-}
-
-// =========================
-// RUN
-// =========================
+// =====================
+// UPLOAD
+// =====================
 async function upload() {
 
-    if (!selectedFile) {
-        alert("Veldu skrá fyrst");
+    if (!currentFile) {
+        alert("Veldu núverandi skrá");
         return;
     }
 
-    status.innerHTML = "Býr til vaktaplan...";
+    status.innerHTML = "Keyri...";
     status.style.color = "black";
     download.style.visibility = "hidden";
 
     const formData = new FormData();
-    formData.append("file", selectedFile);
+    formData.append("current_file", currentFile);
+
+    if (previousFile) {
+        formData.append("previous_file", previousFile);
+    }
 
     const res = await fetch("/run", {
         method: "POST",
@@ -235,14 +166,7 @@ async function upload() {
 
     if (data.status === "success") {
 
-        let message = "Vaktaplan tilbúið ✅";
-
-        if (data.warnings && data.warnings.length > 0) {
-            message += "<br><br>⚠️ Ekki tókst að manna allar vaktir:<br>";
-            message += data.warnings.join("<br>");
-        }
-
-        status.innerHTML = message;
+        status.innerHTML = "Vaktaplan tilbúið ✅";
         status.style.color = "green";
 
         download.href = data.download_url;
@@ -250,7 +174,7 @@ async function upload() {
 
     } else {
 
-        status.innerHTML = "❌<br>" + data.errors.join("<br>");
+        status.innerHTML = "Villa ❌";
         status.style.color = "red";
     }
 }
