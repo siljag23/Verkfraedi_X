@@ -126,7 +126,7 @@ def Plot_Total_Stats(dict_employees, hours_per_employee):
         in zip(prev_weekends, current_weekends, prev_avail_list, current_avail_list)
         if a_prev > 0 and a_curr > 0]
     
-    print("NORMALIZED")
+    print("Normalized statistics")
     print_stats("Total Shifts (norm)", total_shifts_norm)
     print_stats("Total Hours (norm)", total_hours_norm)
     print_stats("Total Score (norm)", total_scores_norm)
