@@ -24,4 +24,4 @@ Contains the Optimization Model.
 
 Main script:
 ```bash
-python Greedy_Algorithm/greedy_algorithm.py
+python -m Greedy_Algorithm.greedy_algorithm
