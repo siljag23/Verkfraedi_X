@@ -23,7 +23,8 @@ base_min_shifts = 3
 
 
 # Prófum að hafa þetta til að skýra json skjölin eftir viðeigandi mánuði
-month = input("Mánuður vaktaplans á format mm_yy: ")
+prev_month = input("Mánuður síðasta vaktaplans á formi mm_yy: ")
+month = input("Mánuður núverandi vaktaplans á formi mm_yy: ")
 
 # Open and read excel input that contains information about events and employees
 dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, event_requests = open_excel(
@@ -32,8 +33,8 @@ dict_events, dict_employees, employees_days_off, score_rules, skillset_scores, e
 # Open and read json files that contain information about events and employees from last period
 base_path = Path(__file__).resolve().parent
 
-previous_json_dict = base_path.parent / "Data" / "03_26_output_dicts.json"
-previous_json_list = base_path.parent / "Data" / "03_26_output_list.json"
+previous_json_dict = base_path.parent / "Data" / f"{prev_month}_output_dicts.json"
+previous_json_list = base_path.parent / "Data" / f"{prev_month}_output_list.json"
 previous_scores, previous_availability = open_previous_scores(previous_json_dict)
 previous_stats = open_previous_stats(previous_json_dict, previous_json_list)
 
